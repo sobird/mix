@@ -1,0 +1,32 @@
+{
+  "name": "@mix/kernel",
+  "version": "0.0.0",
+  "description": "mix kernel.",
+  "keywords": [
+    "mix-kernel"
+  ],
+  "author": "sobird <i@sobird.me>",
+  "homepage": "https://github.com/sobird/mix#readme",
+  "license": "MIT",
+  "main": "mix.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "http://r.npm.sankuai.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sobird/mix.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/sobird/mix/issues"
+  }
+}
