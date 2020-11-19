@@ -28,5 +28,9 @@
   },
   "bugs": {
     "url": "https://github.com/sobird/mix/issues"
+  },
+  "dependencies": {
+    "debug": "^4.2.0",
+    "glob": "^7.1.6"
   }
 }
