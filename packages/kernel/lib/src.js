@@ -32,10 +32,13 @@ module.exports = function (pattern = '**/*', options, streamOptions) {
   );
 
   globber.on('match', function (path) {
+    const { statCache } = globber;
+
     if (
       !readable.push({
         path,
         cwd: globber.cwd,
+        stat: statCache[path]
       })
     ) {
       this.pause();
