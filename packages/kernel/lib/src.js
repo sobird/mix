@@ -1,10 +1,10 @@
 /**
- * index.js
+ * src.js
  *
  * sobird<i@sobird.me> at 2020/11/18 11:40:12 created.
  */
 
-const { Readable, Writable } = require('stream');
+const { Readable } = require('stream');
 const glob = require('glob');
 
 module.exports = function (pattern = '**/*', options, streamOptions) {
