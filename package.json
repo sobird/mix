@@ -1,7 +1,14 @@
 {
-  "name": "root",
-  "private": true,
-  "devDependencies": {
-    "lerna": "^3.22.1"
-  }
+  "name": "mix",
+  "version": "0.0.1",
+  "description": "mix",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "mix"
+  ],
+  "author": "sobird",
+  "license": "MIT"
 }
