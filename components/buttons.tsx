@@ -2,31 +2,32 @@
 
 import { signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { Button } from 'antd';
 
 export const LoginButton = () => {
   return (
-    <button type="button" style={{ marginRight: 10 }} onClick={() => { return signIn(); }}>
+    <Button type="primary" style={{ marginRight: 10 }} onClick={() => { return signIn(); }}>
       Sign in
-    </button>
+    </Button>
   );
 };
 
 export const RegisterButton = () => {
   return (
-    <Link href="/register" style={{ marginRight: 10 }}>
+    <Button type="link" href="/register" style={{ marginRight: 10 }}>
       Register
-    </Link>
+    </Button>
   );
 };
 
 export const LogoutButton = () => {
   return (
-    <button type="button" style={{ marginRight: 10 }} onClick={() => { return signOut(); }}>
+    <Button type="default" style={{ marginRight: 10 }} onClick={() => { return signOut(); }}>
       Sign Out
-    </button>
+    </Button>
   );
 };
 
 export const ProfileButton = () => {
-  return <Link href="/profile">Profile</Link>;
+  return <Button type="link" href="/profile">Profile</Button>;
 };
