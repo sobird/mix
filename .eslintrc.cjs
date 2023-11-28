@@ -13,8 +13,10 @@ module.exports = {
       extends: [
         'sobird/typescript-react.cjs',
       ],
+      rules: {
+        'import/prefer-default-export': 'off',
+      },
     },
   ],
-  rules: {
-  },
+
 };
