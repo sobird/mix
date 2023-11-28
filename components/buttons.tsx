@@ -14,9 +14,9 @@ export const LoginButton = () => {
 
 export const RegisterButton = () => {
   return (
-    <Button type="link" href="/register" style={{ marginRight: 10 }}>
-      Register
-    </Button>
+    <Link type="link" href="/signup" style={{ marginRight: 10 }}>
+      Sign up
+    </Link>
   );
 };
 
@@ -29,5 +29,5 @@ export const LogoutButton = () => {
 };
 
 export const ProfileButton = () => {
-  return <Button type="link" href="/profile">Profile</Button>;
+  return <Link type="link" href="/profile">Profile</Link>;
 };
