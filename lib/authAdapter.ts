@@ -10,7 +10,7 @@ import VerificationToken from '@/models/verificationToken';
 import Account from '@/models/account';
 import Session from '@/models/session';
 
-const USER_ATTRIBUTES_DISPLAY = ['username', 'email', 'nickname', 'realname'];
+const USER_ATTRIBUTES_DISPLAY = ['id', 'username', 'email', 'nickname', 'realname'];
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
@@ -45,6 +45,8 @@ const AuthAdapter: Adapter = {
     return user?.get({ plain: true }) ?? null;
   },
   async updateUser(record) {
+    console.log('record', record);
+
     await User.update(record, { where: { id: record.id } });
     const user = await User.findByPk(record.id, {
       attributes: USER_ATTRIBUTES_DISPLAY,

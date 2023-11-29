@@ -18,6 +18,7 @@
     "nodemailer": "^6.9.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sass": "^1.69.5",
     "sequelize": "^6.33.0",
     "sqlite3": "^5.1.6"
   },

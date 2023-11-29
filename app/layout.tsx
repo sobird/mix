@@ -1,5 +1,7 @@
 import { ConfigProvider } from 'antd';
 import StyledComponentsRegistry from '@/lib/antdRegistry';
+import 'antd/dist/reset.css';
+import './global.scss';
 
 export const metadata = {
   title: 'Next.js',
