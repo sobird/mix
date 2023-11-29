@@ -11,8 +11,10 @@
   }
 
   form {
-    border: 1px solid #ddd;
+    border: 1px solid var(--line-color);
     padding: 24px;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
   }
 }
 
