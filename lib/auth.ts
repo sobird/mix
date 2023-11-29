@@ -5,16 +5,12 @@ import SequelizeAdapter, { models } from '@auth/sequelize-adapter';
 import { sendVerificationRequest } from './mailer';
 import sequelize from './sequelize';
 
-console.log('models', sequelize.models, models);
-
 export const authOptions: AuthOptions = {
   secret: 'sobird',
   session: {
     strategy: 'jwt',
   },
-  adapter: SequelizeAdapter(sequelize, {
-    synchronize: true,
-  }),
+  adapter: SequelizeAdapter(sequelize),
   providers: [
     CredentialsProvider({
       name: 'Sign in',

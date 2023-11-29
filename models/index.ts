@@ -13,7 +13,7 @@ import sequelize from '@/lib/sequelize';
 // export const UserModel = User;
 const defaultModelOptions = { underscored: true, timestamps: false };
 
-const User = sequelize.define('user', {}, defaultModelOptions);
+const User = sequelize.define('user', models.User, defaultModelOptions);
 const Account = sequelize.define('account', models.Account, defaultModelOptions);
 const Session = sequelize.define('session', models.Session, defaultModelOptions);
 const VerificationToken = sequelize.define('verificationToken', models.VerificationToken, defaultModelOptions);
