@@ -1,9 +1,8 @@
 import sequelize from '@/models';
 
-sequelize.sync({ force: true }).then((res) => {
-  // console.log('res', res);
-});
-
 export default (req, res) => {
-  return res.json({ data: 123 });
+  sequelize.sync({ force: true }).then((databaseRes) => {
+    // console.log('res', res);
+    res.json({ message: 'ok' });
+  });
 };

@@ -8,14 +8,13 @@
 
 import { models } from '@auth/sequelize-adapter';
 import sequelize from '@/lib/sequelize';
-// import User from './user';
+import User from './user';
+import Account from './account';
 
 // export const UserModel = User;
-const defaultModelOptions = { underscored: true, timestamps: false };
+const defaultModelOptions = { underscored: false, timestamps: false };
 
-const User = sequelize.define('user', models.User, defaultModelOptions);
-const Account = sequelize.define('account', models.Account, defaultModelOptions);
-const Session = sequelize.define('Session', models.Session, defaultModelOptions);
+const Session = sequelize.define('Session', {}, defaultModelOptions);
 const VerificationToken = sequelize.define('VerificationToken', models.VerificationToken, defaultModelOptions);
 
 Account.belongsTo(User, { onDelete: 'cascade' });
