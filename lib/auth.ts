@@ -1,12 +1,20 @@
-import NextAuth, { AuthOptions } from 'next-auth';
+import type { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
+import SequelizeAdapter, { models } from '@auth/sequelize-adapter';
+import { sendVerificationRequest } from './mailer';
+import sequelize from './sequelize';
+
+console.log('models', sequelize.models, models);
 
 export const authOptions: AuthOptions = {
   secret: 'sobird',
   session: {
     strategy: 'jwt',
   },
+  adapter: SequelizeAdapter(sequelize, {
+    synchronize: true,
+  }),
   providers: [
     CredentialsProvider({
       name: 'Sign in',
@@ -37,6 +45,27 @@ export const authOptions: AuthOptions = {
         return user as any;
       },
     }),
+    /**
+     * The Email authentication provider can only be used if a database is configured.
+     * This is required to store the verification token. Please see the email provider for more details.
+     */
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: process.env.EMAIL_SERVER_PORT,
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+      },
+      from: process.env.EMAIL_FROM,
+      async sendVerificationRequest(params) {
+        sendVerificationRequest(params);
+      },
+      async generateVerificationToken() {
+        return 'ABC123';
+      },
+    }),
   ],
   callbacks: {
     session: ({ session, token }) => {
@@ -64,6 +93,6 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    signIn: '/auth/signin',
+    // signIn: '/signin',
   },
 };
