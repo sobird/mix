@@ -1,5 +1,10 @@
 /**
- * user.model.ts
+ * Extends NextAuth AdapterUser Model
+ *
+ * A user represents a person who can sign in to the application.
+ * If a user does not exist yet, it will be created when they sign in for the first time,
+ * using the information (profile data) returned by the identity provider.
+ * A corresponding account is also created and linked to the user.
  *
  * sobird<i@sobird.me> at 2021/11/16 20:30:51 created.
  */
@@ -16,7 +21,16 @@ export interface UserAttributes {
   username: string;
   nickname?: string | null;
   realname?: string | null;
+  /**
+   * The user's email address.
+   */
   email: string;
+  /**
+   * Whether the user has verified their email address via an Email provider.
+   * It is null if the user has not signed in with the Email provider yet,
+   * or the date of the first successful signin.
+   */
+  emailVerified: null | Date;
   password: string;
   salt: string;
   ip: string;
