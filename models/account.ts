@@ -52,18 +52,6 @@ export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'type
 
 class Account extends Model<AccountAttributes, AccountCreationAttributes> {
   declare id: number;
-
-  public Accountname!: string;
-
-  public salt!: string;
-
-  public password!: string;
-
-  public email!: string;
-
-  private createdAt: string;
-
-  public ip: string;
 }
 
 Account.init(
