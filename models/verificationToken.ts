@@ -11,10 +11,11 @@
  */
 
 import { Model, DataTypes } from 'sequelize';
+import type { VerificationToken as IVerificationToken } from '@auth/core/adapters';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */
-export interface VerificationTokenAttributes {
+export interface VerificationTokenAttributes extends IVerificationToken {
   /**
    * A hashed token, using the AuthConfig.secret value.
    */
@@ -26,7 +27,7 @@ export interface VerificationTokenAttributes {
   /**
    * The absolute date when the token expires.
    */
-  expires: string;
+  expires: Date;
 }
 /** Some attributes are optional in `VerificationToken.build` and `VerificationToken.create` calls */
 export type VerificationTokenCreationAttributes = VerificationTokenAttributes;
@@ -51,7 +52,6 @@ VerificationToken.init(
   },
   {
     sequelize,
-    modelName: 'verificationToken',
   },
 );
 

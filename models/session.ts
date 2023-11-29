@@ -7,10 +7,11 @@
  */
 
 import { Model, DataTypes, type Optional } from 'sequelize';
+import type { AdapterSession } from '@auth/core/adapters';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the Session model */
-export interface SessionAttributes {
+export interface SessionAttributes extends AdapterSession {
   id?: number;
   /**
    * The absolute date when the session expires.
@@ -22,7 +23,7 @@ export interface SessionAttributes {
    * If a session is accessed past its expiry date,
    * it will be removed from the database to clean up inactive sessions.
    */
-  expires: string;
+  expires: Date;
   /**
    * A randomly generated value that is used to look up the session in the database when using "database" AuthConfig.strategy option.
    * This value is saved in a secure, HTTP-Only cookie on the client.
@@ -38,6 +39,8 @@ export type SessionCreationAttributes = Optional<SessionAttributes, 'id'>;
 
 class Session extends Model<SessionAttributes, SessionCreationAttributes> {
   declare id: number;
+
+  public userId!: number;
 }
 
 Session.init(
