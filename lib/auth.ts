@@ -1,16 +1,15 @@
 import type { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
-import SequelizeAdapter, { models } from '@auth/sequelize-adapter';
 import { sendVerificationRequest } from './mailer';
-import sequelize from './sequelize';
+import AuthAdapter from './authAdapter';
 
 export const authOptions: AuthOptions = {
   secret: 'sobird',
   session: {
     strategy: 'jwt',
   },
-  adapter: SequelizeAdapter(sequelize),
+  adapter: AuthAdapter,
   providers: [
     CredentialsProvider({
       name: 'Sign in',
@@ -58,9 +57,9 @@ export const authOptions: AuthOptions = {
       async sendVerificationRequest(params) {
         sendVerificationRequest(params);
       },
-      async generateVerificationToken() {
-        return 'ABC123';
-      },
+      // async generateVerificationToken() {
+      //   return 'ABC123';
+      // },
     }),
   ],
   callbacks: {

@@ -12,6 +12,7 @@
  */
 
 import { Model, DataTypes, type Optional } from 'sequelize';
+import type { AdapterAccount } from '@auth/core/adapters';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the Account model */
@@ -21,7 +22,7 @@ export interface AccountAttributes {
    * id of the user this account belongs to
    */
   userId: string;
-  type: string;
+  type: AdapterAccount['type'];
   /**
    * Provider's id for this account. Eg.: 'google'
    */
@@ -34,24 +35,26 @@ export interface AccountAttributes {
    * credentials: id returned from the authorize() callback
    */
   providerAccountId: string;
-  refresh_token: string;
-  access_token: string;
+  refresh_token?: string;
+  access_token?: string | undefined;
   /**
    * Calculated value based on [OAuth2TokenEndpointResponse.expires_in]([object Object]).
    * It is the absolute timestamp (in seconds) when the [OAuth2TokenEndpointResponse.access_token]([object Object]) expires.
    * This value can be used for implementing token rotation together with [OAuth2TokenEndpointResponse.refresh_token]([object Object]).
    */
-  expires_at: number;
-  token_type: string;
-  scope: string;
-  id_token: string;
-  session_state: string;
+  expires_at?: number;
+  token_type?: string;
+  scope?: string;
+  id_token?: string;
+  // session_state: string;
 }
 /** Some attributes are optional in `Account.build` and `Account.create` calls */
-export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'type'>;
+export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'userId'>;
 
 class Account extends Model<AccountAttributes, AccountCreationAttributes> {
   declare id: number;
+
+  public userId: number;
 }
 
 Account.init(
@@ -103,7 +106,6 @@ Account.init(
   },
   {
     sequelize,
-    modelName: 'account',
   },
 );
 

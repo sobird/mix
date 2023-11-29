@@ -8,7 +8,7 @@
  *
  * sobird<i@sobird.me> at 2021/11/16 20:30:51 created.
  */
-
+import type { AdapterUser } from '@auth/core/adapters';
 import { randomBytes, createHmac } from 'crypto';
 import {
   DataTypes, Model, Optional,
@@ -16,8 +16,8 @@ import {
 import sequelize from '@/lib/sequelize';
 
 // These are all the attributes in the User model
-export interface UserAttributes {
-  id?: number;
+export interface UserAttributes extends Partial<AdapterUser> {
+  id: string;
   username: string;
   nickname?: string | null;
   realname?: string | null;
@@ -36,14 +36,14 @@ export interface UserAttributes {
   ip: string;
 }
 // Some attributes are optional in `User.build` and `User.create` calls
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'nickname' | 'realname' | 'salt' | 'ip'>;
+export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'username' | 'password' | 'nickname' | 'realname' | 'salt' | 'ip'>;
 // 用户登录属性
 export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>;
 // 用户注册属性
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
 class User extends Model<UserAttributes, UserCreationAttributes> {
-  declare id: number;
+  public id: number;
 
   public username!: string;
 
@@ -111,19 +111,29 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
 
 User.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+    },
     username: {
       type: DataTypes.STRING(32),
-      allowNull: false,
       comment: 'user name',
+    },
+    name: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.username;
+      },
+      set(value: string) {
+        this.setDataValue('username', value);
+      },
     },
     nickname: {
       type: DataTypes.STRING(32),
-      allowNull: true,
       comment: 'nick name',
     },
     realname: {
       type: DataTypes.STRING(32),
-      allowNull: true,
       comment: 'real name',
     },
     email: {
@@ -131,9 +141,12 @@ User.init(
       allowNull: false,
       comment: 'user email',
     },
+    emailVerified: {
+      type: DataTypes.DATE,
+      comment: 'email verified',
+    },
     password: {
       type: DataTypes.STRING(128),
-      allowNull: false,
       comment: 'user password hash',
     },
     salt: {
@@ -156,7 +169,9 @@ User.init(
 );
 
 User.beforeCreate((model) => {
-  model.password = User.hashPassword(model.password, model.salt);
+  if (model.password) {
+    model.password = User.hashPassword(model.password, model.salt);
+  }
   // model.ip = fn("INET_ATON", model.ip); // INET_NTOA
 });
 
