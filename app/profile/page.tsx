@@ -11,7 +11,7 @@ export default async function Profile() {
 
   return (
     <div>
-      {JSON.stringify(session.user)}
+      {JSON.stringify(session)}
     </div>
   );
 }

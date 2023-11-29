@@ -1,16 +1,15 @@
-import { getProviders, getCsrfToken } from 'next-auth/react';
-import { Button } from 'antd';
+import { getCsrfToken } from 'next-auth/react';
+import { CtxOrReq } from 'next-auth/client/_utils';
+import styles from './page.module.scss';
+import SigninForm from './form';
 
-const SigninPage = async (ctx) => {
-  // const providers = await getProviders();
-  // const csrfToken = await getCsrfToken(ctx);
+const SigninPage = async (ctx: CtxOrReq) => {
+  const csrfToken = await getCsrfToken(ctx);
 
-  // console.log('csrfToken', csrfToken);
   return (
-    <Button>
-      登录
-
-    </Button>
+    <div className={styles.signin}>
+      <SigninForm csrfToken={csrfToken} />
+    </div>
   );
 };
 
