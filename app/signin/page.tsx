@@ -1,10 +1,13 @@
+import { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { getServerSession } from 'next-auth';
 import { getCsrfToken } from 'next-auth/react';
 // import { CtxOrReq } from 'next-auth/client/_utils';
-import styles from './page.module.scss';
 import SigninForm from './form';
-import { authOptions } from '@/lib/auth';
+import styles from './page.module.scss';
+
+export const metadata: Metadata = {
+  title: '登录',
+};
 
 const SigninPage = async () => {
   // https://github.com/nextauthjs/next-auth/discussions/7256
@@ -15,9 +18,6 @@ const SigninPage = async () => {
       },
     },
   });
-  const session = await getServerSession(authOptions);
-
-  console.log('session', session);
 
   return (
     <div className={styles.signin}>

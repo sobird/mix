@@ -1,0 +1,97 @@
+// class统一前缀
+$prefixCls: 'mix' !default;
+$isBrand: 'true';
+
+// 主题颜色
+$primary: #0080FF !default;
+$secondary: #C8C8CC !default;
+$brand: $primary !default;
+$success: #00B84A !default;
+$info: #0080FF !default;
+$warning: #FF6A00 !default;
+$danger: #FF4338 !default;
+$light: #FFFFFF !default;
+$dark: #333333 !default;
+
+// 高亮色: 一般用于高亮选项
+$active-global: $brand !default;
+
+// 各阶灰色
+$gray-100: #333333 !default;
+$gray-200: #666666 !default;
+$gray-300: #999999 !default;
+$gray-400: #BDBDBD !default;
+$gray-500: #EBEBEB !default;
+$gray-600: #F8F8F8 !default;
+$gray-700: #FBFBFB !default;
+
+// 字体
+$font-family-base: 'Helvetica Neue', Arial, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'microsoft yahei', 'STXihei', sans-serif;
+$font-icon: '#{$prefixCls}-icon' !default;
+$font-size-sm: 12px !default;
+$font-size-base: 14px !default;
+$font-size-heading: 16px !default;
+$font-size-lg: 24px !default;
+$font-size-xl: 38px !default;
+
+// 文本、线、灰度背景色
+$text-color-base: $gray-100 !default; // 正文、次要级信息颜色
+$text-color-secondary: $gray-200 !default; // 辅助说明类信息
+$text-color-weak: $gray-300 !default; // 最次要级辅助说明
+$text-color-lighten: $gray-400 !default; // 辅助信息级icon颜色
+$border-color: $gray-300 !default; // 线框色
+$line-color: $gray-500 !default; // 弱线框色、分割线颜色
+$disabled-color: $gray-500 !default; // 不可点击、禁用色
+$page-background: $gray-600 !default; // 页面背景色
+$card-background: $gray-700 !default; // card背景色
+
+//文字前景反色
+$yiq-text-dark: $dark !default; // 文字反色-深色
+$yiq-text-light: $light !default; // 文字反色-亮色
+
+//文字链接
+$link-color: $primary !default; // 主链接色
+$link-decoration: none !default;
+$link-hover-color: lighten($link-color, 15%); // 主链接hover色
+$link-hover-decoration: none !default;
+
+//圆角相关
+$enable-rounded: true !default;
+$border-radius: 2px !default;
+
+//表单和按钮尺寸
+$input-height-base: 32px !default;
+$input-height-lg: 40px !default;
+$input-height-sm: 28px !default;
+$input-height-xs: 28px !default;
+
+//字体icon路径
+// $fonts-dir:                 '../fonts' !default;
+$fonts-dir: './assets/fonts' !default;
+
+// Button =================
+// 按钮变量
+$btn: '#{$prefixCls}-btn';
+$btn-brand: $brand;
+
+$btn-primary-color: $primary !default;
+
+// breadcrumb =======================
+$breadcrumb-primary: $primary;
+
+$theme-colors: () !default;
+$theme-colors: map-merge((
+  "primary":    $primary,
+  "secondary":  $secondary,
+  "brand":      $brand,
+  "success":    $success,
+  "info":       $info,
+  "warning":    $warning,
+  "danger":     $danger,
+  "light":      $light,
+  "dark":       $dark
+), $theme-colors);
+
+// Tabs  =======================
+$tab-primary: $primary;
+$tabs-active-text-color: $primary;
