@@ -10,7 +10,7 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
-import { Model, DataTypes, type Optional } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */

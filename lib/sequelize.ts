@@ -73,7 +73,7 @@ const sequelize = new Sequelize({
   //   sequelize.define(name, attributes, { timestamps: false });
   // so defining the timestamps for each model will be not necessary
   define: {
-    underscored: false,
+    underscored: true,
     // 强制表名称等于模型名称
     // freezeTableName: true,
     charset: 'utf8',
