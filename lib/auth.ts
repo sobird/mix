@@ -54,9 +54,8 @@ export const authOptions: AuthOptions = {
         },
       },
       from: process.env.EMAIL_FROM,
-      async sendVerificationRequest(params) {
-        sendVerificationRequest(params);
-      },
+      // maxAge: process.env.EMAIL_MAX_AGE,
+      sendVerificationRequest,
       // async generateVerificationToken() {
       //   return 'ABC123';
       // },
@@ -89,6 +88,6 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     signIn: '/signin',
-    // verifyRequest: '/auth/verify-request',
+    // verifyRequest: '/verify',
   },
 };
