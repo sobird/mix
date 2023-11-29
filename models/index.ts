@@ -15,8 +15,8 @@ const defaultModelOptions = { underscored: true, timestamps: false };
 
 const User = sequelize.define('user', models.User, defaultModelOptions);
 const Account = sequelize.define('account', models.Account, defaultModelOptions);
-const Session = sequelize.define('session', models.Session, defaultModelOptions);
-const VerificationToken = sequelize.define('verificationToken', models.VerificationToken, defaultModelOptions);
+const Session = sequelize.define('Session', models.Session, defaultModelOptions);
+const VerificationToken = sequelize.define('VerificationToken', models.VerificationToken, defaultModelOptions);
 
 Account.belongsTo(User, { onDelete: 'cascade' });
 Session.belongsTo(User, { onDelete: 'cascade' });
