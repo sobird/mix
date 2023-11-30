@@ -11,9 +11,16 @@
 import type { AdapterUser } from '@auth/core/adapters';
 import { randomBytes, createHmac } from 'crypto';
 import {
-  DataTypes, Model, Optional,
+  DataTypes,
+  Model,
+  Optional,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyAddAssociationsMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyCreateAssociationMixin,
 } from 'sequelize';
 import sequelize from '@/lib/sequelize';
+import Role from './role';
 
 // These are all the attributes in the User model
 export interface UserAttributes extends Partial<AdapterUser> {
@@ -56,6 +63,14 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
   private createdAt: string;
 
   public ip: string;
+
+  declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
+
+  declare addRole: BelongsToManyAddAssociationMixin<Role, Role['id']>;
+
+  declare addRoles: BelongsToManyAddAssociationsMixin<Role, Role['id']>;
+
+  declare createRole: BelongsToManyCreateAssociationMixin<Role>;
 
   /** 用户注册 */
   public static async signup(attributes: UserSignupAttributes) {
@@ -114,6 +129,7 @@ User.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
     username: {
       type: DataTypes.STRING(32),
