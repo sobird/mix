@@ -1,3 +1,12 @@
+.heading {
+  text-align: center;
+  margin: 60px 0 30px 0;
+  h1 {
+    color: #6a6a6a;
+    font-weight: 400;
+    margin-top: 10px;
+  }
+}
 .signin {
   margin: 0 auto;
   width: 350px;
@@ -11,13 +20,19 @@
   }
 
   form {
-    border: 1px solid var(--line-color);
     padding: 24px;
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1), 0 12px 20px rgba(38,38,38,.12);
+    border-radius: 8px;
   }
 }
 
 .login {
   color: red;
+}
+
+body {
+  &:has( .signin) {
+    background-color: #f8fcff;
+  }
 }

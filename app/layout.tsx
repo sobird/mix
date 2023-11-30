@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ConfigProvider } from 'antd';
+import config from '@/styles/theme';
 import StyledComponentsRegistry from '@/lib/antdRegistry';
 import mix from '@/assets/mix.svg';
 import '@/styles/presets.scss';
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ConfigProvider prefixCls="mix">
+        <ConfigProvider prefixCls="mix" theme={config}>
           <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
         </ConfigProvider>
       </body>

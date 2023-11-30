@@ -11,8 +11,6 @@ export const metadata: Metadata = {
   title: '登录',
 };
 
-export const bodyClass = 'test';
-
 const SigninPage = async () => {
   // https://github.com/nextauthjs/next-auth/discussions/7256
   const csrfToken = await getCsrfToken({
@@ -25,7 +23,11 @@ const SigninPage = async () => {
 
   return (
     <div className={styles.signin}>
-      <Image className="logo" src={mix.src} width={32} height={32} alt="mix" />
+      <div className={styles.heading}>
+        <Image className="logo" src={mix.src} width={64} height={64} alt="mix" />
+        <h1>登录</h1>
+      </div>
+
       <SigninForm csrfToken={csrfToken} />
     </div>
   );
