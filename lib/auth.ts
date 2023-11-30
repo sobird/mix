@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import { sendVerificationRequest } from './mailer';
 import AuthAdapter from './authAdapter';
+import User from '@/models/user';
 
 export const authOptions: AuthOptions = {
   secret: 'sobird@2023',
@@ -14,30 +15,22 @@ export const authOptions: AuthOptions = {
     CredentialsProvider({
       name: 'Sign in',
       credentials: {
-        email: {
-          label: 'Email',
-          type: 'email',
-          placeholder: 'example@example.com',
+        username: {
+          label: 'Username',
+          type: 'text',
+          placeholder: 'sobird',
         },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        // const authResponse = await fetch('/users/login', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify(credentials),
-        // });
+        const { username, password } = credentials || {};
 
-        // if (!authResponse.ok) {
-        //   return null;
-        // }
-
-        // const user = await authResponse.json();
-        const user = { id: '1', name: 'Admin', email: 'admin@admin.com' };
-
-        return user as any;
+        try {
+          const user = await User.signin({ username, password });
+          return user.get({ plain: true }) ?? null;
+        } catch (e) {
+          throw Error(e);
+        }
       },
     }),
     /**
@@ -63,7 +56,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     session: ({ session, token }) => {
-      console.log('Session Callback1', { session, token });
+      console.log('Session Callback', { session, token });
       return {
         ...session,
         user: {
@@ -88,6 +81,6 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     signIn: '/signin',
-    verifyRequest: '/verify',
+    verifyRequest: '/signin/verify',
   },
 };

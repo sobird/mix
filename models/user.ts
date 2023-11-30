@@ -18,7 +18,7 @@ import sequelize from '@/lib/sequelize';
 // These are all the attributes in the User model
 export interface UserAttributes extends Partial<AdapterUser> {
   id: string;
-  username: string;
+  username?: string;
   nickname?: string | null;
   realname?: string | null;
   /**
@@ -31,7 +31,7 @@ export interface UserAttributes extends Partial<AdapterUser> {
    * or the date of the first successful signin.
    */
   emailVerified: null | Date;
-  password: string;
+  password?: string;
   salt: string;
   ip: string;
 }
