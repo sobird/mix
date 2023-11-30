@@ -14,10 +14,16 @@ import {
   DataTypes,
   Model,
   Optional,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
   BelongsToManyAddAssociationsMixin,
-  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManyRemoveAssociationsMixin,
+  BelongsToManyHasAssociationMixin,
+  BelongsToManyHasAssociationsMixin,
   BelongsToManyCreateAssociationMixin,
+  BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 import sequelize from '@/lib/sequelize';
 import Role from './role';
@@ -66,11 +72,24 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
+  /** Remove all previous associations and set the new ones */
+  declare setRoles: BelongsToManySetAssociationsMixin<Role, Role['id']>;
+
   declare addRole: BelongsToManyAddAssociationMixin<Role, Role['id']>;
 
   declare addRoles: BelongsToManyAddAssociationsMixin<Role, Role['id']>;
 
+  declare removeRole: BelongsToManyRemoveAssociationMixin<Role, Role['id']>;
+
+  declare removeRoles: BelongsToManyRemoveAssociationsMixin<Role, Role['id']>;
+
+  declare hasRole: BelongsToManyHasAssociationMixin<Role, Role['id']>;
+
+  declare hasRoles: BelongsToManyHasAssociationsMixin<Role, Role['id']>;
+
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
+
+  declare countRoles: BelongsToManyCountAssociationsMixin;
 
   /** 用户注册 */
   public static async signup(attributes: UserSignupAttributes) {
