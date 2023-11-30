@@ -14,9 +14,13 @@ content-type: application/json
 POST {{HOST}}/api/role
 content-type: application/json
 
+### 更新角色
+PATCH {{HOST}}/api/role/1
+content-type: application/json
+
 {
-  "name": "管理员",
-  "description": "这是普通管理员角色"
+  "name": "管理员-更新",
+  "description": "这是普通管理员角色-更新"
 }
 
 ### Comment GET
