@@ -8,7 +8,7 @@
 
 import {
   Model,
-  type DataTypes,
+  DataTypes,
   type Optional,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
@@ -22,7 +22,7 @@ import {
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 import sequelize from '@/lib/sequelize';
-import User from './user';
+import type User from './user';
 
 /** These are all the attributes in the Role model */
 export interface RoleAttributes {
