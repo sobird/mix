@@ -1,0 +1,16 @@
+.header {
+  width: 1024px;
+  margin: 0 auto;
+}
+.suggest {
+  margin: 0 auto;
+  width: 440px;
+  text-align: center;
+  ol {
+    margin: 10px 0 0 0;
+    list-style: none;
+    li {
+      margin-bottom: 8px;
+    }
+  }
+}

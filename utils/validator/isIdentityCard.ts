@@ -1,54 +1,53 @@
 /**
  * 身份证 18 位号码校验
- * 
+ *
  * AAAAAA-YYYYMMDD-CCC-X
  * 6位数字地址码+8位数字出生日期码+3位数字顺序码+1位数字校验码
- * 
+ *
  * sobird<i@sobird.me> at 2023/10/26 21:48:34 created.
  */
 
-
 function isIdCard(code: number | string) {
-  if(!code) {
+  if (!code) {
     return false;
   }
-  code = String(code);
-  
+  const internalCode = String(code);
+
   const reg = /^(([1][1-5])|([2][1-3])|([3][1-7])|([4][1-6])|([5][0-4])|([6][1-5])|([7][1])|([8][1-2]))\d{4}(([1][9]\d{2})|([2]\d{3}))(([0][1-9])|([1][0-2]))(([0][1-9])|([1-2][0-9])|([3][0-1]))\d{3}[0-9xX]$/i;
   const provinceCodes = ['11', '12', '13', '14', '15', '21', '22', '23', '31', '32', '33', '34', '35', '36', '37', '41', '42', '43', '44', '45', '46', '50', '51', '52', '53', '54', '61', '62', '63', '64', '65', '71', '81', '82', '91'];
-  const codeLen = code.length
+  const codeLen = internalCode.length;
 
   // 格式错误
-  if (!reg.test(code) || codeLen !== 18) {
-    return false
+  if (!reg.test(internalCode) || codeLen !== 18) {
+    return false;
   }
 
   // 地址码错误
-  const provinceCode = code.substring(0, 2)
+  const provinceCode = internalCode.substring(0, 2);
   if (!provinceCodes.includes(provinceCode)) {
-    return false
+    return false;
   }
 
   // 18 位需校验最后一位校验码
   if (codeLen === 18) {
-    const codeArr = code.split('')
-    const factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
-    const parity = [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2]
+    const codeArr = internalCode.split('');
+    const factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+    const parity = [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2];
     let sum = 0;
     for (let i = 0; i < 17; i++) {
-      const ai = codeArr[i] as unknown as number
-      const wi = factor[i]
-      sum += ai * wi
+      const ai = codeArr[i] as unknown as number;
+      const wi = factor[i];
+      sum += ai * wi;
     }
-    if (parity[sum % 11] != codeArr[17].toUpperCase()) {
+    if (parity[sum % 11] !== codeArr[17].toUpperCase()) {
       // 校验码错误
-      return false
+      return false;
     }
   }
-  return true
+  return true;
 }
 
-export default isIdCard
+export default isIdCard;
 
 /**
  * 〖中华人民共和国国家标准 GB 11643-1999〗中有关公民身份号码的规定：
