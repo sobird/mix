@@ -1,0 +1,40 @@
+
+@HOST={{$dotenv NEXTAUTH_URL}}
+
+### 创建用户
+POST {{HOST}}/api/user
+content-type: application/json
+
+{
+  "usename": "sobird",
+  "email": "sobird@126.com"
+}
+
+### 创建角色
+POST {{HOST}}/api/role
+content-type: application/json
+
+{
+  "name": "管理员",
+  "description": "这是普通管理员角色"
+}
+
+### Comment GET
+# @name comments
+GET http://{{HOST}}/api/comments
+?pn=1
+&ps=20
+
+
+### Comment POST
+
+@LastId = {{comments.response.body.$.data.rows[0].id}}
+POST http://{{HOST}}/api/comments
+content-type: application/json
+
+{
+  "id": {{LastId}},
+  "author": "sobird",
+  "content": "评论内容1 {{$guid}}",
+  "email": "sobird@126.com"
+}
