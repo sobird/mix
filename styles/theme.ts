@@ -14,8 +14,8 @@ const config: ThemeConfig = {
     // controlHeight: 28
 
     // disabled
-    colorBgContainerDisabled: '#fff',
-    colorTextDisabled: '#444',
+    // colorBgContainerDisabled: '#fff',
+    // colorTextDisabled: '#444',
     // motion: false,
 
     fontFamily: '',
