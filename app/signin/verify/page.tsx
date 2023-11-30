@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home({ searchParams }: any) {
-  const emailLoginUrl = getEmailLoginUrl(searchParams.email);
+  const emailLoginUrl = getEmailLoginUrl(decodeURIComponent(searchParams.email));
   return (
     <div>
       <div className={styles.header}>
