@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: '登录',
 };
 
+export const bodyClass = 'test';
+
 const SigninPage = async () => {
   // https://github.com/nextauthjs/next-auth/discussions/7256
   const csrfToken = await getCsrfToken({
