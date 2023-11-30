@@ -2,49 +2,65 @@
 
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { Input, Button, ConfigProvider } from 'antd';
+import { useRouter } from 'next/navigation';
+import {
+  Form, Input, Button, ConfigProvider, message,
+} from 'antd';
 import { isEmail } from '@/utils/validator';
 
-interface SigninFormProps {
-  csrfToken?: string;
-}
-
-const SigninForm: React.FC<SigninFormProps> = ({ csrfToken }) => {
+const SigninForm: React.FC = () => {
+  const router = useRouter();
+  const [form] = Form.useForm();
   const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const onFinish = async ({ email }) => {
+    setLoading(true);
+    const res = await signIn('email', { email, redirect: false });
+    setLoading(false);
+    if (res?.error) {
+      message.error(res.error);
+      return;
+    }
+    if (res?.ok) {
+      router.push(`/signin/verify?email=${email}`, {
+        scroll: false,
+      });
+    }
+  };
   return (
     <ConfigProvider componentSize="large">
-      <form method="post" action="/api/auth/signin/email">
-        <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-        <Input
-          id="email"
+      <Form form={form} onFinish={onFinish}>
+        <Form.Item
           name="email"
-          placeholder="输入电子邮箱"
-          style={{ marginBottom: 30 }}
-          allowClear
-          onChange={(e) => {
-            const { value } = e.target;
-            if (isEmail(value)) {
-              setDisabled(false);
-            } else {
-              setDisabled(true);
-            }
-          }}
-        />
+          rules={[{
+            async validator(rule, value) {
+              if (isEmail(value)) {
+                setDisabled(false);
+              } else {
+                setDisabled(true);
+              }
+            },
+          }]}
+        >
+          <Input
+            placeholder="输入电子邮箱"
+            allowClear
+          />
+        </Form.Item>
+
         <div>
           <Button
-            onClick={async () => {
-              const res = await signIn('email', { email: 'ddd@test.com', redirect: false });
-              console.log('res', res);
-            }}
+            loading={loading}
             disabled={disabled}
             type="primary"
             style={{ width: '100%', borderColor: 'transparent' }}
+            htmlType="submit"
           >
             发送登录连接
-
           </Button>
         </div>
-      </form>
+      </Form>
     </ConfigProvider>
   );
 };
