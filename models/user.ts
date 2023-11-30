@@ -30,6 +30,7 @@ import {
 import sequelize from '@/lib/sequelize';
 import Role from './role';
 
+/** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
