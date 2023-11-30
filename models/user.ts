@@ -6,6 +6,8 @@
  * using the information (profile data) returned by the identity provider.
  * A corresponding account is also created and linked to the user.
  *
+ * @see https://sequelize.org/docs/v7/associations/belongs-to-many
+ *
  * sobird<i@sobird.me> at 2021/11/16 20:30:51 created.
  */
 import type { AdapterUser } from '@auth/core/adapters';
@@ -27,6 +29,8 @@ import {
 } from 'sequelize';
 import sequelize from '@/lib/sequelize';
 import Role from './role';
+
+export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
 export interface UserAttributes extends Partial<AdapterUser> {
