@@ -88,6 +88,6 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     signIn: '/signin',
-    // verifyRequest: '/verify',
+    verifyRequest: '/verify',
   },
 };
