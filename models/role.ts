@@ -23,6 +23,7 @@ import {
 } from 'sequelize';
 import sequelize from '@/lib/sequelize';
 import type User from './user';
+import type Permission from './permission';
 
 /** These are all the attributes in the Role model */
 export interface RoleAttributes {
@@ -57,6 +58,27 @@ class Role extends Model<RoleAttributes, RoleCreationAttributes> {
   declare createUser: BelongsToManyCreateAssociationMixin<User>;
 
   declare countUsers: BelongsToManyCountAssociationsMixin;
+
+  declare getPermissions: BelongsToManyGetAssociationsMixin<Permission>;
+
+  /** Remove all previous associations and set the new ones */
+  declare setPermissions: BelongsToManySetAssociationsMixin<Permission, Permission['id']>;
+
+  declare addPermission: BelongsToManyAddAssociationMixin<Permission, Permission['id']>;
+
+  declare addPermissions: BelongsToManyAddAssociationsMixin<Permission, Permission['id']>;
+
+  declare removePermission: BelongsToManyRemoveAssociationMixin<Permission, Permission['id']>;
+
+  declare removePermissions: BelongsToManyRemoveAssociationsMixin<Permission, Permission['id']>;
+
+  declare hasPermission: BelongsToManyHasAssociationMixin<Permission, Permission['id']>;
+
+  declare hasPermissions: BelongsToManyHasAssociationsMixin<Permission, Permission['id']>;
+
+  declare createPermission: BelongsToManyCreateAssociationMixin<Permission>;
+
+  declare countPermissions: BelongsToManyCountAssociationsMixin;
 }
 
 Role.init(

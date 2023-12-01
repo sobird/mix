@@ -67,6 +67,7 @@ Permission.init(
   },
   {
     sequelize,
+    modelName: 'permission',
   },
 );
 
