@@ -1,0 +1,62 @@
+
+# role model curd
+
+@HOST={{$dotenv NEXTAUTH_URL}}
+
+### 创建单个角色
+@rolenameToAdd=role-{{$randomInt 1 1000}}
+POST {{HOST}}/api/role
+content-type: application/json
+
+{
+  "name": "{{rolenameToAdd}}",
+  "description": "{{rolenameToAdd}} some description"
+}
+
+### 查询所有角色
+# @name getRoles
+GET {{HOST}}/api/role
+content-type: application/json
+
+### 查询某个角色
+# @name getRole
+# @prompt id 手动输入ID
+GET {{HOST}}/api/role/{{id}}
+content-type: application/json
+
+### 更新某个角色
+@roleIdToPatch = {{getRole.response.body.$.id}}
+@rolenameToPatch = {{getRole.response.body.$.name}}-patched
+@descriptionToPatch = {{getRole.response.body.$.description}}-patched
+PATCH {{HOST}}/api/role/{{roleIdToPatch}}
+content-type: application/json
+
+{
+  "name": "{{rolenameToPatch}}",
+  "description": "{{descriptionToPatch}}"
+}
+
+### 删除某个角色
+@roleIdToDelete = {{getRole.response.body.$.id}}
+# @prompt id 手动输入ID
+DELETE {{HOST}}/api/role/{{id}}
+content-type: application/json
+
+### 查询角色下的所有用户
+@roleIdToGetUser = {{getRole.response.body.$.id}}
+GET {{HOST}}/api/role/{{roleIdToGetUser}}/user
+content-type: application/json
+
+
+### 为查询出来的角色添加用户
+@roleIdToAddUser = {{getRole.response.body.$.id}}
+# @prompt userId 手动输入userId
+POST {{HOST}}/api/role/{{roleIdToAddUser}}/user
+content-type: application/json
+
+{
+  "ids": [{{userId}}]
+}
+
+### 强制同步role模型表
+PUT {{HOST}}/api/role/
