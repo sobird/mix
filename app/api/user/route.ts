@@ -17,3 +17,16 @@ export async function POST(request: Request) {
   const user = await UserModel.create(body);
   return NextResponse.json(user);
 }
+
+/**
+ * 强制同步role模型表
+ *
+ * @todo 不可上生产环境
+ * @returns
+ */
+export async function PUT() {
+  await UserModel.sync({ force: true });
+  return NextResponse.json({
+    message: 'ok',
+  });
+}

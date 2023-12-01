@@ -1,61 +1,57 @@
 
+# user model curd
+
 @HOST={{$dotenv NEXTAUTH_URL}}
 
 ### 创建用户
+@usernameToPost=sobird-{{$randomInt 1 1000}}
 POST {{HOST}}/api/user
 content-type: application/json
 
 {
-  "usename": "sobird",
-  "email": "sobird@126.com"
+  "username": "{{usernameToPost}}",
+  "email": "{{usernameToPost}}@test.com"
 }
 
-### 为用户添加角色
-POST {{HOST}}/api/user/1/role
+### 查询所有用户
+# @name getUsers
+GET {{HOST}}/api/user
+content-type: application/json
+
+### 查询单个用户
+# @name getUser
+# @prompt id 手动输入ID
+GET {{HOST}}/api/user/{{id}}
+content-type: application/json
+
+### 更新查询出来的用户
+@userIdToPatch = {{getUser.response.body.$.id}}
+@usernameToPatch = {{getUser.response.body.$.username}}-patched
+PATCH {{HOST}}/api/user/{{userIdToPatch}}
 content-type: application/json
 
 {
-  "ids": [3]
+  "usename": "{{usernameToPatch}}",
+  "email": "{{usernameToPatch}}@test.com"
 }
 
-### 创建角色
-POST {{HOST}}/api/role
+### 删除用户
+@userIdToDelete = {{getUser.response.body.$.id}}
+DELETE {{HOST}}/api/user/{{userIdToDelete}}
+
+### 查询用户下的所有角色
+@userIdToGetRole = {{getUser.response.body.$.id}}
+GET {{HOST}}/api/user/{{userIdToGetRole}}/role
+
+### 为查询出来的角色添加用户
+@userIdToAddRole = {{getUser.response.body.$.id}}
+# @prompt roleId 手动输入roleId
+POST {{HOST}}/api/user/{{userIdToAddRole}}/role
 content-type: application/json
 
 {
-  "name": "管理员-创建",
-  "description": "这是普通管理员角色-创建"
+  "ids": [{{roleId}}]
 }
 
-### 更新角色
-PATCH {{HOST}}/api/role/1
-content-type: application/json
-
-{
-  "name": "管理员-更新",
-  "description": "这是普通管理员角色-更新"
-}
-
-### 删除角色
-DELETE {{HOST}}/api/role/2
-content-type: application/json
-
-### Comment GET
-# @name comments
-GET http://{{HOST}}/api/comments
-?pn=1
-&ps=20
-
-
-### Comment POST
-
-@LastId = {{comments.response.body.$.data.rows[0].id}}
-POST http://{{HOST}}/api/comments
-content-type: application/json
-
-{
-  "id": {{LastId}},
-  "author": "sobird",
-  "content": "评论内容1 {{$guid}}",
-  "email": "sobird@126.com"
-}
+### 强制同步role模型表
+PUT {{HOST}}/api/user/

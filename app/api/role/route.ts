@@ -20,3 +20,16 @@ export async function POST(request: Request) {
   const role = await RoleModel.create(body);
   return NextResponse.json(role);
 }
+
+/**
+ * 强制同步role模型表
+ *
+ * @todo 不可上生产环境
+ * @returns
+ */
+export async function PUT() {
+  await RoleModel.sync({ force: true });
+  return NextResponse.json({
+    message: 'ok',
+  });
+}
