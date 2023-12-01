@@ -27,6 +27,7 @@ import type User from './user';
 /** These are all the attributes in the Role model */
 export interface RoleAttributes {
   id?: number;
+  parentId: number,
   name: string;
   description: string;
 }
@@ -35,8 +36,6 @@ export type RoleCreationAttributes = Optional<RoleAttributes, 'id'>;
 
 class Role extends Model<RoleAttributes, RoleCreationAttributes> {
   declare id: number;
-
-  public userId!: number;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
 
@@ -69,6 +68,9 @@ Role.init(
     },
     description: {
       type: DataTypes.STRING,
+    },
+    parentId: {
+      type: DataTypes.INTEGER,
     },
   },
   {

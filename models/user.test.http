@@ -10,9 +10,22 @@ content-type: application/json
   "email": "sobird@126.com"
 }
 
+### 为用户添加角色
+POST {{HOST}}/api/user/1/role
+content-type: application/json
+
+{
+  "ids": [3]
+}
+
 ### 创建角色
 POST {{HOST}}/api/role
 content-type: application/json
+
+{
+  "name": "管理员-创建",
+  "description": "这是普通管理员角色-创建"
+}
 
 ### 更新角色
 PATCH {{HOST}}/api/role/1
@@ -22,6 +35,10 @@ content-type: application/json
   "name": "管理员-更新",
   "description": "这是普通管理员角色-更新"
 }
+
+### 删除角色
+DELETE {{HOST}}/api/role/2
+content-type: application/json
 
 ### Comment GET
 # @name comments

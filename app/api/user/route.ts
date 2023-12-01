@@ -3,7 +3,10 @@ import { UserModel, RoleModel } from '@/models';
 
 export async function GET(request: Request) {
   const user = await UserModel.findAll({
-    include: [RoleModel],
+    include: [{
+      model: RoleModel,
+      // as: 'Roles',
+    }],
   });
   return NextResponse.json(user);
 }
