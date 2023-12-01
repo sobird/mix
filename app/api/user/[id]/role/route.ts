@@ -17,7 +17,6 @@ export async function GET(request: Request, { params }) {
 /** 添加用户角色 */
 export async function POST(request: Request, { params }) {
   const body = await request.json();
-
   const user = await UserModel.findByPk(params.id);
   const userRole = await user?.addRoles(body.ids);
   return NextResponse.json(userRole);

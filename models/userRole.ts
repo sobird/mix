@@ -22,6 +22,8 @@ class UserRole extends Model<UserRoleAttributes, UserRoleCreationAttributes> {
   declare id: number;
 
   public userId!: number;
+
+  public roleId!: number;
 }
 
 UserRole.init(

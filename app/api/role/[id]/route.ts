@@ -22,3 +22,12 @@ export async function PATCH(request: Request, { params }) {
   });
   return NextResponse.json(role);
 }
+/** 删除角色 也将会删除所有的角色关系 */
+export async function DELETE(request: Request, { params }) {
+  const role = await RoleModel.destroy({
+    where: {
+      id: params.id,
+    },
+  });
+  return NextResponse.json(role);
+}
