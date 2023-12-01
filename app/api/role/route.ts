@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
-import { UserModel, RoleModel } from '@/models';
+import { UserModel, RoleModel, PermissionModel } from '@/models';
 import { UserExcludeAttributes } from '@/models/user';
 
-export async function GET(request: Request) {
+export async function GET() {
   const roles = await RoleModel.findAll({
     include: [{
       model: UserModel,
       attributes: {
         exclude: UserExcludeAttributes,
       },
+    }, {
+      model: PermissionModel,
     }],
   });
   return NextResponse.json(roles);
