@@ -7,24 +7,22 @@
 import { FC } from 'react';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mix from '!raw-loader!@/assets/mix.svg';
-import Mix from '@/assets/mix';
-import Mix2 from '@/assets/mix.svg';
 
 const buff = Buffer.from(mix);
 const base64data = buff.toString('base64');
 
 interface VerificationProps {
-
+  host?: string;
+  /** user sign in url */
+  url: string;
 }
 
-const Verification: FC<VerificationProps> = () => {
-  // const escapedHost = host.replace(/\./g, '&#8203;.');
-
+const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }) => {
   const brandColor = '#346df1';
 
   const color = {
     background: '#f9f9f9',
-    text: '#444',
+    text: '#888',
     mainBackground: '#fff',
     buttonBackground: brandColor,
     buttonBorder: brandColor,
@@ -34,9 +32,9 @@ const Verification: FC<VerificationProps> = () => {
   return (
     <div style={{
       background: '#F7F9F9',
+      padding: 20,
     }}
     >
-      <Mix fill="red" />
       <table
         width="100%"
         border={0}
@@ -47,6 +45,7 @@ const Verification: FC<VerificationProps> = () => {
           maxWidth: 600,
           margin: 'auto',
           borderRadius: 10,
+          position: 'relative',
         }}
       >
         <tr>
@@ -64,24 +63,25 @@ const Verification: FC<VerificationProps> = () => {
           </td>
         </tr>
         <tr>
-          <td align="center" style={{ padding: '20px 0' }}>
+          <td align="center" style={{ padding: '10px 0' }}>
             <table border={0} cellSpacing="0" cellPadding="0">
               <tr>
-                <td align="center" style={{ borderRadius: '5px', backgroundColor: `${color.buttonBackground}` }}>
+                <td align="center" style={{ lineHeight: 'normal' }}>
                   <a
-                    href="/test"
+                    href={url}
                     target="_blank"
                     style={{
                       fontSize: '18px',
-                      fontFamily: 'Helvetica, Arial, sans-serif',
                       color: `${color.buttonText}`,
                       textDecoration: 'none',
                       borderRadius: '5px',
-                      padding: '10px 20px',
+                      padding: '7px 20px',
                       border: `1px solid ${color.buttonBorder}`,
+                      backgroundColor: `${color.buttonBackground}`,
                       display: 'inline-block',
                       fontWeight: 'bold',
                     }}
+                    rel="noreferrer"
                   >
                     登录
                   </a>
@@ -95,14 +95,28 @@ const Verification: FC<VerificationProps> = () => {
           <td
             align="center"
             style={{
-              padding: '0',
-              fontSize: '16px',
+              padding: '10px 0px',
+              fontSize: '14px',
               lineHeight: '22px',
               fontFamily: 'Helvetica, Arial, sans-serif',
               color: `${color.text}`,
             }}
           >
-            如果您没有请求此电子邮件，您可以放心地忽略它。
+            若非本人请求此电子邮件，请忽略
+
+            <span style={{
+              position: 'absolute',
+              right: 5,
+              top: 0,
+              color: '#b8bec5',
+              fontStyle: 'italic',
+              fontSize: 12,
+              textShadow: '0 1px #F7F9F9',
+            }}
+            >
+              {host}
+
+            </span>
           </td>
         </tr>
       </table>
