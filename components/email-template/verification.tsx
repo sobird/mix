@@ -4,7 +4,20 @@
  * sobird<i@sobird.me> at 2023/12/02 20:52:40 created.
  */
 
-const Verification = () => {
+import { FC } from 'react';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import mix from '!raw-loader!@/assets/mix.svg';
+import Mix from '@/assets/mix';
+import Mix2 from '@/assets/mix.svg';
+
+const buff = Buffer.from(mix);
+const base64data = buff.toString('base64');
+
+interface VerificationProps {
+
+}
+
+const Verification: FC<VerificationProps> = () => {
   // const escapedHost = host.replace(/\./g, '&#8203;.');
 
   const brandColor = '#346df1';
@@ -19,10 +32,11 @@ const Verification = () => {
   };
 
   return (
-    <body style={{
-      background: '#f9f9f9',
+    <div style={{
+      background: '#F7F9F9',
     }}
     >
+      <Mix fill="red" />
       <table
         width="100%"
         border={0}
@@ -45,11 +59,8 @@ const Verification = () => {
               color: `${color.text}`,
             }}
           >
-            Sign in to
-            {' '}
-            <strong>
-              Mix
-            </strong>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`data:image/svg+xml;base64,${base64data}`} width={48} height={48} alt="mix" />
           </td>
         </tr>
         <tr>
@@ -72,8 +83,7 @@ const Verification = () => {
                       fontWeight: 'bold',
                     }}
                   >
-                    Sign
-                    in
+                    登录
                   </a>
 
                 </td>
@@ -92,11 +102,11 @@ const Verification = () => {
               color: `${color.text}`,
             }}
           >
-            If you did not request this email you can safely ignore it.
+            如果您没有请求此电子邮件，您可以放心地忽略它。
           </td>
         </tr>
       </table>
-    </body>
+    </div>
   );
 };
 
