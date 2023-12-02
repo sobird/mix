@@ -1,3 +1,10 @@
+/**
+ * 用户注册
+ * /api/siginup
+ *
+ * sobird<i@sobird.me> at 2023/11/28 15:52:24 created.
+ */
+
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
