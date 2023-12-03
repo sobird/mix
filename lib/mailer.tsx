@@ -1,5 +1,5 @@
 import { createTransport } from 'nodemailer';
-import renderReactElement from '@/lib/renderReactElement';
+import reactToHtml from '@/lib/reactToHtml';
 import Verification from '@/components/email-template/verification';
 
 export async function sendVerificationRequest(params) {
@@ -14,7 +14,7 @@ export async function sendVerificationRequest(params) {
     from: provider.from,
     subject: '[MIX] 登录验证',
     text: `登录 ${host}\n${url}\n\n`,
-    html: await renderReactElement(<Verification url={url} host={host} />),
+    html: await reactToHtml(<Verification url={url} host={host} />),
   });
   const failed = result.rejected.concat(result.pending).filter(Boolean);
   if (failed.length) {

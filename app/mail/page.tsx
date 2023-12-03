@@ -1,10 +1,10 @@
-import getData from '@/lib/renderReactElement';
+import reactToHtml from '@/lib/reactToHtml';
 
 import Verification from '@/components/email-template/verification';
 import Mix from '@/assets/mix';
 
 const Mail = async () => {
-  const prerenderStaticComponent = await getData(<Verification url="https://sobird.me" />);
+  const prerenderStaticComponent = await reactToHtml(<Verification url="https://sobird.me" />);
 
   return (
     <div className="mail">
