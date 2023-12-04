@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.18.4",
-    "@reduxjs/toolkit": "^2.0.0",
+    "@reduxjs/toolkit": "1.9.7",
     "antd": "^5.11.5",
     "axios": "^1.6.2",
     "classnames": "^2.3.2",
@@ -25,7 +25,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.0",
-    "redux-thunk": "^3.0.1",
     "sass": "^1.69.5",
     "sequelize": "^6.33.0",
     "sqlite3": "^5.1.6"

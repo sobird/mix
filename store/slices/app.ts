@@ -7,7 +7,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
-const TOGGLE_ASIDE = 'TOGGLE_ASIDE';
+export const TOGGLE_ASIDE = 'TOGGLE_ASIDE';
 
 export type User = {
   name: string,
@@ -32,7 +32,7 @@ const initialState = {
   },
 };
 
-const appSlice = createSlice({
+export const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
@@ -41,9 +41,6 @@ const appSlice = createSlice({
     },
     updateMicro: (state, action: PayloadAction<IAppState['micro']>) => {
       state.micro = action.payload;
-    },
-    setCollapsed: (state, action: PayloadAction<IAppState['collapsed']>) => {
-      state.collapsed = action.payload;
     },
     toggleAside: (state) => {
       Cookies.set(TOGGLE_ASIDE, state.collapsed ? '0' : '1', {
@@ -59,6 +56,6 @@ const appSlice = createSlice({
 });
 
 export const {
-  updateUser, updateMicro, toggleAside, setCollapsed,
+  updateUser, updateMicro, toggleAside,
 } = appSlice.actions;
 export default appSlice.reducer;

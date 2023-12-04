@@ -13,9 +13,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook, useDispatch, useSelector, useStore,
 } from 'react-redux';
-import thunk, { ThunkDispatch } from 'redux-thunk';
 import reducers from './slices';
-// import logger from './middleware/logger';
+import logger from './middleware/logger';
 
 // const composeWithDevTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -31,9 +30,18 @@ import reducers from './slices';
 //   // enhancers: []
 // });
 
-export const makeStore = () => {
+export const makeStore = (preloadedState) => {
   return configureStore({
     reducer: reducers,
+    middleware: (getDefaultMiddleware) => {
+      return getDefaultMiddleware({
+        thunk: {
+          extraArgument: 'thunk',
+        },
+      }).concat(logger);
+    },
+    devTools: process.env.NODE_ENV !== 'production',
+    preloadedState,
   });
 };
 
@@ -42,7 +50,7 @@ export type AppStore = ReturnType<typeof makeStore>;
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<AppStore['getState']>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = ThunkDispatch<string, number, any>;
+export type AppDispatch = AppStore['dispatch'];
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
