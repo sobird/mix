@@ -18,15 +18,13 @@ const DashBoard = () => {
   const app = useAppSelector((state) => { return state; });
   const dispatch = useAppDispatch();
 
-  console.log('app', app);
+  console.log('app', store.getState());
 
   return (
     <div>
       DashBoardPage
       <Button onClick={() => {
-        return dispatch(updateUser({
-          name: 'sobird123',
-        }));
+        return dispatch(toggleAside());
       }}
       >
         dispatch

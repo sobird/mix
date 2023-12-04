@@ -7,7 +7,8 @@
 import { Metadata } from 'next';
 import { Button } from 'antd';
 import styles from './layout.module.scss';
-import StoreProvider from '@/components/store-provider';
+import StoreProvider from '@/store/provider';
+import Header from '@/components/layout/dashboard/header';
 
 export const metadata: Metadata = {
   title: 'mix',
@@ -20,6 +21,7 @@ export default function DashboardLayout({ children }: {
   return (
     <StoreProvider>
       <div className={styles.dashboard}>
+        <Header />
         <Button>按钮测试</Button>
         {children}
       </div>
