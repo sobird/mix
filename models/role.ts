@@ -1,8 +1,6 @@
 /**
  * Role Model
  *
- * A Role holds information about a user's current signin state.
- *
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
