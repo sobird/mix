@@ -25,6 +25,8 @@ import type Role from './user';
 /** These are all the attributes in the Permission model */
 export interface PermissionAttributes {
   id?: number;
+  name: string;
+  description: string;
   operator: string;
   target: string;
 }
@@ -58,6 +60,14 @@ class Permission extends Model<PermissionAttributes, PermissionCreationAttribute
 
 Permission.init(
   {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    description: {
+      type: DataTypes.STRING,
+    },
     operator: {
       type: DataTypes.STRING,
     },

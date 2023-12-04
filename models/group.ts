@@ -1,5 +1,5 @@
 /**
- * Role Model
+ * Group Model
  *
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
@@ -23,17 +23,17 @@ import sequelize from '@/lib/sequelize';
 import type User from './user';
 import type Permission from './permission';
 
-/** These are all the attributes in the Role model */
-export interface RoleAttributes {
+/** These are all the attributes in the Group model */
+export interface GroupAttributes {
   id?: number;
   parentId: number,
   name: string;
   description: string;
 }
-/** Some attributes are optional in `Role.build` and `Role.create` calls */
-export type RoleCreationAttributes = Optional<RoleAttributes, 'id'>;
+/** Some attributes are optional in `Group.build` and `Group.create` calls */
+export type GroupCreationAttributes = Optional<GroupAttributes, 'id'>;
 
-class Role extends Model<RoleAttributes, RoleCreationAttributes> {
+class Group extends Model<GroupAttributes, GroupCreationAttributes> {
   declare id: number;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
@@ -79,7 +79,7 @@ class Role extends Model<RoleAttributes, RoleCreationAttributes> {
   declare countPermissions: BelongsToManyCountAssociationsMixin;
 }
 
-Role.init(
+Group.init(
   {
     name: {
       type: DataTypes.STRING,
@@ -98,4 +98,4 @@ Role.init(
   },
 );
 
-export default Role;
+export default Group;

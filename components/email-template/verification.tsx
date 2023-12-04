@@ -115,7 +115,6 @@ const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }
             }}
             >
               {host}
-
             </span>
           </td>
         </tr>
