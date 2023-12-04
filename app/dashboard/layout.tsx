@@ -7,6 +7,7 @@
 'use client';
 
 import classNames from 'classnames';
+import Link from 'next/link';
 import Header from '@/components/layout/dashboard/header';
 import Aside from '@/components/layout/dashboard/aside';
 import styles from './layout.module.scss';
@@ -28,6 +29,8 @@ export default function DashboardLayout({ children }: {
       <div className={styles.body}>
         <Aside />
         <main className={styles.main}>
+          <Link href="/dashboard">首页</Link>
+          <Link href="/dashboard/about">关于</Link>
           <div id="micro-container" style={{ width: '100%' }} />
           {children}
         </main>

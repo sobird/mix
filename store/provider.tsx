@@ -9,34 +9,22 @@
 
 'use client';
 
-// import { useRef } from 'react';
+import { useRef, PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
-import { makeStore, AppStore } from '@/store';
-import { setCollapsed } from '@/store/slices/app';
+import { makeStore, AppStore, RootState } from '@/store';
+
+interface StoreProviderProps {
+  preloadedState?: DeepPartial<RootState>
+}
 
 export default function StoreProvider({
-  test,
+  preloadedState,
   children,
-}: {
-  // count: number
-  children: React.ReactNode
-}) {
-  // const storeRef = useRef<AppStore | null>(null);
-  // if (!storeRef.current) {
-  //   storeRef.current = makeStore();
-  //   // storeRef.current.dispatch(initializeApp(count));
-  //   console.log('process.browser', process.browser);
-  // }
+}: PropsWithChildren<StoreProviderProps>) {
+  const storeRef = useRef<AppStore | null>(null);
+  if (!storeRef.current) {
+    storeRef.current = makeStore(preloadedState);
+  }
 
-  const store = makeStore();
-
-  console.log('test', test);
-
-  console.log('store', test.value === '1');
-
-  store.dispatch(setCollapsed(true));
-
-  console.log('store', store.getState());
-
-  return <Provider store={store}>{children}</Provider>;
+  return <Provider store={storeRef.current}>{children}</Provider>;
 }
