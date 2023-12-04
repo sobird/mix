@@ -1,0 +1,79 @@
+/**
+ * 全局搜索样式
+ * 
+ * sobird<i@sobird.me> at 2023/09/12 15:27:28 created.
+ */
+
+.app-search {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+
+  .mtm-input-search {
+    width: 50%;
+    min-width: 350px
+  }
+}
+
+.search-select-dropdown {
+  padding: 0;
+
+  &-suggest {
+    padding: 10px 0;
+
+    &-item {
+      display: block;
+      cursor: pointer;
+      padding: 5px 15px;
+
+      &:hover {
+        background-color: #E3E5E7;
+      }
+    }
+  }
+
+  &-history {
+    padding: 15px;
+
+    .search-history-head {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      &-title {
+        height: 24px;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 500;
+        flex: 1;
+      }
+
+      &-clear {
+
+      }
+    }
+
+    .search-history-tag {
+      cursor: pointer;
+      margin-bottom: 10px;
+      a {
+        color: #333;
+        &:hover {
+          color: var(--primary);
+        }
+      }
+      .mtm-tag-close-icon {
+        position: absolute;
+        right: -5px;
+        top: -10px;
+        display: none;
+      }
+
+      &:hover {
+        .mtm-tag-close-icon {
+          display: block;
+        }
+      }
+    }
+  }
+}

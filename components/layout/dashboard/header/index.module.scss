@@ -1,0 +1,44 @@
+/**
+ * LayoutMain Header style
+ * 
+ * sobird<i@sobird.me> at 2023/09/06 23:06:01 created.
+ */
+
+._ {
+  height: 56px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-bottom: 1px solid rgb(232, 232, 232);
+
+  .brand {
+    a {
+      text-decoration: none;
+      color: #2c3e50;
+      font-size: 16px;
+    }
+    img {
+      
+    }
+  }
+  .dropdown{
+    width:162px;
+  }
+  
+  .bread {
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+  }
+
+  .avatar {
+    cursor: pointer;
+    img {
+      height: 28px;
+      width: 28px;
+      border-radius: 50%;
+      background-color: #f8fcff;
+    }
+  }
+}
