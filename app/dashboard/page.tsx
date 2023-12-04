@@ -15,10 +15,8 @@ const DashBoard = () => {
     // store.dispatch(initializeProduct(product));
     initialized.current = true;
   }
-  const app = useAppSelector((state) => { return state; });
-  const dispatch = useAppDispatch();
 
-  console.log('app', store.getState());
+  const dispatch = useAppDispatch();
 
   return (
     <div>
