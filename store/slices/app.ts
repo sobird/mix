@@ -42,6 +42,9 @@ const appSlice = createSlice({
     updateMicro: (state, action: PayloadAction<IAppState['micro']>) => {
       state.micro = action.payload;
     },
+    setCollapsed: (state, action: PayloadAction<IAppState['collapsed']>) => {
+      state.collapsed = action.payload;
+    },
     toggleAside: (state) => {
       Cookies.set(TOGGLE_ASIDE, state.collapsed ? '0' : '1', {
         path: '/',
@@ -55,5 +58,7 @@ const appSlice = createSlice({
   },
 });
 
-export const { updateUser, updateMicro, toggleAside } = appSlice.actions;
+export const {
+  updateUser, updateMicro, toggleAside, setCollapsed,
+} = appSlice.actions;
 export default appSlice.reducer;

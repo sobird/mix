@@ -9,7 +9,6 @@
 import Image from 'next/image';
 import React from 'react';
 import { Dropdown } from 'antd';
-import { useAppSelector } from '@/store';
 import Search from '../search';
 import Logo from '@/assets/mix.svg';
 import styles from './index.module.scss';
@@ -38,10 +37,8 @@ const onClick = ({ key }) => {
 };
 
 const Header: React.FC = () => {
-  const { collapsed } = useAppSelector((state) => { return state.app; });
-  console.log('collapsed', collapsed);
   return (
-    <header className={styles._}>
+    <header className={styles.container}>
       <div className={styles.brand}>
         <a href="/dashboard" title="mix" aria-label="mix">
           <Image src={Logo.src} width={32} height={32} alt="" />

@@ -4,27 +4,35 @@
  * sobird<i@sobird.me> at 2023/12/04 0:07:22 created.
  */
 
-import { Metadata } from 'next';
-import { Button } from 'antd';
-import styles from './layout.module.scss';
-import StoreProvider from '@/store/provider';
-import Header from '@/components/layout/dashboard/header';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'mix',
-  // description: '',
-};
+import classNames from 'classnames';
+import Header from '@/components/layout/dashboard/header';
+import Aside from '@/components/layout/dashboard/aside';
+import styles from './layout.module.scss';
+import { useAppSelector } from '@/store';
 
 export default function DashboardLayout({ children }: {
   children: React.ReactNode
 }) {
+  const { collapsed } = useAppSelector((state) => { return state.app; });
+
   return (
-    <StoreProvider>
-      <div className={styles.dashboard}>
-        <Header />
-        <Button>按钮测试</Button>
-        {children}
+    <div
+      className={classNames(styles.container, {
+        test: collapsed,
+      })}
+    >
+      {collapsed ? 'true' : 'false'}
+      <Header />
+      <div className={styles.body}>
+        <Aside />
+        <main className={styles.main}>
+          <div id="micro-container" style={{ width: '100%' }} />
+          {children}
+        </main>
       </div>
-    </StoreProvider>
+
+    </div>
   );
 }

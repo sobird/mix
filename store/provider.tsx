@@ -9,23 +9,34 @@
 
 'use client';
 
-import { useRef } from 'react';
+// import { useRef } from 'react';
 import { Provider } from 'react-redux';
 import { makeStore, AppStore } from '@/store';
-// import { initializeApp } from '@/store/slices/app';
+import { setCollapsed } from '@/store/slices/app';
 
 export default function StoreProvider({
-  // count,
+  test,
   children,
 }: {
   // count: number
   children: React.ReactNode
 }) {
-  const storeRef = useRef<AppStore | null>(null);
-  if (!storeRef.current) {
-    storeRef.current = makeStore();
-    // storeRef.current.dispatch(initializeApp(count));
-  }
+  // const storeRef = useRef<AppStore | null>(null);
+  // if (!storeRef.current) {
+  //   storeRef.current = makeStore();
+  //   // storeRef.current.dispatch(initializeApp(count));
+  //   console.log('process.browser', process.browser);
+  // }
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  const store = makeStore();
+
+  console.log('test', test);
+
+  console.log('store', test.value === '1');
+
+  store.dispatch(setCollapsed(true));
+
+  console.log('store', store.getState());
+
+  return <Provider store={store}>{children}</Provider>;
 }

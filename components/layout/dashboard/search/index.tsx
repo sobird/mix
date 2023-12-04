@@ -4,6 +4,8 @@
  * sobird<i@sobird.me> at 2023/09/12 15:14:52 created.
  */
 
+'use client';
+
 import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
@@ -46,7 +48,7 @@ const SeachDropdown: React.FC<SeachDropdownProps> = ({
           result.map((item) => {
             return (
               <Link
-                to={item.path}
+                href={item.path}
                 target="_blank"
                 className="search-select-dropdown-suggest-item"
                 key={item.path}
@@ -124,8 +126,10 @@ const find = (data: IMenuItem[], keyword) => {
 const Search: React.FC = () => {
   const { menuTrees } = useAppSelector((state) => { return state.menu; });
   const [keyword, setKeyword] = useState('');
-  const [searchHistory, setSearchHistory] = useLocalStorageState('search_history', []);
+  // const [searchHistory, setSearchHistory] = useLocalStorageState('search_history', []);
 
+  const searchHistory = [];
+  const setSearchHistory = () => {};
   const debounceFn = useCallback(
     debounce((value) => {
       setKeyword(value);

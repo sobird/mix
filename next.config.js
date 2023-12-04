@@ -17,6 +17,10 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+
+  compiler: {
+    styledComponents: true,
+  },
 };
 
 module.exports = nextConfig;
