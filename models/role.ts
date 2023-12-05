@@ -19,6 +19,7 @@ import {
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
+import BaseModel from '@/lib/model';
 import sequelize from '@/lib/sequelize';
 import type User from './user';
 import type Permission from './permission';
@@ -33,7 +34,7 @@ export interface RoleAttributes {
 /** Some attributes are optional in `Role.build` and `Role.create` calls */
 export type RoleCreationAttributes = Optional<RoleAttributes, 'id'>;
 
-class Role extends Model<RoleAttributes, RoleCreationAttributes> {
+class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
   declare id: number;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
@@ -95,6 +96,7 @@ Role.init(
   },
   {
     sequelize,
+    modelName: 'role',
   },
 );
 

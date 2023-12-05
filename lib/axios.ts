@@ -185,6 +185,4 @@ export const defaults: CreateAxiosDefaults = {
   },
 };
 
-console.log('defaults', defaults);
-
 export default new Http(defaults);

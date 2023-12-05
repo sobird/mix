@@ -17,7 +17,6 @@ export default function DashboardLayout({ children }: {
   children: React.ReactNode
 }) {
   const { collapsed } = useAppSelector((state) => { return state.app; });
-  console.log('collapsed', collapsed);
   return (
     <div
       className={classNames(styles.container, {
@@ -28,8 +27,6 @@ export default function DashboardLayout({ children }: {
       <div className={classNames(styles.body, 'layout-body')}>
         <Aside />
         <main className={styles.main}>
-          <Link href="/dashboard">首页</Link>
-          <Link href="/dashboard/about">关于</Link>
           <div id="micro-container" style={{ width: '100%' }} />
           {children}
         </main>
