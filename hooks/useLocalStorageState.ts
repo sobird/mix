@@ -8,8 +8,9 @@ import { useState, useEffect } from 'react';
 
 export type SetState<S> = S | ((prevState?: S) => S);
 
+const storage = typeof window === 'undefined' ? undefined : localStorage;
+
 export default function useLocalStorageState<T>(key: string, defaultValue: T) {
-  const storage = typeof window === 'undefined' ? undefined : localStorage;
   function getStoredValue() {
     try {
       const raw = storage?.getItem(key);
