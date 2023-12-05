@@ -7,6 +7,7 @@
 import http from '@/lib/axios';
 import listToTree from '@/utils/listToTree';
 
+console.log('http', http);
 export interface IMenuItem {
   title: string;
   icon: string;

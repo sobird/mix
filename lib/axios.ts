@@ -178,11 +178,13 @@ export class Http {
 export const defaults: CreateAxiosDefaults = {
   // withCredentials: true,
   timeout: 10 * 1000,
-  baseURL: process.env.baseURL,
+  baseURL: process.env.NEXT_PUBLIC_baseURL,
   headers: {
     // 'X-Requested-With': 'XMLHttpRequest',
     'Content-Type': 'application/json;charset=UTF-8',
   },
 };
+
+console.log('defaults', defaults);
 
 export default new Http(defaults);

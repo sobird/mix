@@ -103,7 +103,7 @@ const find = (data: IMenuItem[], keyword) => {
     return [];
   }
 
-  const result = [];
+  const result: unknown[] = [];
 
   data.forEach((parent) => {
     const parentFound = parent.title.indexOf(keyword) !== -1;
@@ -162,7 +162,7 @@ const Search: React.FC = () => {
   }, [searchHistory]);
 
   const result = find(menuTrees, keyword);
-  console.log('styles', styles);
+
   return (
     <div className={styles.container}>
       <Select
