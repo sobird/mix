@@ -9,9 +9,10 @@ import { useState, useEffect } from 'react';
 export type SetState<S> = S | ((prevState?: S) => S);
 
 export default function useLocalStorageState<T>(key: string, defaultValue: T) {
+  const storage = typeof window === 'undefined' ? undefined : localStorage;
   function getStoredValue() {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = storage?.getItem(key);
       if (raw) {
         return JSON.parse(raw);
       }
@@ -27,9 +28,9 @@ export default function useLocalStorageState<T>(key: string, defaultValue: T) {
 
   useEffect(() => {
     if (state === undefined) {
-      localStorage.removeItem(key);
+      storage?.removeItem(key);
     } else {
-      localStorage.setItem(key, JSON.stringify(state));
+      storage?.setItem(key, JSON.stringify(state));
     }
   }, [key, state]);
 
