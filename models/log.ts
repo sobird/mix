@@ -15,7 +15,7 @@ export interface LogAttributes {
   agent: string;
 }
 /** Some attributes are optional in `Log.build` and `Log.create` calls */
-export type LogCreationAttributes = Optional<LogAttributes, 'description'>;
+export type LogCreationAttributes = Optional<LogAttributes, 'agent'>;
 
 class Log extends Model<LogAttributes, LogCreationAttributes> {
   declare id: number;
@@ -41,7 +41,7 @@ Log.init(
   },
   {
     sequelize,
-    modelName: 'organization',
+    modelName: 'log',
   },
 );
 
