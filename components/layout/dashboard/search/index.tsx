@@ -17,7 +17,7 @@ import useLocalStorageState from '@/hooks/useLocalStorageState';
 import { useAppSelector } from '@/store';
 import { IMenuItem } from '@/services/menu';
 
-import './index.scss';
+import styles from './index.module.scss';
 
 type ResultItem = {
   name: string;
@@ -43,7 +43,7 @@ const SeachDropdown: React.FC<SeachDropdownProps> = ({
 }) => {
   if (keyword) {
     return (
-      <div className="search-select-dropdown-suggest">
+      <div className={styles['select-dropdown-suggest']}>
         {result?.length > 0 ? (
           result.map((item) => {
             return (
@@ -66,7 +66,7 @@ const SeachDropdown: React.FC<SeachDropdownProps> = ({
   }
 
   return (
-    <div className="search-select-dropdown-history">
+    <div className={styles['select-dropdown-history']}>
       <div className="search-history-head">
         <span className="search-history-head-title">搜索历史</span>
 
@@ -126,10 +126,10 @@ const find = (data: IMenuItem[], keyword) => {
 const Search: React.FC = () => {
   const { menuTrees } = useAppSelector((state) => { return state.menu; });
   const [keyword, setKeyword] = useState('');
-  // const [searchHistory, setSearchHistory] = useLocalStorageState('search_history', []);
+  const [searchHistory, setSearchHistory] = useLocalStorageState('search_history', []);
 
-  const searchHistory = [];
-  const setSearchHistory = () => {};
+  // const searchHistory = [];
+  // const setSearchHistory = () => {};
   const debounceFn = useCallback(
     debounce((value) => {
       setKeyword(value);
@@ -162,11 +162,11 @@ const Search: React.FC = () => {
   }, [searchHistory]);
 
   const result = find(menuTrees, keyword);
-
+  console.log('styles', styles);
   return (
-    <div className="app-search">
+    <div className={styles.container}>
       <Select
-        popupClassName="search-select-dropdown"
+        popupClassName={styles['select-dropdown']}
         showSearch
         placeholder="搜索你感兴趣的内容"
         allowClear

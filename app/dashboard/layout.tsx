@@ -17,15 +17,15 @@ export default function DashboardLayout({ children }: {
   children: React.ReactNode
 }) {
   const { collapsed } = useAppSelector((state) => { return state.app; });
-
+  console.log('collapsed', collapsed);
   return (
     <div
       className={classNames(styles.container, {
-        test: collapsed,
+        [styles.collapsed]: collapsed,
       })}
     >
       <Header />
-      <div className={styles.body}>
+      <div className={classNames(styles.body, 'layout-body')}>
         <Aside />
         <main className={styles.main}>
           <Link href="/dashboard">首页</Link>
