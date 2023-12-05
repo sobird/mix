@@ -24,7 +24,6 @@ export default function DashboardLayout({ children }: {
         test: collapsed,
       })}
     >
-      {collapsed ? 'true' : 'false'}
       <Header />
       <div className={styles.body}>
         <Aside />
