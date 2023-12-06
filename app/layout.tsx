@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ConfigProvider } from 'antd';
+import zhCN from 'antd/lib/locale/zh_CN';
 import config from '@/styles/theme';
 import StyledComponentsRegistry from '@/lib/antdRegistry';
 import StoreProvider from '@/store/provider';
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ConfigProvider prefixCls="mix" theme={config}>
+        <ConfigProvider locale={zhCN} prefixCls="mix" theme={config}>
           <StyledComponentsRegistry>
             {/* 全局store配置 */}
             <StoreProvider preloadedState={{

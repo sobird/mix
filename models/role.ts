@@ -5,7 +5,6 @@
  */
 
 import {
-  Model,
   DataTypes,
   type Optional,
   BelongsToManyGetAssociationsMixin,
@@ -92,6 +91,7 @@ Role.init(
     },
     parentId: {
       type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
   },
   {
