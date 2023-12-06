@@ -1,9 +1,9 @@
 'use server';
 
-import { NextResponse } from 'next/server';
+import { UserModel } from '@/models';
 
 export const submitAbout = async (...args) => {
   console.log('data');
-
-  return NextResponse.json({ message: 'ok' });
+  console.log('UserModel', UserModel);
+  // return NextResponse.json({ message: 'ok' });
 };
