@@ -2,8 +2,7 @@
 
 import { UserModel } from '@/models';
 
-export const submitAbout = async (...args) => {
-  console.log('data');
-  console.log('UserModel', UserModel);
+export const submitAbout = async (formData: FormData) => {
+  console.log('formData', formData);
   // return NextResponse.json({ message: 'ok' });
 };

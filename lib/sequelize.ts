@@ -9,6 +9,7 @@
  */
 
 import { Sequelize } from 'sequelize';
+import sqlite3 from 'sqlite3';
 
 const sequelize = new Sequelize({
   // The name of the database
@@ -23,6 +24,8 @@ const sequelize = new Sequelize({
   // the sql dialect of the database
   // currently supported: 'mysql', 'sqlite', 'postgres', 'mssql'
   dialect: 'sqlite',
+
+  dialectModule: sqlite3,
 
   // custom host; default: localhost
   host: '127.0.0.1',
