@@ -58,38 +58,38 @@
       }
     }
   
-    // .mtm-menu {
-    //   background-color: #fff;
-    //   border-right: none;
+    .mix-menu {
+      background-color: #fff;
+      border-right: none;
   
-    //   &.mtm-menu-inline-collapsed {
-    //     width: 64px;
-    //   }
+      &.mix-menu-inline-collapsed {
+        width: 64px;
+      }
   
-    //   .mtm-menu-item {
-    //     width: 100%;
-    //     margin: 0;
-    //     background-color: #f5f6fa;
+      .mix-menu-item {
+        width: 100%;
+        margin: 0;
+        background-color: #f5f6fa;
   
-    //     .iconfont {
-    //       font-size: 1.1em;
-    //     }
-    //     &:has(+ .mtm-menu-item-selected) {
-    //       border-bottom-right-radius: 10px;
-    //     }
-    //   }
+        .iconfont {
+          font-size: 1.1em;
+        }
+        &:has(+ .mix-menu-item-selected) {
+          border-bottom-right-radius: 10px;
+        }
+      }
   
-    //   .mtm-menu-item-selected {
-    //     background-color: #fff;
-    //     color: #000;
-    //     font-weight: 500;
+      .mix-menu-item-selected {
+        background-color: #fff;
+        color: #000;
+        font-weight: 500;
   
   
-    //     & + li {
-    //       border-top-right-radius: 10px;
-    //     }
-    //   }
-    // }
+        & + li {
+          border-top-right-radius: 10px;
+        }
+      }
+    }
   }
 
   .hamburger {
@@ -119,7 +119,7 @@
 .menu {
 
   // 菜单项通用样式
-  .mtm-menu {
+  .mix-menu {
     border-right: none !important;
     background-color: transparent;
 
@@ -128,11 +128,11 @@
       content: none;
     }
 
-    .mtm-menu-item-divider {
+    .mix-menu-item-divider {
       margin: 10px 0;
     }
 
-    .mtm-menu-item {
+    .mix-menu-item {
       padding: 0;
       display: inline;
 
@@ -141,7 +141,7 @@
         color: #1677ff !important;
       }
 
-      .mtm-menu-title-content {
+      .mix-menu-title-content {
         height: 24px;
         transition: none;
         overflow: inherit;
@@ -156,10 +156,10 @@
           // margin-right: 5px;
         }
 
-        .mtm-badge {
+        .mix-badge {
           color: inherit;
 
-          .mtm-badge-count {
+          .mix-badge-count {
             zoom: 0.55;
             padding: 0 5px;
           }
@@ -167,28 +167,28 @@
       }
     }
 
-    .mtm-menu-item-selected {
+    .mix-menu-item-selected {
       font-weight: 500;
 
     }
 
-    .mtm-menu-submenu-selected {
-      .mtm-menu-submenu-title {
+    .mix-menu-submenu-selected {
+      .mix-menu-submenu-title {
         color: #1677ff;
         font-weight: 500;
       }
     }
 
-    &.mtm-menu-inline {
+    &.mix-menu-inline {
       border: none;
     }
   }
 
 
-  .mtm-menu-root {
+  .mix-menu-root {
 
     // 根菜单项
-    &>.mtm-menu-item {
+    &>.mix-menu-item {
       background-color: transparent;
       line-height: normal;
       height: auto;
@@ -199,15 +199,15 @@
       }
     }
 
-    &>.mtm-menu-item-selected {
+    &>.mix-menu-item-selected {
       &::after {
         border: 0;
       }
     }
   }
 
-  .mtm-menu-submenu {
-    .mtm-menu-submenu-title {
+  .mix-menu-submenu {
+    .mix-menu-submenu-title {
       padding: 10px 0 !important;
       height: auto;
       line-height: normal;
@@ -218,7 +218,7 @@
         margin-right: 5px;
       }
 
-      .mtm-menu-submenu-arrow {
+      .mix-menu-submenu-arrow {
         right: 0;
       }
 
@@ -227,21 +227,21 @@
       }
     }
 
-    .mtm-menu-sub {
+    .mix-menu-sub {
       display: flex;
       flex-wrap: wrap;
       flex: 1 1;
       justify-content: space-between;
 
-      &.mtm-menu-inline {
+      &.mix-menu-inline {
         background-color: transparent;
       }
 
-      &.mtm-menu-hidden {
+      &.mix-menu-hidden {
         display: none;
       }
 
-      .mtm-menu-item {
+      .mix-menu-item {
         width: 48%;
         height: 24px;
         line-height: 24px;
@@ -261,34 +261,34 @@
         }
       }
 
-      &>.mtm-menu-item-divider {
+      &>.mix-menu-item-divider {
         display: none;
       }
 
-      &>.mtm-menu-submenu {
+      &>.mix-menu-submenu {
         width: 100%;
         background-color: #f3f6f9;
         border-radius: 3px;
 
-        .mtm-menu-submenu-title {
+        .mix-menu-submenu-title {
           font-size: 12px;
           margin: 0 5px !important;
           line-height: normal;
           height: auto;
           width: auto;
 
-          .mtm-menu-submenu-arrow {
+          .mix-menu-submenu-arrow {
             color: #888;
           }
         }
 
-        &>.mtm-menu-sub {
+        &>.mix-menu-sub {
           width: auto;
           margin: 0 10px;
           background-color: transparent;
           padding-bottom: 10px;
 
-          .mtm-menu-item {
+          .mix-menu-item {
             &:hover {
               background-color: #fff;
             }
@@ -297,11 +297,11 @@
       }
     }
 
-    .mtm-badge {
+    .mix-badge {
       font-size: 12px;
       color: inherit;
 
-      .mtm-badge-count {
+      .mix-badge-count {
         zoom: 0.55;
         padding: 0 5px;
       }
@@ -309,14 +309,14 @@
   }
 
   // 折叠后的样式
-  .mtm-menu-inline-collapsed {
+  .mix-menu-inline-collapsed {
     width: 45px;
 
-    .mtm-menu-item-divider {
+    .mix-menu-item-divider {
       margin: 0;
     }
 
-    &>.mtm-menu-item {
+    &>.mix-menu-item {
       text-align: center;
       padding: 10px 0 !important;
 
@@ -331,8 +331,8 @@
       }
     }
 
-    .mtm-menu-submenu {
-      .mtm-menu-submenu-title {
+    .mix-menu-submenu {
+      .mix-menu-submenu-title {
         text-align: center;
 
         .iconfont {
@@ -349,21 +349,21 @@
   }
 }
 
-.mtm-menu-inline-collapsed-tooltip {
+.mix-menu-inline-collapsed-tooltip {
   .iconfont {
     margin-right: 5px;
   }
 
-  .mtm-badge {
+  .mix-badge {
     color: inherit;
   }
 }
 
-.mtm-menu-submenu-popup {
-  .mtm-badge {
+.mix-menu-submenu-popup {
+  .mix-badge {
     color: inherit;
 
-    .mtm-badge-count {
+    .mix-badge-count {
       zoom: 0.55;
       padding: 0 5px;
     }
@@ -398,12 +398,12 @@
     font-size: 12px;
   }
 
-  .mtm-menu-submenu-arrow {
+  .mix-menu-submenu-arrow {
     display: none;
   }
 }
 
-.mtm-menu-title-content {
+.mix-menu-title-content {
   display: flex;
   align-items: center;
 }
@@ -428,7 +428,7 @@
 }
 
 .fav-item-edit {
-  .mtm-menu-title-content {
+  .mix-menu-title-content {
     display: flex;
 
     .anticon {
@@ -459,7 +459,7 @@
 }
 
 .fav-item-added {
-  .mtm-menu-title-content {
+  .mix-menu-title-content {
     .anticon {
       color: var(--danger);
     }
