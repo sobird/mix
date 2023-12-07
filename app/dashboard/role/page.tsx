@@ -18,10 +18,10 @@ interface RolePageProps {
 }
 
 const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
-  const roleRows = await RoleModel.findAllWithPagination(searchParams);
+  const roleTableData = await RoleModel.findAllWithPagination(searchParams);
   return (
     <div>
-      <RoleTable data={roleRows} />
+      <RoleTable data={roleTableData} />
     </div>
   );
 };

@@ -7,14 +7,14 @@
 'use client';
 
 import { FC } from 'react';
-import { Table } from 'antd';
+import { Button, Table } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import type { RoleModel } from '@/models';
 
-type RoleRowsWithPagination = Awaited<ReturnType<typeof RoleModel.findAllWithPagination>>;
+type RoleTableData = Awaited<ReturnType<typeof RoleModel.findAllWithPagination>>;
 
 interface RoleTableProps {
-  data: RoleRowsWithPagination
+  data: RoleTableData
 }
 
 const RoleTable:FC<RoleTableProps> = ({ data }) => {
@@ -22,7 +22,6 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  console.log('data', data);
   return (
     <div style={{
       backgroundColor: 'rgb(249 250 251)',
@@ -38,7 +37,8 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
           showSizeChanger: true,
           onChange: (page, pageSize) => {
             const params = new URLSearchParams(searchParams);
-            params?.set('pn', page);
+            params.set('pn', page);
+            params.set('ps', pageSize);
             router.push(`${pathname}?${params.toString()}`);
           },
           itemRender: (page, type, originalElement) => {
@@ -54,7 +54,15 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
         <Table.Column title="角色名称" dataIndex="name" />
         <Table.Column title="角色描述" dataIndex="description" />
         <Table.Column title="创建时间" dataIndex="createdAt" />
-        <Table.Column title="操作" dataIndex="actions" />
+        <Table.Column
+          title="操作"
+          dataIndex="actions"
+          render={(value, record) => {
+            return (
+              <Button type="link">编辑</Button>
+            );
+          }}
+        />
       </Table>
     </div>
   );
