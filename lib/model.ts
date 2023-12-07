@@ -10,10 +10,10 @@ class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
   declare id: number;
 
   /** 分页查找模型数据 */
-  public static async findAllWithPagination(query: IPaginationParams) {
+  public static async findAllWithPagination(query: IPaginationSearchParams) {
     const ps = Number(query.ps) || 20;
     const pn = Number(query.pn) || 1;
-    const offset = (pn) * ps;
+    const offset = (pn - 1) * ps;
 
     const orderBy = query.orderBy || 'createdAt,DESC';
     const order: string[] = [];

@@ -1,7 +1,7 @@
 /**
  * 数据列表分页查询参数
  */
-interface IPaginationParams {
+interface IPaginationSearchParams {
   /** 当前页数 */
   pn?: string | string[];
   /** 每页条数 */

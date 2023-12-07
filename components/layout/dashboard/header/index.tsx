@@ -46,7 +46,7 @@ const Header: React.FC = () => {
       </div>
 
       <div className={styles.bread}>
-        <Search />
+        {/* <Search /> */}
         <div className={styles.nav}>
           <Dropdown menu={{ items, onClick }} overlayClassName={styles.dropdown}>
             <div className={styles.avatar}>
