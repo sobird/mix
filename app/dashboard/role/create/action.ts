@@ -14,6 +14,20 @@ export async function createRole(formData: FormData) {
   redirect('/dashboard/role');
 }
 
+export async function updateRole(formData: FormData) {
+  await RoleModel.update({
+    name: formData.name,
+    description: formData.description,
+  }, {
+    where: {
+      id: formData.id,
+    },
+  });
+
+  revalidatePath('/dashboard/role');
+  redirect('/dashboard/role');
+}
+
 export async function deleteRole(id: number) {
   await RoleModel.destroy({
     where: {

@@ -9,6 +9,7 @@
 import { FC } from 'react';
 import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import type { RoleModel } from '@/models';
 import { deleteRole } from './create/action';
 
@@ -62,7 +63,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
             const deleteRoleWithId = deleteRole.bind(null, record.id);
             return (
               <>
-                <Button type="link">编辑</Button>
+                <Link href={`/dashboard/role/${record.id}/edit`}>编辑</Link>
 
                 <Button
                   type="link"
@@ -73,7 +74,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
                       content: 'Some descriptions',
                       onOk() {
                         console.log('OK');
-                        deleteRoleWithId();
+                        deleteRole(record.id);
                       },
                     });
                   }}
