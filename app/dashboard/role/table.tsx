@@ -7,9 +7,10 @@
 'use client';
 
 import { FC } from 'react';
-import { Button, Table } from 'antd';
+import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import type { RoleModel } from '@/models';
+import { deleteRole } from './create/action';
 
 type RoleTableData = Awaited<ReturnType<typeof RoleModel.findAllWithPagination>>;
 
@@ -58,8 +59,29 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
           title="操作"
           dataIndex="actions"
           render={(value, record) => {
+            const deleteRoleWithId = deleteRole.bind(null, record.id);
             return (
-              <Button type="link">编辑</Button>
+              <>
+                <Button type="link">编辑</Button>
+
+                <Button
+                  type="link"
+                    // htmlType="submit"
+                  onClick={() => {
+                    Modal.confirm({
+                      title: 'Do you Want to delete these items?',
+                      content: 'Some descriptions',
+                      onOk() {
+                        console.log('OK');
+                        deleteRoleWithId();
+                      },
+                    });
+                  }}
+                >
+                  删除
+
+                </Button>
+              </>
             );
           }}
         />

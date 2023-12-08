@@ -26,7 +26,7 @@ import type Permission from './permission';
 /** These are all the attributes in the Role model */
 export interface RoleAttributes {
   id?: number;
-  parentId: number,
+  parentId?: number,
   name: string;
   description: string;
 }

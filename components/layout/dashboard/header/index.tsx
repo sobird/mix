@@ -6,6 +6,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
 import { Dropdown } from 'antd';
@@ -40,9 +41,9 @@ const Header: React.FC = () => {
   return (
     <header className={styles.container}>
       <div className={styles.brand}>
-        <a href="/dashboard" title="mix" aria-label="mix">
+        <Link href="/dashboard" title="mix" aria-label="mix">
           <Image src={Logo.src} width={32} height={32} alt="" />
-        </a>
+        </Link>
       </div>
 
       <div className={styles.bread}>
