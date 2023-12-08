@@ -5,7 +5,9 @@
  */
 
 import { Metadata } from 'next';
+import Link from 'next/link';
 import React from 'react';
+import { Button } from 'antd';
 import { RoleModel } from '@/models';
 import RoleTable from './table';
 
@@ -21,6 +23,8 @@ const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
   const roleTableData = await RoleModel.findAllWithPagination(searchParams);
   return (
     <div>
+      <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
+
       <RoleTable data={roleTableData} />
     </div>
   );

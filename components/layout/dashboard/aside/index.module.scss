@@ -24,13 +24,12 @@
     overflow-x: hidden;
     overflow-y: overlay;
     height: calc(100% - 33px);
-    padding: 10px 10px;
     border-right: none;
   
     &::-webkit-scrollbar {
       background-color: transparent;
-      width: 4px;
-      height: 4px;
+      width: 0px;
+      // height: 4px;
     }
   
     &:hover {
@@ -39,8 +38,7 @@
       /*定义滚动条高宽及背景
           高宽分别对应横竖滚动条的尺寸*/
       &::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
+        width: 0px;
         background-color: transparent;
       }
   
@@ -55,12 +53,14 @@
       &::-webkit-scrollbar-thumb {
         border-radius: 4px;
         background-color: #dbdbdb;
+        background-color: transparent;
       }
     }
-  
-    .mix-menu {
-      background-color: #fff;
-      border-right: none;
+
+    // reset antd style
+    :global .mix-menu {
+      background-color: transparent;
+      border-inline-end: none !important;
   
       &.mix-menu-inline-collapsed {
         width: 64px;
@@ -68,8 +68,8 @@
   
       .mix-menu-item {
         width: 100%;
-        margin: 0;
-        background-color: #f5f6fa;
+        // margin: 0;
+        // background-color: #;
   
         .iconfont {
           font-size: 1.1em;
@@ -83,8 +83,6 @@
         background-color: #fff;
         color: #000;
         font-weight: 500;
-  
-  
         & + li {
           border-top-right-radius: 10px;
         }

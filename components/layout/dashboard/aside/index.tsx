@@ -9,7 +9,8 @@
 
 'use client';
 
-import React, { useEffect, useState, ComponentProps } from 'react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import { message, Button, Menu } from 'antd';
 import classNames from 'classnames';
 
@@ -17,7 +18,6 @@ import {
   PlusCircleOutlined, MinusCircleOutlined, PlusCircleFilled, MinusCircleFilled,
 } from '@ant-design/icons';
 
-import Link from 'next/link';
 import {
   usePathname, useSearchParams, useParams, useRouter,
 } from 'next/navigation';
@@ -33,6 +33,8 @@ import TitleWithBadge from './components/title-with-badge';
 import styles from './index.module.scss';
 
 const { Item, SubMenu, Divider } = Menu;
+
+const DASHBOARD = '/dashboard';
 
 const Aside: React.FunctionComponent = () => {
   const pathname = usePathname() || '';
@@ -280,10 +282,16 @@ const Aside: React.FunctionComponent = () => {
           // onClick={onClick}
           // style={{ width: 256 }}
           defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
+          selectedKeys={[pathname]}
+          defaultOpenKeys={['dashboard']}
           mode="inline"
-          items={items}
-        />
+        >
+          <Menu.SubMenu key="dashboard" title="系统管理">
+            <Menu.Item key={`${DASHBOARD}/role`}>
+              <Link href={`${DASHBOARD}/role`}>角色管理</Link>
+            </Menu.Item>
+          </Menu.SubMenu>
+        </Menu>
       </div>
 
       <Button
