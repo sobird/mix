@@ -85,6 +85,11 @@ Role.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      validate: {
+        notNull: {
+          msg: '请输入角色名称',
+        },
+      },
     },
     description: {
       type: DataTypes.STRING,

@@ -3,7 +3,7 @@ const nextConfig = {
   output: 'standalone',
   experimental: {
     // typedRoutes: true,
-    esmExternals: 'loose',
+    // esmExternals: 'loose',
     // serverComponentsExternalPackages: ['sequelize'],
   },
   eslint: {
