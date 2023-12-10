@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import config from '@/styles/theme';
-import StyledComponentsRegistry from '@/lib/antdRegistry';
+import StyledComponentsRegistry from '@/lib/antd';
 import StoreProvider from '@/store/provider';
 import mix from '@/assets/mix.svg';
 import '@/styles/presets.scss';
