@@ -31,5 +31,6 @@ yarn.lock
 .env.production.local
 
 # prisma
-prisma
+prisma/migrations
+prisma/dev.db
 database.sqlite
