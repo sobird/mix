@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import prisma from '@/lib/prisma';
 import { RoleModel } from '@/models';
 
 const FormSchema = z.object({
@@ -37,7 +38,15 @@ export async function createRole(prevState: State, formData: FormData) {
     };
   }
 
-  await RoleModel.create(validatedFields.data);
+  // await RoleModel.create(validatedFields.data);
+
+  const user = await prisma.user.create({
+    data: {
+      username: validatedFields.data.name,
+    },
+  });
+
+  console.log('user', user);
 
   revalidatePath('/dashboard/role');
   redirect('/dashboard/role');
@@ -58,11 +67,15 @@ export async function updateRole(formData: FormData) {
 }
 
 export async function deleteRole(id: number) {
-  await RoleModel.destroy({
-    where: {
-      id,
-    },
-  });
+  // await RoleModel.destroy({
+  //   where: {
+  //     id,
+  //   },
+  // });
+
+  const user = await prisma.user.findMany();
+
+  console.log('user', user);
 
   revalidatePath('/dashboard/role');
 }

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "mix",
   "private": true,
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -13,6 +14,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.18.4",
+    "@prisma/client": "5.7.0",
     "@reduxjs/toolkit": "^2.0.1",
     "antd": "^5.11.5",
     "axios": "^1.6.2",
@@ -22,6 +24,7 @@
     "next": "^14.0.3",
     "next-auth": "^4.24.5",
     "nodemailer": "^6.9.7",
+    "prisma": "^5.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.0",
