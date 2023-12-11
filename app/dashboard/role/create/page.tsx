@@ -1,6 +1,6 @@
 import React from 'react';
 import sequelize from 'sequelize';
-import { createRole } from './action';
+import { create } from '@/actions/role';
 import RoleForm from './form';
 
 const Page = () => {
@@ -9,7 +9,7 @@ const Page = () => {
   return (
     <div>
 
-      <RoleForm action={createRole} />
+      <RoleForm action={create} />
     </div>
   );
 };

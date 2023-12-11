@@ -33,4 +33,5 @@ yarn.lock
 # prisma
 prisma/migrations
 prisma/dev.db
+prisma/zod
 database.sqlite
