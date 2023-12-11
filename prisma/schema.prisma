@@ -1,9 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "./generated/prisma-client-js"
 }
 
 datasource db {
@@ -12,23 +8,122 @@ datasource db {
 }
 
 model User {
-  id String @default(cuid()) @id
-  username          String?   @unique
-  nickname String?
-  realname String?
-  password String?
-  salt String
-  email         String       @unique
-  emailVerified DateTime?      @map(name: "email_verified")
-  createdAt     DateTime      @default(now()) @map(name: "created_at")
-  updatedAt     DateTime      @updatedAt @map(name: "updated_at")
-  @@map(name: "users")
+  id            Int          @id @default(autoincrement())
+  username      String?
+  nickname      String?
+  realname      String?
+  email         String
+  emailVerified DateTime?    @map("email_verified")
+  password      String?
+  salt          String       @default("7f30b4630016f4a696088033c299fc2a")
+  ip            Int          @default(0)
+  createdAt     DateTime     @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  accounts      accounts[]
+  sessions      sessions[]
+  user_roles    user_roles[]
+
+  @@map("users")
 }
 
-model Post {
-  id            String        @default(cuid()) @id
-  title         String
-  content       String?
-  published     Boolean       @default(false)
-  authorId      String?
+model accounts {
+  id                  Int      @id @default(autoincrement())
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+  user_id             Int?
+  created_at          DateTime
+  updated_at          DateTime
+  users               User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model groups {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique(map: "sqlite_autoindex_groups_1")
+  description String?
+  parent_id   Int?
+  created_at  DateTime
+  updated_at  DateTime
+}
+
+model menus {
+  id          Int      @id @default(autoincrement())
+  name        String
+  href        Int
+  icon        String?
+  description String?
+  parent_id   Int?
+  sort        Int?
+  created_at  DateTime
+  updated_at  DateTime
+}
+
+model permissions {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique(map: "sqlite_autoindex_permissions_1")
+  description      String?
+  operator         String?
+  target           String?
+  created_at       DateTime
+  updated_at       DateTime
+  role_permissions role_permissions[]
+}
+
+model role_permissions {
+  permission_id Int
+  role_id       Int
+  created_at    DateTime
+  updated_at    DateTime
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  @@id([permission_id, role_id])
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique(map: "sqlite_autoindex_roles_1")
+  description      String?
+  parent_id        Int?               @default(0)
+  created_at       DateTime
+  updated_at       DateTime
+  role_permissions role_permissions[]
+  user_roles       user_roles[]
+}
+
+model sessions {
+  id            Int      @id @default(autoincrement())
+  expires       DateTime
+  session_token String   @unique(map: "sqlite_autoindex_sessions_1")
+  user_id       Int?
+  created_at    DateTime
+  updated_at    DateTime
+  users         User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model user_roles {
+  user_id    Int
+  role_id    Int
+  created_at DateTime
+  updated_at DateTime
+  roles      roles    @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  users      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, role_id])
+}
+
+model verification_tokens {
+  id         Int      @id @default(autoincrement())
+  token      String?  @unique(map: "sqlite_autoindex_verification_tokens_1")
+  identifier String
+  expires    DateTime
+  created_at DateTime
+  updated_at DateTime
 }
