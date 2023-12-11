@@ -8,7 +8,7 @@ import { submitAbout } from '@/lib/actions';
 
 const AboutPage = () => {
   const appState = useAppSelector((state) => { return state.app; });
-  console.log('appState', appState);
+
   const dispatch = useAppDispatch();
 
   return (
