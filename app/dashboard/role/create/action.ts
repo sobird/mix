@@ -40,10 +40,8 @@ export async function createRole(prevState: State, formData: FormData) {
 
   // await RoleModel.create(validatedFields.data);
 
-  const user = await prisma.user.create({
-    data: {
-      username: validatedFields.data.name,
-    },
+  const user = await prisma.role.create({
+    data: validatedFields.data,
   });
 
   console.log('user', user);
