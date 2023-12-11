@@ -44,7 +44,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
             router.push(`${pathname}?${params.toString()}`);
           },
           itemRender: (page, type, originalElement) => {
-            console.log('page', page, type, originalElement);
+            // console.log('page', page, type, originalElement);
 
             return originalElement;
           },
