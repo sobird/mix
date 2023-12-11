@@ -19,41 +19,45 @@ model User {
   ip            Int          @default(0)
   createdAt     DateTime     @map("created_at")
   updatedAt     DateTime     @updatedAt @map("updated_at")
-  accounts      accounts[]
-  sessions      sessions[]
-  user_roles    user_roles[]
+  accounts      Account[]
+  sessions      Session[]
+  UserRole      UserRole[]
 
   @@map("users")
 }
 
-model accounts {
+model Account {
   id                  Int      @id @default(autoincrement())
   type                String
   provider            String
-  provider_account_id String
-  refresh_token       String?
+  providerAccountId   String   @map("provider_account_id")
+  refresh_token       String?  @map("")
   access_token        String?
   expires_at          Int?
   token_type          String?
   scope               String?
   id_token            String?
   session_state       String?
-  user_id             Int?
+  userId              Int?      @map("user_id")
   created_at          DateTime
   updated_at          DateTime
-  users               User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  users               User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
 }
 
-model groups {
+model Group {
   id          Int      @id @default(autoincrement())
   name        String   @unique(map: "sqlite_autoindex_groups_1")
   description String?
   parent_id   Int?
   created_at  DateTime
   updated_at  DateTime
+
+  @@map("groups")
 }
 
-model menus {
+model Menu {
   id          Int      @id @default(autoincrement())
   name        String
   href        Int
@@ -63,9 +67,11 @@ model menus {
   sort        Int?
   created_at  DateTime
   updated_at  DateTime
+
+  @@map("menus")
 }
 
-model permissions {
+model Permission {
   id               Int                @id @default(autoincrement())
   name             String             @unique(map: "sqlite_autoindex_permissions_1")
   description      String?
@@ -73,32 +79,37 @@ model permissions {
   target           String?
   created_at       DateTime
   updated_at       DateTime
-  role_permissions role_permissions[]
+  role_permissions RolePermission[]
+
+  @@map("permissions")
 }
 
-model role_permissions {
+model RolePermission {
   permission_id Int
   role_id       Int
   created_at    DateTime
   updated_at    DateTime
-  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+  roles         Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permissions   Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
 
   @@id([permission_id, role_id])
+  @@map("role_permissions")
 }
 
-model roles {
+model Role {
   id               Int                @id @default(autoincrement())
   name             String             @unique(map: "sqlite_autoindex_roles_1")
   description      String?
   parent_id        Int?               @default(0)
   created_at       DateTime
   updated_at       DateTime
-  role_permissions role_permissions[]
-  user_roles       user_roles[]
+  role_permissions RolePermission[]
+  UserRole       UserRole[]
+
+  @@map("roles")
 }
 
-model sessions {
+model Session {
   id            Int      @id @default(autoincrement())
   expires       DateTime
   session_token String   @unique(map: "sqlite_autoindex_sessions_1")
@@ -108,22 +119,21 @@ model sessions {
   users         User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-model user_roles {
+model UserRole {
   user_id    Int
   role_id    Int
   created_at DateTime
   updated_at DateTime
-  roles      roles    @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  roles      Role    @relation(fields: [role_id], references: [id], onDelete: Cascade)
   users      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@id([user_id, role_id])
 }
 
-model verification_tokens {
-  id         Int      @id @default(autoincrement())
-  token      String?  @unique(map: "sqlite_autoindex_verification_tokens_1")
+model VerificationToken {
+  token      String  @unique
   identifier String
   expires    DateTime
-  created_at DateTime
-  updated_at DateTime
+
+  @@unique([identifier, token])
 }

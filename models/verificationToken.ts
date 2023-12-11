@@ -40,6 +40,7 @@ VerificationToken.init(
     token: {
       type: DataTypes.STRING,
       unique: true,
+      allowNull: false,
       comment: 'VerificationToken token',
     },
     identifier: {
