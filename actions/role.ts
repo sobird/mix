@@ -2,28 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { z } from 'zod';
 import prisma from '@/lib/prisma';
+import { RoleZod, RoleFormAttributes } from '@/zod/role';
 
-const FormSchema = z.object({
-  name: z.string({
-    invalid_type_error: '角色名称长度为3-12个字符',
-  }).min(3, '角色名称长度不能少于3个字符').max(12, '角色名称长度不能大于24个字符'),
-  description: z.string().optional(),
-});
-
-type RoleFormType = z.infer<typeof FormSchema>;
-
-export type State = {
-  errors?: {
-    name?: string[];
-    description?: string[];
-  };
-  message?: string | null;
-};
-
-export async function create(prevState: State, formData: RoleFormType) {
-  const validatedFields = FormSchema.safeParse(formData);
+export async function create(prevState: ActionState<RoleFormAttributes>, formData: RoleFormAttributes) {
+  const validatedFields = RoleZod.safeParse(formData);
 
   if (!validatedFields.success) {
     return {
