@@ -45,6 +45,7 @@ UserRole.init(
   },
   {
     sequelize,
+    modelName: 'userRole',
   },
 );
 

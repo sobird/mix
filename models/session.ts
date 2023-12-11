@@ -7,11 +7,10 @@
  */
 
 import { Model, DataTypes, type Optional } from 'sequelize';
-import type { AdapterSession } from '@auth/core/adapters';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the Session model */
-export interface SessionAttributes extends AdapterSession {
+export interface SessionAttributes {
   id?: number;
   /**
    * The absolute date when the session expires.
@@ -32,7 +31,7 @@ export interface SessionAttributes extends AdapterSession {
   /**
    * Connects the active session to a user in the database
    */
-  userId: string;
+  userId: number;
 }
 /** Some attributes are optional in `Session.build` and `Session.create` calls */
 export type SessionCreationAttributes = Optional<SessionAttributes, 'id'>;
@@ -56,7 +55,10 @@ Session.init(
       unique: 'sessionToken',
       comment: 'session token',
     },
-    userId: { type: DataTypes.UUID, comment: 'user id' },
+    userId: {
+      type: DataTypes.INTEGER,
+      comment: 'user id',
+    },
   },
   {
     sequelize,

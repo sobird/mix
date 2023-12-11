@@ -11,11 +11,10 @@
  */
 
 import { Model, DataTypes } from 'sequelize';
-import type { VerificationToken as IVerificationToken } from '@auth/core/adapters';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */
-export interface VerificationTokenAttributes extends IVerificationToken {
+export interface VerificationTokenAttributes {
   /**
    * A hashed token, using the AuthConfig.secret value.
    */
@@ -40,10 +39,14 @@ VerificationToken.init(
   {
     token: {
       type: DataTypes.STRING,
-      primaryKey: true,
+      unique: true,
       comment: 'VerificationToken token',
     },
-    identifier: { type: DataTypes.STRING, allowNull: false, comment: 'user id' },
+    identifier: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      comment: 'user id',
+    },
     expires: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -52,6 +55,7 @@ VerificationToken.init(
   },
   {
     sequelize,
+    modelName: 'verificationToken',
   },
 );
 

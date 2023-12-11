@@ -19,8 +19,6 @@ export type LogCreationAttributes = Optional<LogAttributes, 'agent'>;
 
 class Log extends Model<LogAttributes, LogCreationAttributes> {
   declare id: number;
-
-  public userId: number;
 }
 
 Log.init(

@@ -18,6 +18,7 @@ import Account from './account';
 import Session from './session';
 import VerificationToken from './verificationToken';
 import Menu from './menu';
+import Group from './group';
 
 export const UserModel = User;
 export const AccountModel = Account;
@@ -26,6 +27,7 @@ export const VerificationTokenModel = VerificationToken;
 export const RoleModel = Role;
 export const PermissionModel = Permission;
 export const MenuModel = Menu;
+export const GroupModel = Group;
 
 Account.belongsTo(User, { onDelete: 'cascade' });
 Session.belongsTo(User, { onDelete: 'cascade' });

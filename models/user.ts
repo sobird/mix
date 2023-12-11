@@ -10,7 +10,7 @@
  *
  * sobird<i@sobird.me> at 2021/11/16 20:30:51 created.
  */
-import type { AdapterUser } from '@auth/core/adapters';
+
 import { randomBytes, createHmac } from 'crypto';
 import {
   DataTypes,
@@ -34,8 +34,9 @@ import type Role from './role';
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
-export interface UserAttributes extends Partial<AdapterUser> {
+export interface UserAttributes {
   id: string;
+  name?: string;
   username?: string;
   nickname?: string | null;
   realname?: string | null;
