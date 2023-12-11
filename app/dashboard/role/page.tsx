@@ -10,6 +10,7 @@ import React from 'react';
 import { Button } from 'antd';
 import { RoleModel } from '@/models';
 import RoleTable from './table';
+import prisma from '@/lib/prisma';
 
 export const metadata: Metadata = {
   title: '角色管理',
@@ -21,6 +22,16 @@ interface RolePageProps {
 
 const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
   const roleTableData = await RoleModel.findAllWithPagination(searchParams);
+  const role = await prisma.role.findManyByPage({
+    pn: 1,
+    ps: 10,
+    select: {
+      description: true,
+      name: true,
+    },
+  });
+
+  console.log('role', role);
   return (
     <div>
       <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
