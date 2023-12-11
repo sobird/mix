@@ -12,7 +12,6 @@
  */
 
 import { Model, DataTypes, type Optional } from 'sequelize';
-import type { AdapterAccount } from '@auth/core/adapters';
 import sequelize from '@/lib/sequelize';
 
 /** These are all the attributes in the Account model */
@@ -21,8 +20,8 @@ export interface AccountAttributes {
   /**
    * id of the user this account belongs to
    */
-  userId: string;
-  type: AdapterAccount['type'];
+  userId: number;
+  type: 'oauth' | 'oidc' | 'email';
   /**
    * Provider's id for this account. Eg.: 'google'
    */
@@ -46,7 +45,7 @@ export interface AccountAttributes {
   token_type?: string;
   scope?: string;
   id_token?: string;
-  // session_state: string;
+  session_state: string;
 }
 /** Some attributes are optional in `Account.build` and `Account.create` calls */
 export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'userId'>;
@@ -102,10 +101,14 @@ Account.init(
       type: DataTypes.STRING,
       comment: 'session state',
     },
-    userId: { type: DataTypes.UUID, comment: 'user id' },
+    userId: {
+      type: DataTypes.INTEGER,
+      comment: 'user id',
+    },
   },
   {
     sequelize,
+    modelName: 'account',
   },
 );
 

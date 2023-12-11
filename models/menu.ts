@@ -45,7 +45,7 @@ Menu.init(
       type: DataTypes.INTEGER,
     },
     sort: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.INTEGER,
     },
   },
   {
