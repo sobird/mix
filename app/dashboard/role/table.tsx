@@ -32,6 +32,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
     >
       <Table
         pagination={{
+          hideOnSinglePage: true,
           position: ['bottomCenter'],
           current: data.pn,
           pageSize: data.ps,
@@ -79,7 +80,6 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
                       title: 'Do you Want to delete these items?',
                       content: 'Some descriptions',
                       onOk() {
-                        console.log('OK');
                         destroy(record.id);
                       },
                     });

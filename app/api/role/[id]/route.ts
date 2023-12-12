@@ -4,10 +4,10 @@
  * sobird<i@sobird.me> at 2023/11/30 23:41:37 created.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { RoleModel } from '@/models';
 
-export async function GET(request: Request, { params }) {
+export async function GET(request: NextRequest, { params }) {
   const role = await RoleModel.findByPk(params.id);
   return NextResponse.json(role);
 }

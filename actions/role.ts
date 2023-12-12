@@ -52,7 +52,7 @@ export async function update(prevState: ActionState<RoleFormAttributes>, formDat
   redirect('/dashboard/role');
 }
 
-export async function destroy(id: number) {
+export async function destroy(id: string) {
   try {
     await prisma.role.delete({
       where: {

@@ -86,7 +86,7 @@ model Permission {
 
 model RolePermission {
   permission_id Int
-  role_id       Int
+  role_id       String
   created_at    DateTime
   updated_at    DateTime
   roles         Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
@@ -97,7 +97,7 @@ model RolePermission {
 }
 
 model Role {
-  id               Int                @id @default(autoincrement())
+  id               String             @id @default(cuid())
   /// @zod.max(255, { message: "The title must be shorter than 256 characters" })
   name             String             @unique
   description      String?
@@ -122,7 +122,7 @@ model Session {
 
 model UserRole {
   user_id    Int
-  role_id    Int
+  role_id    String
   created_at DateTime
   updated_at DateTime
   roles      Role    @relation(fields: [role_id], references: [id], onDelete: Cascade)
