@@ -3,9 +3,9 @@
  */
 interface PaginationSearchParams {
   /** 当前页数 */
-  pn: number;
+  pn?: number;
   /** 每页条数 */
-  ps: number;
+  ps?: number;
   /** default: createdAt,DESC */
   // orderBy?: string | string[];
 }

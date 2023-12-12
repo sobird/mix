@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { UserModel, RoleModel, PermissionModel } from '@/models';
 import { UserExcludeAttributes } from '@/models/user';
+import prisma from '@/lib/prisma';
 
-export async function GET() {
-  const roles = await RoleModel.findAll({
-    include: [{
-      model: UserModel,
-      attributes: {
-        exclude: UserExcludeAttributes,
-      },
-    }, {
-      model: PermissionModel,
-    }],
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const pn = searchParams.get('pn');
+  const ps = searchParams.get('ps');
+
+  const rolesWithPage = await prisma.role.findManyByPage({
+    pn,
+    ps,
   });
-  return NextResponse.json(roles);
+
+  return NextResponse.json(rolesWithPage);
 }
 
 /** 创建角色 */
