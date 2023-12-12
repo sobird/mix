@@ -24,6 +24,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
 
   return (
     <Form onFinish={dispatch} initialValues={initialValues} {...formItemLayout}>
+      <Form.Item hidden name="id" />
       <Form.Item label="角色名称" name="name" rules={[ZodRule]}>
         <Input name="name" />
       </Form.Item>

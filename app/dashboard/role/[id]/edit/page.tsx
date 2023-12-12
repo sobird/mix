@@ -7,7 +7,7 @@
 import React from 'react';
 import { RoleModel } from '@/models';
 import RoleForm from '../../create/form';
-import { createRole } from '../../create/action';
+import { update } from '@/actions/role';
 
 interface RoleEditPageProps {
   params: {
@@ -27,7 +27,7 @@ const Page: React.FC<RoleEditPageProps> = async ({ params }) => {
 
   console.log('role', role);
   return (
-    <RoleForm action={createRole} initialValues={role} />
+    <RoleForm action={update} initialValues={role} />
   );
 };
 

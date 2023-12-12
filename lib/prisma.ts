@@ -19,17 +19,17 @@ const prisma = new PrismaClient().$extends({
       },
       async findManyByPage<T, A = Prisma.Args<T, 'findMany'>>(
         this: T,
-        args: A & PaginationSearchParams,
+        page: PaginationSearchParams,
+        args?: A,
       ): Promise<{ count: number, rows: Prisma.Result<T, A, 'findMany'> } & PaginationSearchParams> {
         const context = Prisma.getExtensionContext(this) as any;
-        const { pn: page, ps: pageSize, ...rest } = args;
-        const pn = Number(page) || 20;
-        const ps = Number(pageSize) || 1;
+        const pn = Number(page.pn) || 1;
+        const ps = Number(page.ps) || 20;
 
         const options = {
           skip: (pn - 1) * ps,
           take: ps,
-          ...rest,
+          ...args,
         };
 
         const count = await context.count();
