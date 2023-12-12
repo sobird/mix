@@ -17,14 +17,14 @@ export const metadata: Metadata = {
 };
 
 interface RolePageProps {
-  searchParams: IPaginationSearchParams
+  searchParams: PaginationSearchParams
 }
 
 const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
+  console.log('searchParams', typeof searchParams.pn);
   const roleTableData = await RoleModel.findAllWithPagination(searchParams);
   const role = await prisma.role.findManyByPage({
-    pn: 1,
-    ps: 10,
+    ...searchParams,
     select: {
       description: true,
       name: true,

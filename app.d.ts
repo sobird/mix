@@ -1,13 +1,13 @@
 /**
  * 数据列表分页查询参数
  */
-interface IPaginationSearchParams {
+interface PaginationSearchParams {
   /** 当前页数 */
-  pn?: string | string[];
+  pn: number;
   /** 每页条数 */
-  ps?: string | string[];
+  ps: number;
   /** default: createdAt,DESC */
-  orderBy?: string | string[];
+  // orderBy?: string | string[];
 }
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
