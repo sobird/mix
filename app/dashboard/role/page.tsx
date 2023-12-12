@@ -19,19 +19,13 @@ interface RolePageProps extends PropsWithParams<any, PaginationSearchParams> {
   //
 }
 
-const RolePage: React.FC<RolePageProps> = async (props) => {
-  const role = await prisma.role.findManyByPage({
-    ...props.searchParams,
-    select: {
-      description: true,
-      name: true,
-    },
-  });
+const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
+  const rolesWithPage = await prisma.role.findManyByPage(searchParams);
 
   return (
     <div>
       <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
-      <RoleTable data={role} />
+      <RoleTable data={rolesWithPage} />
     </div>
   );
 };

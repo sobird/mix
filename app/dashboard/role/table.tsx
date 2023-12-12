@@ -10,8 +10,8 @@ import { FC } from 'react';
 import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { deleteRole } from './create/action';
 import prisma from '@/lib/prisma';
+import { destroy } from '@/actions/role';
 
 type RoleTableData = Awaited<ReturnType<typeof prisma.role.findManyByPage>>;
 
@@ -38,7 +38,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
           total: data.count,
           showSizeChanger: true,
           onChange: (page, pageSize) => {
-            const params = new URLSearchParams(searchParams);
+            const params = new URLSearchParams(searchParams?.toString());
             params.set('pn', page);
             params.set('ps', pageSize);
             router.push(`${pathname}?${params.toString()}`);
@@ -55,12 +55,18 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
       >
         <Table.Column title="角色名称" dataIndex="name" />
         <Table.Column title="角色描述" dataIndex="description" />
-        <Table.Column title="创建时间" dataIndex="createdAt" />
-        <Table.Column
+        <Table.Column<any>
+          title="创建时间"
+          dataIndex="createdAt"
+          render={(value, record) => {
+            console.log('record', record);
+            return value?.toString();
+          }}
+        />
+        <Table.Column<any>
           title="操作"
           dataIndex="actions"
           render={(value, record) => {
-            const deleteRoleWithId = deleteRole.bind(null, record.id);
             return (
               <>
                 <Link href={`/dashboard/role/${record.id}/edit`}>编辑</Link>
@@ -74,7 +80,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
                       content: 'Some descriptions',
                       onOk() {
                         console.log('OK');
-                        deleteRole(record.id);
+                        destroy(record.id);
                       },
                     });
                   }}

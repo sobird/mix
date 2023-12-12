@@ -26,3 +26,42 @@ export async function create(prevState: ActionState<RoleFormAttributes>, formDat
   revalidatePath('/dashboard/role');
   redirect('/dashboard/role');
 }
+
+export async function update(prevState: ActionState<RoleFormAttributes>, formData: RoleFormAttributes) {
+  const validatedFields = RoleZod.safeParse(formData);
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Role.',
+    };
+  }
+
+  try {
+    await prisma.role.update({
+      data: validatedFields.data,
+      where: {
+        id: formData.id,
+      },
+    });
+  } catch (error) {
+    console.log('error', error);
+  }
+
+  revalidatePath('/dashboard/role');
+  redirect('/dashboard/role');
+}
+
+export async function destroy(id: number) {
+  try {
+    await prisma.role.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    console.log('error', error);
+  }
+
+  revalidatePath('/dashboard/role');
+}
