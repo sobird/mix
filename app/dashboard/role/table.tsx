@@ -10,10 +10,10 @@ import { FC } from 'react';
 import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import type { RoleModel } from '@/models';
 import { deleteRole } from './create/action';
+import prisma from '@/lib/prisma';
 
-type RoleTableData = Awaited<ReturnType<typeof RoleModel.findAllWithPagination>>;
+type RoleTableData = Awaited<ReturnType<typeof prisma.role.findManyByPage>>;
 
 interface RoleTableProps {
   data: RoleTableData

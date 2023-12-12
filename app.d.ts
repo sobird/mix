@@ -10,6 +10,11 @@ interface PaginationSearchParams {
   // orderBy?: string | string[];
 }
 
+interface PropsWithParams<P, S> {
+  params: P;
+  searchParams: S
+}
+
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
 type ActionState<T> = {
