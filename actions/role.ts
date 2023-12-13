@@ -1,3 +1,9 @@
+/**
+ * Role CRUD
+ *
+ * sobird<i@sobird.me> at 2023/12/11 16:57:56 created.
+ */
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -24,7 +30,7 @@ export async function create(prevState: ActionState<RoleFormAttributes>, formDat
   }
 
   revalidatePath('/dashboard/role');
-  redirect('/dashboard/role');
+  // redirect('/dashboard/role');
 }
 
 export async function update(prevState: ActionState<RoleFormAttributes>, formData: RoleFormAttributes) {
