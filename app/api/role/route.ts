@@ -1,26 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { UserModel, RoleModel, PermissionModel } from '@/models';
 import { UserExcludeAttributes } from '@/models/user';
 import prisma from '@/lib/prisma';
+import { create } from '@/actions/role';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const pn = searchParams.get('pn');
-  const ps = searchParams.get('ps');
+  const pn = Number(searchParams.get('pn'));
+  const ps = Number(searchParams.get('ps'));
 
-  const rolesWithPage = await prisma.role.findManyByPage({
-    pn,
-    ps,
-  });
-
-  return NextResponse.json(rolesWithPage);
+  try {
+    const rolesWithPage = await prisma.role.findManyByPage({
+      pn,
+      ps,
+    });
+    return NextResponse.json(rolesWithPage);
+  } catch (error) {
+    //
+  }
 }
 
 /** 创建角色 */
 export async function POST(request: Request) {
   const body = await request.json();
-  const role = await RoleModel.create(body);
-  return NextResponse.json(role);
+  console.log('body', body);
+  const role = await create(null, body);
+  console.log('role', role);
+
+  revalidatePath('/dashboard/role');
+  return NextResponse.json({});
 }
 
 /**

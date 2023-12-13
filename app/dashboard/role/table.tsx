@@ -6,12 +6,14 @@
 
 'use client';
 
+import { revalidatePath } from 'next/cache';
 import { FC } from 'react';
 import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { destroy } from '@/actions/role';
+import RoleService from '@/services/role';
 
 type RoleTableData = Awaited<ReturnType<typeof prisma.role.findManyByPage>>;
 
@@ -30,6 +32,18 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
       padding: '0.5rem',
     }}
     >
+      <Button onClick={() => {
+        RoleService.create({
+          name: 'sobird',
+          description: '描述信息',
+        }).finally(() => {
+          // revalidatePath('/dashboard/role');
+        });
+      }}
+      >
+        直接创建角色
+
+      </Button>
       <Table
         pagination={{
           hideOnSinglePage: true,
@@ -60,7 +74,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
           title="创建时间"
           dataIndex="createdAt"
           render={(value, record) => {
-            console.log('record', record);
+            // console.log('record', record);
             return value?.toString();
           }}
         />
