@@ -17,6 +17,25 @@ const prisma = new PrismaClient().$extends({
         const result = await (context as any).findFirst({ where });
         return result !== null;
       },
+      async findOrCreate<T, A = Prisma.Args<T, 'create'>>(
+        this: T,
+        args: A & { where: Prisma.Args<T, 'findFirst'>['where'], },
+      ): Promise<[Prisma.Result<T, A, 'findFirst'>, boolean]> {
+        const { where, ...rest } = args;
+        const context = Prisma.getExtensionContext(this) as any;
+        if (!args || !where || arguments.length > 1) {
+          throw new Error(
+            'Missing where attribute in the options parameter passed to findOrCreate. ',
+          );
+        }
+        const found = await context.findFirst({ where });
+        if (found) {
+          return [found, true];
+        }
+
+        const created = await context.create(rest);
+        return [created, false];
+      },
       async findManyByPage<T, A = Prisma.Args<T, 'findMany'>>(
         this: T,
         page: PaginationSearchParams,
