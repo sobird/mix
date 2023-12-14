@@ -3,6 +3,8 @@
 import React from 'react';
 import { useFormState } from 'react-dom';
 import { Form, Input, Button } from 'antd';
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { ZodRule } from '@/zod/role';
 import { create } from '@/actions/role';
 
@@ -19,13 +21,14 @@ interface RoleFormProps {
 }
 
 const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
-  const [state, dispatch] = useFormState(action, null);
+  const initialState = {};
+  const [state, dispatch] = useFormState(action, initialState);
   console.log('state', state);
 
   return (
     <Form onFinish={dispatch} initialValues={initialValues} {...formItemLayout}>
       <Form.Item hidden name="id" />
-      <Form.Item label="角色名称" name="name" rules={[ZodRule]}>
+      <Form.Item label="角色名称" name="name">
         <Input name="name" />
       </Form.Item>
       <Form.Item label="描述" name="description">

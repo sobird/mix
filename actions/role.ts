@@ -1,5 +1,5 @@
 /**
- * Role CRUD
+ * Role CRUD Actions
  *
  * sobird<i@sobird.me> at 2023/12/11 16:57:56 created.
  */
@@ -11,30 +11,48 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { RoleZod, RoleFormAttributes } from '@/zod/role';
 
-export async function create(prevState: ActionState<RoleFormAttributes>, formData: RoleFormAttributes) {
-  const validatedFields = RoleZod.safeParse(formData);
-
+export async function create(prevState: ServerActionState<RoleFormAttributes>, payload: RoleFormAttributes) {
+  const validatedFields = RoleZod.safeParse(payload);
   if (!validatedFields.success) {
     return {
+      success: false,
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Role.',
     };
   }
 
+  // Mutate data
   try {
-    await prisma.role.create({
+    const [role, found] = await prisma.role.findOrCreate({
       data: validatedFields.data,
+      where: {
+        name: validatedFields.data.name,
+      },
     });
-  } catch (error) {
-    console.log('error', error);
-  }
 
-  revalidatePath('/dashboard/role');
-  // redirect('/dashboard/role');
+    if (found) {
+      return {
+        success: false,
+        message: '角色名称已存在',
+        data: role,
+      };
+    }
+
+    revalidatePath('/dashboard/role');
+    return {
+      success: true,
+      data: role,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
 }
 
-export async function update(prevState: ActionState<RoleFormAttributes>, formData: RoleFormAttributes) {
-  const validatedFields = RoleZod.safeParse(formData);
+export async function update(prevState: ActionState<RoleFormAttributes>, payload: RoleFormAttributes) {
+  const validatedFields = RoleZod.safeParse(payload);
 
   if (!validatedFields.success) {
     return {
@@ -47,7 +65,7 @@ export async function update(prevState: ActionState<RoleFormAttributes>, formDat
     await prisma.role.update({
       data: validatedFields.data,
       where: {
-        id: formData.id,
+        id: payload.id,
       },
     });
   } catch (error) {
@@ -60,14 +78,14 @@ export async function update(prevState: ActionState<RoleFormAttributes>, formDat
 
 export async function destroy(id: string) {
   try {
-    await prisma.role.delete({
+    const role = await prisma.role.delete({
       where: {
         id,
       },
     });
+    revalidatePath('/dashboard/role');
+    return role;
   } catch (error) {
     console.log('error', error);
   }
-
-  revalidatePath('/dashboard/role');
 }

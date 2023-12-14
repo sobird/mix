@@ -22,25 +22,31 @@ export async function GET(req: NextRequest) {
 }
 
 /** 创建角色 */
-export async function POST(request: Request) {
-  const body = await request.json();
-  console.log('body', body);
-  const role = await create(null, body);
+export async function POST({ nextUrl, json }: NextRequest) {
+  const body = await json();
+  const path = nextUrl.searchParams.get('path');
+
+  const role = await create({
+    revalidate: {
+      path: '/test',
+    },
+  }, body);
+
   console.log('role', role);
 
   revalidatePath('/dashboard/role');
-  return NextResponse.json({});
+  return NextResponse.json(role);
 }
 
-/**
- * 强制同步role模型表
- *
- * @todo 不可上生产环境
- * @returns
- */
-export async function PUT() {
+/** 更新角色 */
+export async function PATCH(request: NextRequest) {
   await RoleModel.sync({ force: true });
   return NextResponse.json({
     message: 'ok',
   });
+}
+
+export async function DELETE(request: NextRequest) {
+  const body = await request.json();
+  console.log('body', body);
 }
