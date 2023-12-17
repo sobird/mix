@@ -4,107 +4,70 @@
  * sobird<i@sobird.me> at 2023/11/29 10:18:40 created.
  */
 
-import type { Adapter } from '@auth/core/adapters';
-import User from '@/models/user';
-import VerificationToken from '@/models/verificationToken';
-import Account from '@/models/account';
-import Session from '@/models/session';
-
-const USER_ATTRIBUTES_DISPLAY = ['id', 'username', 'email', 'nickname', 'realname'];
+import type {
+  Adapter, AdapterAccount, AdapterUser, AdapterSession,
+} from '@auth/core/adapters';
+import type { Prisma } from '@prisma/client';
+import prisma from './prisma';
 
 const AuthAdapter: Adapter = {
-  async createUser(record) {
-    const user = await User.create(record);
-    return user?.get({ plain: true }) ?? null;
+  async createUser(data) {
+    return prisma.user.create({
+      data,
+    });
   },
   async getUser(id) {
-    const user = await User.findByPk(id, {
-      attributes: USER_ATTRIBUTES_DISPLAY,
+    return prisma.user.findUnique({
+      where: {
+        id,
+      },
     });
-    return user?.get({ plain: true }) ?? null;
   },
   async getUserByEmail(email) {
-    const user = await User.findOne({
-      where: { email },
-      attributes: USER_ATTRIBUTES_DISPLAY,
-    });
-    return user?.get({ plain: true }) ?? null;
-  },
-  async getUserByAccount({ providerAccountId, provider }) {
-    const account = await Account.findOne({
-      where: { provider, providerAccountId },
-    });
-
-    if (!account) {
-      return null;
-    }
-
-    const user = await User.findByPk(account.userId, {
-      attributes: USER_ATTRIBUTES_DISPLAY,
-    });
-    return user?.get({ plain: true }) ?? null;
-  },
-  async updateUser(record) {
-    console.log('record', record);
-
-    await User.update(record, { where: { id: record.id } });
-    const user = await User.findByPk(record.id, {
-      attributes: USER_ATTRIBUTES_DISPLAY,
-    });
-    return user!.get({ plain: true });
-  },
-  async deleteUser(userId) {
-    await User.findByPk(userId);
-    await User.destroy({ where: { id: userId } });
-  },
-  async linkAccount(account) {
-    await Account.create(account);
-  },
-  async unlinkAccount({ providerAccountId, provider }) {
-    await Account.destroy({
-      where: { provider, providerAccountId },
+    return prisma.user.findUnique({
+      where: {
+        email,
+      },
     });
   },
-  async createSession(record) {
-    const session = await Session.create(record);
-    return session?.get({ plain: true }) ?? null;
+  async getUserByAccount(provider_providerAccountId) {
+    const account = await prisma.account.findUnique({
+      where: { provider_providerAccountId },
+      select: { user: true },
+    });
+    return account?.user ?? null;
+  },
+  async updateUser({ id, ...data }) {
+    return prisma.user.update({ where: { id }, data });
+  },
+  async deleteUser(id) {
+    return prisma.user.delete({ where: { id } });
+  },
+  async linkAccount(data) {
+    return prisma.account.create({ data }) as unknown as AdapterAccount;
+  },
+  async unlinkAccount(provider_providerAccountId) {
+    return prisma.account.delete({
+      where: { provider_providerAccountId },
+    }) as unknown as AdapterAccount;
+  },
+  async createSession(data) {
+    return prisma.session.create({ data });
   },
   async getSessionAndUser(sessionToken) {
-    const session = await Session.findOne({
+    const userAndSession = await prisma.session.findUnique({
       where: { sessionToken },
+      include: { user: true },
     });
-
-    if (!session) {
-      return null;
-    }
-
-    const user = await User.findByPk(session.userId, {
-      attributes: USER_ATTRIBUTES_DISPLAY,
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return {
-      session: session?.get({ plain: true }),
-      user: user?.get({ plain: true }),
-    };
+    if (!userAndSession) return null;
+    const { user, ...session } = userAndSession;
+    return { user, session } as { user: AdapterUser; session: AdapterSession };
   },
-  async updateSession({ sessionToken, expires }) {
-    await Session.update(
-      { sessionToken, expires },
-      { where: { sessionToken } },
-    );
-
-    const session = await Session.findOne({ where: { sessionToken } });
-
-    return session?.get({ plain: true }) ?? null;
+  async updateSession(data) {
+    return prisma.session.update({ where: { sessionToken: data.sessionToken }, data });
   },
   async deleteSession(sessionToken) {
-    const session = await Session.findOne({ where: { sessionToken } });
-    await Session.destroy({ where: { sessionToken } });
-    return session?.get({ plain: true });
+    return prisma.session.delete({ where: { sessionToken } });
   },
 
   /**
@@ -114,17 +77,26 @@ const AuthAdapter: Adapter = {
    * @param attributes
    * @returns
    */
-  async createVerificationToken(attributes) {
-    return VerificationToken.create(attributes) as any;
+  async createVerificationToken(data) {
+    const verificationToken = await prisma.verificationToken.create({ data });
+    // @ts-expect-errors // MongoDB needs an ID, but we don't
+    if (verificationToken.id) delete verificationToken.id;
+    return verificationToken;
   },
-  async useVerificationToken({ identifier, token }) {
-    const tokenInstance = await VerificationToken.findOne({
-      where: { identifier, token },
-    });
-
-    await VerificationToken.destroy({ where: { identifier } });
-
-    return tokenInstance?.get({ plain: true }) ?? null;
+  async useVerificationToken(identifier_token) {
+    try {
+      const verificationToken = await prisma.verificationToken.delete({
+        where: { identifier_token },
+      });
+      // @ts-expect-errors // MongoDB needs an ID, but we don't
+      if (verificationToken.id) delete verificationToken.id;
+      return verificationToken;
+    } catch (error) {
+      // If token already used/deleted, just return null
+      // https://www.prisma.io/docs/reference/api-reference/error-reference#p2025
+      if ((error as Prisma.PrismaClientKnownRequestError).code === 'P2025') { return null; }
+      throw error;
+    }
   },
 };
 

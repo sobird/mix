@@ -12,14 +12,14 @@ model User {
   username      String?
   nickname      String?
   realname      String?
-  email         String
+  email         String     @unique
   avatar        String?
   emailVerified DateTime?  @map("email_verified")
   password      String?
-  salt          String     @default("7f30b4630016f4a696088033c299fc2a")
+  salt          String     @default(uuid())
   ip            Int        @default(0)
-  createdAt     DateTime   @map("created_at")
-  updatedAt     DateTime   @updatedAt @map("updated_at")
+  createdAt     DateTime?  @default(now()) @map("created_at")
+  updatedAt     DateTime?  @updatedAt @map("updated_at")
   accounts      Account[]
   sessions      Session[]
   UserRole      UserRole[]
@@ -41,19 +41,19 @@ model Account {
   session_state     String?
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
-  users             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
   @@map("accounts")
 }
 
 model Session {
-  session_token String   @unique
-  userId        String
-  expires       DateTime
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionToken String    @unique @map("session_token")
+  userId       String
+  expires      DateTime
+  createdAt    DateTime? @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+  user         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
@@ -62,9 +62,9 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
   @@unique([identifier, token])
   @@map("verification_tokens")
 }

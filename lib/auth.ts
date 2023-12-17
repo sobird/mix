@@ -8,9 +8,10 @@ import User from '@/models/user';
 export const authOptions: AuthOptions = {
   secret: 'sobird@2023',
   session: {
-    strategy: 'jwt',
+    // strategy: 'jwt',
   },
   adapter: AuthAdapter,
+  // cookies: {},
   providers: [
     CredentialsProvider({
       name: 'Sign in',
@@ -61,8 +62,6 @@ export const authOptions: AuthOptions = {
         ...session,
         user: {
           ...session.user,
-          id: token.id,
-          randomKey: token.randomKey,
         },
       };
     },
