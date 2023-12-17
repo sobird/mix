@@ -35,3 +35,4 @@ prisma/migrations
 prisma/dev.db
 prisma/zod
 database.sqlite
+database.sqlite-journal
