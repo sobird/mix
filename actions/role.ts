@@ -51,7 +51,7 @@ export async function create(prevState: ServerActionState<RoleFormAttributes>, p
   }
 }
 
-export async function update(prevState: ActionState<RoleFormAttributes>, payload: RoleFormAttributes) {
+export async function update(prevState: ServerActionState<RoleFormAttributes>, payload: RoleFormAttributes) {
   const validatedFields = RoleZod.safeParse(payload);
 
   if (!validatedFields.success) {

@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id            Int          @id @default(autoincrement())
+  id            String     @id @default(cuid())
   username      String?
   nickname      String?
   realname      String?
   email         String
-  emailVerified DateTime?    @map("email_verified")
+  avatar        String?
+  emailVerified DateTime?  @map("email_verified")
   password      String?
-  salt          String       @default("7f30b4630016f4a696088033c299fc2a")
-  ip            Int          @default(0)
-  createdAt     DateTime     @map("created_at")
-  updatedAt     DateTime     @updatedAt @map("updated_at")
+  salt          String     @default("7f30b4630016f4a696088033c299fc2a")
+  ip            Int        @default(0)
+  createdAt     DateTime   @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
   accounts      Account[]
   sessions      Session[]
   UserRole      UserRole[]
@@ -27,137 +28,141 @@ model User {
 }
 
 model Account {
-  id                  Int      @id @default(autoincrement())
-  type                String
-  provider            String
-  providerAccountId   String   @map("provider_account_id")
-  refresh_token       String?  @map("")
-  access_token        String?
-  expires_at          Int?
-  token_type          String?
-  scope               String?
-  id_token            String?
-  session_state       String?
-  userId              Int?      @map("user_id")
-  created_at          DateTime
-  updated_at          DateTime
-  users               User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String   @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  users             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@id([provider, providerAccountId])
   @@map("accounts")
 }
 
+model Session {
+  session_token String   @unique
+  userId        String
+  expires       DateTime
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
 model Group {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique(map: "sqlite_autoindex_groups_1")
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
-  parent_id   Int?
-  created_at  DateTime
-  updated_at  DateTime
+  parentId    String?  @map("parent_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("groups")
 }
 
 model Menu {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(cuid())
   name        String
   href        Int
   icon        String?
   description String?
-  parent_id   Int?
+  parentId    String?  @map("parent_id")
   sort        Int?
-  created_at  DateTime
-  updated_at  DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("menus")
 }
 
 model Permission {
-  id               Int                @id @default(autoincrement())
-  name             String             @unique(map: "sqlite_autoindex_permissions_1")
-  description      String?
-  operator         String?
-  target           String?
-  created_at       DateTime
-  updated_at       DateTime
-  role_permissions RolePermission[]
+  id             String           @id @default(cuid())
+  name           String           @unique
+  description    String?
+  operator       String?
+  target         String?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  RolePermission RolePermission[]
 
   @@map("permissions")
 }
 
 model RolePermission {
-  permission_id Int
-  role_id       String
-  created_at    DateTime
-  updated_at    DateTime
-  roles         Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  permissions   Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+  permissionId String     @map("permission_id")
+  roleId       String     @map("role_id")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  roles        Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissions  Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
-  @@id([permission_id, role_id])
+  @@id([permissionId, roleId])
   @@map("role_permissions")
 }
 
 model Role {
-  id               String             @id @default(cuid())
+  id             String           @id @default(cuid())
   /// @zod.max(255, { message: "The title must be shorter than 256 characters" })
-  name             String             @unique
-  description      String?
-  parentId         Int?               @default(0) @map("parent_id")
-  createdAt        DateTime           @default(now()) @map("created_at")
-  updatedAt        DateTime           @updatedAt @map("updated_at")
-  role_permissions RolePermission[]
-  UserRole         UserRole[]
+  name           String           @unique
+  description    String?
+  parentId       Int?             @default(0) @map("parent_id")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  RolePermission RolePermission[]
+  UserRole       UserRole[]
 
   @@map("roles")
 }
 
-model Session {
-  id            Int      @id @default(autoincrement())
-  expires       DateTime
-  session_token String   @unique(map: "sqlite_autoindex_sessions_1")
-  user_id       Int?
-  created_at    DateTime
-  updated_at    DateTime
-  users         User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
 model UserRole {
-  user_id    Int
-  role_id    String
-  created_at DateTime
-  updated_at DateTime
-  roles      Role    @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  users      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  roleId    String   @map("role_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  roles     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([user_id, role_id])
-}
-
-model VerificationToken {
-  token      String  @unique
-  identifier String
-  expires    DateTime
-
-  @@unique([identifier, token])
+  @@id([userId, roleId])
 }
 
 generator zod {
-  provider                 = "zod-prisma"
-  output                   = "./zod" // (default) the directory where generated zod schemas will be saved
+  provider = "zod-prisma"
+  output   = "./zod" // (default) the directory where generated zod schemas will be saved
 
-  relationModel            = true // (default) Create and export both plain and related models.
+  relationModel = true // (default) Create and export both plain and related models.
   // relationModel         = "default" // Do not export model without relations.
   // relationModel         = false // Do not generate related model
 
-  modelCase                = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
   // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
 
-  modelSuffix              = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
 
   // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
-  useDecimalJs             = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
+  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
 
   // imports                  = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
 
   // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
-  prismaJsonNullability    = true // (default) uses prisma's scheme for JSON field nullability
+  prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
   // prismaJsonNullability = false // allows null assignment to optional JSON fields
 }

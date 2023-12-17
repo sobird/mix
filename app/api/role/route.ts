@@ -5,36 +5,26 @@ import { UserExcludeAttributes } from '@/models/user';
 import prisma from '@/lib/prisma';
 import { create } from '@/actions/role';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl;
-  const pn = Number(searchParams.get('pn'));
-  const ps = Number(searchParams.get('ps'));
-
+export async function GET(request: NextRequest) {
+  const searchParams = Object.fromEntries(request.nextUrl.searchParams);
   try {
-    const rolesWithPage = await prisma.role.findManyByPage({
-      pn,
-      ps,
-    });
-    return NextResponse.json(rolesWithPage);
+    const roles = await prisma.role.findManyByPage(searchParams);
+    return NextResponse.json(roles);
   } catch (error) {
-    //
+    return NextResponse.json({
+      message: error.message,
+    }, {
+      status: 500,
+    });
   }
 }
 
 /** 创建角色 */
-export async function POST({ nextUrl, json }: NextRequest) {
-  const body = await json();
-  const path = nextUrl.searchParams.get('path');
+export async function POST(request: NextRequest) {
+  const body = await request.json();
 
-  const role = await create({
-    revalidate: {
-      path: '/test',
-    },
-  }, body);
+  const role = await create(null, body);
 
-  console.log('role', role);
-
-  revalidatePath('/dashboard/role');
   return NextResponse.json(role);
 }
 
