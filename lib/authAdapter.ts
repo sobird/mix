@@ -67,7 +67,11 @@ const AuthAdapter: Adapter = {
     return prisma.session.update({ where: { sessionToken: data.sessionToken }, data });
   },
   async deleteSession(sessionToken) {
-    return prisma.session.delete({ where: { sessionToken } });
+    try {
+      return await prisma.session.delete({ where: { sessionToken } });
+    } catch (error) {
+      console.log('error', error);
+    }
   },
 
   /**

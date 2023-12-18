@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import type { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
@@ -14,14 +15,14 @@ export const authOptions: AuthOptions = {
   // cookies: {},
   providers: [
     CredentialsProvider({
-      name: 'Sign in',
+      name: 'credentials',
       credentials: {
         username: {
-          label: 'Username',
+          label: '用户',
           type: 'text',
-          placeholder: 'sobird',
+          placeholder: '请输入用户名',
         },
-        password: { label: 'Password', type: 'password' },
+        password: { label: '密码', type: 'password' },
       },
       async authorize(credentials, req) {
         const { username, password } = credentials || {};
@@ -56,24 +57,29 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    session: ({ session, token }) => {
-      console.log('Session Callback', { session, token });
+    session: ({ session, token, user }) => {
+      console.log('Session Callback', { session, token, user });
+
       return {
         ...session,
         user: {
           ...session.user,
+          username: (user as any).username,
         },
       };
     },
-    jwt: ({ token, user }) => {
-      console.log('JWT Callback', { token, user });
+    jwt: ({
+      token, user, account, profile, isNewUser,
+    }) => {
+      console.log('JWT Callback', {
+        token, user, account, profile, isNewUser,
+      });
       if (user) {
-        const u = user as unknown as any;
-        return {
-          ...token,
-          id: u.id,
-          randomKey: u.randomKey,
-        };
+        token.id = user.id;
+      }
+      // Persist the OAuth access_token to the token right after signin
+      if (account) {
+        token.accessToken = account.access_token;
       }
       return token;
     },
