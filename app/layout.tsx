@@ -30,11 +30,12 @@ export default function RootLayout({ children }: {
         <ConfigProvider locale={zhCN} prefixCls="mix" theme={config}>
           <StyledComponentsRegistry>
             {/* 全局store配置 */}
-            <StoreProvider preloadedState={{
-              app: {
-                collapsed: collapsedCookie?.value === '1',
-              },
-            }}
+            <StoreProvider
+              preloadedState={{
+                app: {
+                  collapsed: collapsedCookie?.value === '1',
+                },
+              }}
             >
               {children}
             </StoreProvider>
