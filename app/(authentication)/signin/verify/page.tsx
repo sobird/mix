@@ -18,10 +18,6 @@ export default function Home({ searchParams }: any) {
   const emailLoginUrl = getEmailLoginUrl(decodeURIComponent(searchParams.email));
   return (
     <div>
-      <div className={styles.header}>
-        <Image className="logo" src={mix.src} width={32} height={32} alt="mix" />
-      </div>
-
       <Result
         status="success"
         title="发送邮件成功"
