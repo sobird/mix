@@ -14,3 +14,4 @@ export const SignUpFormZod = z
   });
 
 export const SignUpFormRule = zodToRule(SignUpFormZod);
+export type SignUpAttributes = z.infer<typeof SignUpFormZod>;
