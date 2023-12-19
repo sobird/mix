@@ -1,3 +1,11 @@
+/**
+ * Root Layout (Required)
+ *
+ * The root layout is a Server Component by default and can not be set to a Client Component.
+ *
+ * sobird<i@sobird.me> at 2023/11/27 13:21:49 created.
+ */
+
 import { cookies } from 'next/headers';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';

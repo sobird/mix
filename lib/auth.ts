@@ -57,8 +57,12 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    session: ({ session, token, user }) => {
-      console.log('Session Callback', { session, token, user });
+    session: ({
+      session, token, user, trigger,
+    }) => {
+      console.log('Session Callback', {
+        session, token, user, trigger,
+      });
 
       return {
         ...session,
@@ -69,11 +73,13 @@ export const authOptions: AuthOptions = {
       };
     },
     jwt: ({
-      token, user, account, profile, isNewUser,
+      token, user, account, profile, trigger,
     }) => {
+      const isNewUser = trigger === 'signUp';
       console.log('JWT Callback', {
         token, user, account, profile, isNewUser,
       });
+
       if (user) {
         token.id = user.id;
       }
@@ -85,7 +91,7 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    signIn: '/signin',
+    // signIn: '/signin',
     verifyRequest: '/signin/verify',
   },
 };
