@@ -49,20 +49,21 @@ export const SignupForm = () => {
         onFinish={onSubmit}
       >
         <Form.Item name="username">
-          <Input placeholder="请输入用户名称" />
+          <Input placeholder="用户名" />
         </Form.Item>
         <Form.Item name="password">
-          <Input.Password placeholder="请输入用户密码" />
+          <Input.Password placeholder="登录密码" />
         </Form.Item>
         <Form.Item name="password2">
-          <Input.Password placeholder="请输入确认密码" />
+          <Input.Password placeholder="密码确认" />
         </Form.Item>
         <Form.Item name="email">
-          <Input placeholder="请输入用户邮箱" />
+          <Input placeholder="邮箱" />
         </Form.Item>
 
         <Button
           type="primary"
+          style={{ width: '100%', borderColor: 'transparent' }}
           disabled={loading}
         >
           注册
