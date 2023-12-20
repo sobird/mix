@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { signup } from '@/actions/user';
-import { SignUpFormRule, SignUpFormRule2, SignUpPasswordRule } from '@/zod/user';
+import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
 
 export const SignupForm = () => {
   const [form] = Form.useForm();
@@ -39,10 +39,10 @@ export const SignupForm = () => {
         <Form.Item name="confirmPassword" dependencies={['password']} rules={[SignUpPasswordRule]}>
           <Input.Password placeholder="密码确认" />
         </Form.Item>
-        <Form.Item name="email">
+        <Form.Item hasFeedback name="email" rules={[SignUpFormRule]}>
           <Input placeholder="邮箱" />
         </Form.Item>
-        <Form.Item name="verificationCode">
+        <Form.Item name="verificationCode" rules={[SignUpFormRule]}>
           <Input placeholder="验证码" />
         </Form.Item>
 
@@ -75,7 +75,7 @@ export const SignupForm = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'last']}
-                        rules={[SignUpFormRule2]}
+                        rules={[SignUpFormRule]}
                         // rules={[{ required: true, message: 'Missing last name' }]}
                       >
                         <Input placeholder="Last Name" />
