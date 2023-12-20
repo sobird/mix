@@ -1,12 +1,8 @@
 import {
-  z, ZodEffects, ZodRawShape, ZodOptional, ZodObject, ZodTypeAny, ZodArray,
+  z, ZodEffects, ZodOptional, ZodObject, ZodArray,
 } from 'zod';
-import { FormInstance, RuleRender, RuleObject } from 'antd/es/form';
+import { FormInstance } from 'antd/es/form';
 import { ValidatorRule } from 'rc-field-form/es/interface';
-
-type AntdFormZodSchema<T extends ZodRawShape> =
-  | z.ZodObject<T>
-  | z.ZodEffects<z.ZodObject<T>>;
 
 const isZodEffects = (schema: unknown): schema is ZodEffects<any> => {
   return schema instanceof ZodEffects;
@@ -43,44 +39,6 @@ const getSchemaByPath = (schema: unknown, name: string[]) => {
   }
 
   return schema;
-};
-
-const getSchemaBaseSchema = <T extends ZodTypeAny>(schema: ZodTypeAny): T => {
-  if (isZodEffects(schema)) {
-    return getSchemaBaseSchema(schema._def.schema);
-  } if (isZodOptional(schema)) {
-    return getSchemaBaseSchema(schema._def.innerType);
-  }
-
-  return schema as T;
-};
-
-const getZodSchemaShape = <T extends ZodRawShape>(schema: AntdFormZodSchema<T>) => {
-  // eslint-disable-next-line no-underscore-dangle
-  return (isZodEffects(schema) ? schema._def.schema.shape : schema.shape);
-};
-
-const getNestedPlaceholders = <T extends ZodRawShape>(
-  schema: AntdFormZodSchema<T>,
-  values: Record<string, any> = {},
-): {} => {
-  const baseSchema = getZodSchemaShape(schema);
-  return Object.entries(baseSchema).reduce((res, [key, field]) => {
-    if (isZodOptional(field) && values[key] === undefined) {
-      // Ignore optional fields when empty regardless of the base type
-      return res;
-    }
-
-    const fieldSchema = getSchemaBaseSchema(field);
-    if (fieldSchema instanceof ZodObject) {
-      return {
-        ...res,
-        [key]: getNestedPlaceholders(fieldSchema, values[key]),
-      };
-    }
-
-    return res;
-  }, {});
 };
 
 /**
