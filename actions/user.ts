@@ -2,7 +2,7 @@
 
 import { PrismaClient, Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
-import { SignUpZod, SignUpAttributes } from '@/zod/user';
+import { SignUpZodWithRefine, SignUpAttributes } from '@/zod/user';
 
 /**
  * 用户是否存在
@@ -11,13 +11,12 @@ import { SignUpZod, SignUpAttributes } from '@/zod/user';
  * @returns
  */
 export async function exists(where: Prisma.UserWhereInput) {
-  console.log('where', where);
   return prisma.user.exists(where);
 }
 
 export async function signup(prevState, payload: SignUpAttributes) {
   console.log('data', payload);
-  const validatedFields = await SignUpZod.safeParseAsync(payload);
+  const validatedFields = await SignUpZodWithRefine.safeParseAsync(payload);
   console.log('validatedFields', validatedFields);
   if (!validatedFields.success) {
     return {
