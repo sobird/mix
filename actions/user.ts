@@ -13,24 +13,3 @@ import { SignUpZodWithRefine, SignUpAttributes } from '@/zod/user';
 export async function exists(where: Prisma.UserWhereInput) {
   return prisma.user.exists(where);
 }
-
-export async function signup(prevState, payload: SignUpAttributes) {
-  console.log('data', payload);
-  const validatedFields = await SignUpZodWithRefine.safeParseAsync(payload);
-  console.log('validatedFields', validatedFields);
-  if (!validatedFields.success) {
-    return {
-      success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Sign Up.',
-    };
-  }
-
-  // const [user, created] = await prisma.user.findOrCreate({
-  //   defaults: attributes,
-  //   where: {
-  //     username: attributes.username,
-  //   },
-  // });
-  // return [user, created];
-}

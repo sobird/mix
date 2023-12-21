@@ -9,10 +9,9 @@
 import { ChangeEvent, useState } from 'react';
 import { useFormState } from 'react-dom';
 import {
-  Input, Button, Form, ConfigProvider, Space,
+  Input, Button, Form, ConfigProvider, message,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { signup } from '@/actions/user';
+import { signup } from '@/actions/auth';
 import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
 import FieldCaptcha from '@/components/field-captcha';
 
@@ -20,6 +19,9 @@ export const SignupForm = () => {
   const [form] = Form.useForm();
   const [state, dispatch] = useFormState(signup, null);
   console.log('state', state);
+  // if (!state?.success) {
+  //   message.error(state?.message);
+  // }
   return (
     <ConfigProvider componentSize="large">
       <Form

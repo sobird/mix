@@ -24,6 +24,7 @@ export type State = {
 };
 
 export async function createRole(prevState: State, formData: FormData) {
+  console.log('formData', formData);
   const validatedFields = FormSchema.safeParse({
     name: formData.name,
     description: formData.description,
@@ -38,11 +39,11 @@ export async function createRole(prevState: State, formData: FormData) {
     };
   }
 
-  // await RoleModel.create(validatedFields.data);
+  const user = await RoleModel.create(validatedFields.data);
 
-  const user = await prisma.role.create({
-    data: validatedFields.data,
-  });
+  // const user = await prisma.role.create({
+  //   data: validatedFields.data,
+  // });
 
   console.log('user', user);
 
