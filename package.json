@@ -4,6 +4,7 @@
   "description": "mix",
   "private": true,
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "start": "next start",

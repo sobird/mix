@@ -43,6 +43,27 @@ const sequelize = require('sequelize')
 
 这种虽然兼顾了上面的两个问题，但是sequelize的ts类型推导失效，编写操作模型时会感到不方便。
 
+### 完美解决方案
+
+1. 修改`package.json`文件的type
+```json
+{
+  "type": "module",
+}
+```
+
+2. 修改`next.config.js`配置
+
+```js
+const nextConfig = {
+  experimental: {
+    esmExternals: false,
+    serverComponentsExternalPackages: ['sequelize'],
+  },
+}
+
+export default nextConfig;
+```
 ## prisma
 
 ```sh
