@@ -4,7 +4,7 @@ const nextConfig = {
   experimental: {
     // typedRoutes: true,
     // esmExternals: 'loose',
-    // serverComponentsExternalPackages: ['sequelize'],
+    serverComponentsExternalPackages: ['sequelize'],
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if

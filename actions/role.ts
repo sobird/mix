@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { RoleZod, RoleFormAttributes } from '@/zod/role';
+import { RoleModel } from '@/models';
 
 export async function create(prevState: ServerActionState<RoleFormAttributes>, payload: RoleFormAttributes) {
   const validatedFields = RoleZod.safeParse(payload);
@@ -21,6 +22,17 @@ export async function create(prevState: ServerActionState<RoleFormAttributes>, p
     };
   }
 
+  try {
+    const user2 = await RoleModel.create({
+      name: 'test122',
+      description: 'ddd333',
+    });
+    console.log('user2', user2);
+  } catch (error) {
+    console.log('error', error);
+  }
+
+  return;
   // Mutate data
   try {
     const [role, found] = await prisma.role.findOrCreate({

@@ -81,6 +81,12 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
 
 Role.init(
   {
+    id: {
+      type: DataTypes.UUIDV4,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
