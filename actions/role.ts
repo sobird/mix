@@ -23,14 +23,13 @@ export async function create(prevState: ServerActionState<RoleFormAttributes>, p
   }
 
   try {
-    const user2 = await RoleModel.create({
-      name: 'test122',
-      description: 'ddd333',
-    });
+    const user2 = await RoleModel.create(validatedFields.data);
     console.log('user2', user2);
   } catch (error) {
     console.log('error', error);
   }
+
+  redirect('/dashboard/role');
 
   return;
   // Mutate data

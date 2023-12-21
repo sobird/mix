@@ -1,6 +1,7 @@
 /**
- * Custom Adapter
+ * NextAuth Prisma Adapter (Custom)
  *
+ * @see https://github.com/nextauthjs/next-auth/blob/main/packages/adapter-prisma/src/index.ts
  * sobird<i@sobird.me> at 2023/11/29 10:18:40 created.
  */
 
