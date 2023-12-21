@@ -14,6 +14,7 @@ import {
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { signup } from '@/actions/user';
 import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
+import FieldCaptcha from '@/components/field-captcha';
 
 export const SignupForm = () => {
   const [form] = Form.useForm();
@@ -43,64 +44,15 @@ export const SignupForm = () => {
           <Input placeholder="邮箱" />
         </Form.Item>
         <Form.Item name="verificationCode" rules={[SignUpFormRule]}>
-          <Input placeholder="验证码" />
+          <FieldCaptcha identifierName="email" fieldProps={{ placeholder: '请输入邮箱验证码' }} />
         </Form.Item>
-
-        <h3>对象嵌套</h3>
-        <Form.Item name={['user', 'name']} label="Name" rules={[SignUpFormRule]}>
-          <Input />
-        </Form.Item>
-        <Form.Item name={['user', 'email']} label="Email" rules={[SignUpFormRule]}>
-          <Input />
-        </Form.Item>
-
-        <h3>数组嵌套</h3>
-        <Form.List
-          name="users"
-          rules={[SignUpFormRule(form)]}
-        >
-          {(fields, { add, remove }, { errors }) => {
-            return (
-              <>
-                {fields.map(({ key, name, ...restField }) => {
-                  return (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'first']}
-                        rules={[SignUpFormRule]}
-                      >
-                        <Input placeholder="First Name" />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'last']}
-                        rules={[SignUpFormRule]}
-                        // rules={[{ required: true, message: 'Missing last name' }]}
-                      >
-                        <Input placeholder="Last Name" />
-                      </Form.Item>
-                      <MinusCircleOutlined onClick={() => { return remove(name); }} />
-                    </Space>
-                  );
-                })}
-                <Form.Item>
-                  <Button type="dashed" onClick={() => { return add(); }} block icon={<PlusOutlined />}>
-                    Add field
-                  </Button>
-                  <Form.ErrorList errors={errors} />
-                </Form.Item>
-              </>
-            );
-          }}
-        </Form.List>
 
         <Button
           type="primary"
           style={{ width: '100%', borderColor: 'transparent' }}
           htmlType="submit"
         >
-          注册
+          立即注册
         </Button>
       </Form>
     </ConfigProvider>
