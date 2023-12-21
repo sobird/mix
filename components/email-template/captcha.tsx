@@ -11,13 +11,11 @@ import mix from '!raw-loader!@/assets/mix.svg';
 const buff = Buffer.from(mix);
 const base64data = buff.toString('base64');
 
-interface VerificationProps {
-  host?: string;
-  /** user sign in url */
-  url: string;
+interface CaptchaEmailBodyProps {
+  code: string;
 }
 
-const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }) => {
+const CaptchaEmailBody: FC<CaptchaEmailBodyProps> = ({ code }) => {
   const brandColor = '#346df1';
 
   const color = {
@@ -67,11 +65,10 @@ const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }
             <table border={0} cellSpacing="0" cellPadding="0">
               <tr>
                 <td align="center" style={{ lineHeight: 'normal' }}>
-                  <a
-                    href={url}
-                    target="_blank"
+                  <p>验证码</p>
+                  <div
                     style={{
-                      fontSize: '18px',
+                      fontSize: '20px',
                       color: `${color.buttonText}`,
                       textDecoration: 'none',
                       borderRadius: '5px',
@@ -81,10 +78,9 @@ const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }
                       display: 'inline-block',
                       fontWeight: 'bold',
                     }}
-                    rel="noreferrer"
                   >
-                    登录
-                  </a>
+                    {code}
+                  </div>
 
                 </td>
               </tr>
@@ -103,19 +99,6 @@ const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }
             }}
           >
             若非本人请求此电子邮件，请忽略
-
-            <span style={{
-              position: 'absolute',
-              right: 5,
-              top: 0,
-              color: '#b8bec5',
-              fontStyle: 'italic',
-              fontSize: 12,
-              textShadow: '0 1px #F7F9F9',
-            }}
-            >
-              {host}
-            </span>
           </td>
         </tr>
       </table>
@@ -123,4 +106,4 @@ const Verification: FC<VerificationProps> = ({ url, host = 'https://sobird.me' }
   );
 };
 
-export default Verification;
+export default CaptchaEmailBody;

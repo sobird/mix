@@ -40,15 +40,15 @@ export const authOptions: AuthOptions = {
      * This is required to store the verification token. Please see the email provider for more details.
      */
     EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
+      // server: {
+      //   host: process.env.EMAIL_SERVER_HOST,
+      //   port: process.env.EMAIL_SERVER_PORT,
+      //   auth: {
+      //     user: process.env.EMAIL_SERVER_USER,
+      //     pass: process.env.EMAIL_SERVER_PASS,
+      //   },
+      // },
+      // from: process.env.EMAIL_FROM,
       // maxAge: process.env.EMAIL_MAX_AGE,
       sendVerificationRequest,
       // async generateVerificationToken() {

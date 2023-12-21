@@ -27,14 +27,6 @@ export const SignUpZod = z.object({
   verificationCode: z.string({
     required_error: '请输入验证码',
   }).regex(/^\d{6}$/, '验证码为6位数字'),
-  users: z.array(z.object({
-    first: z.string().min(3),
-    last: z.string().min(1),
-  })).min(2),
-  user: z.object({
-    name: z.string().min(1),
-    email: z.string().email(),
-  }),
 });
 
 export const PasswordZod = z.object({

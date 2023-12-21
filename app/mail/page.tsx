@@ -1,16 +1,17 @@
 import reactToHtml from '@/lib/reactToHtml';
 
-import Verification from '@/components/email-template/verification';
-import Mix from '@/assets/mix';
+import Verification from '@/components/email-template/authentication';
+import CaptchaEmail from '@/components/email-template/captcha';
 
 const Mail = async () => {
   const prerenderStaticComponent = await reactToHtml(<Verification url="https://sobird.me" />);
+  const captchaEmailHtml = await reactToHtml(<CaptchaEmail code={123456} />);
 
   return (
     <div className="mail">
       {/* <Verification /> */}
-      <Mix />
-      <div dangerouslySetInnerHTML={{ __html: prerenderStaticComponent }} />
+      {/* <div dangerouslySetInnerHTML={{ __html: prerenderStaticComponent }} /> */}
+      <div dangerouslySetInnerHTML={{ __html: captchaEmailHtml }} />
     </div>
   );
 };

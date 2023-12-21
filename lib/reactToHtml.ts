@@ -9,7 +9,7 @@ import { ReactElement } from 'react';
 
 type ReactDOMServerMethod = 'renderToString' | 'renderToNodeStream' | 'renderToPipeableStream' | 'renderToStaticMarkup' | 'renderToStaticNodeStream';
 
-const renderReactElement = async (element: ReactElement, method: ReactDOMServerMethod = 'renderToStaticMarkup') => {
+const renderReactElement = async (element: ReactElement, method: ReactDOMServerMethod = 'renderToStaticMarkup'): Promise<string> => {
   const ReactDOMServer = (await import('react-dom/server')).default;
   return ReactDOMServer[method](element as any);
 };
