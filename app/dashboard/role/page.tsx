@@ -10,6 +10,7 @@ import React from 'react';
 import { Button } from 'antd';
 import RoleTable from './table';
 import prisma from '@/lib/prisma';
+import { RoleModel } from '@/models';
 
 export const metadata: Metadata = {
   title: '角色管理',
@@ -20,7 +21,7 @@ interface RolePageProps extends PropsWithParams<any, PaginationSearchParams> {
 }
 
 const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
-  const rolesWithPage = await prisma.role.findManyByPage(searchParams);
+  const rolesWithPage = await RoleModel.findAllWithPagination(searchParams);
 
   return (
     <div>
