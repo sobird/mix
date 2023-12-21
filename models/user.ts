@@ -16,6 +16,7 @@ import {
   DataTypes,
   Model,
   Optional,
+  InferAttributes, InferCreationAttributes, CreationOptional,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
@@ -61,20 +62,20 @@ export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>
 // 用户注册属性
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
-class User extends Model<UserAttributes, UserCreationAttributes> {
-  public id: number;
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  declare id: CreationOptional<number>;
 
-  public username!: string;
+  declare username: string;
 
-  public salt!: string;
+  declare salt: CreationOptional<string>;
 
-  public password!: string;
+  public password!: CreationOptional<string>;
 
-  public email!: string;
+  declare email: string;
 
   private createdAt: string;
 
-  public ip: string;
+  public ip: CreationOptional<string>;
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
@@ -96,6 +97,16 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
 
   declare countRoles: BelongsToManyCountAssociationsMixin;
+
+  /**
+   * Helper method for defining associations.
+   * This method is not a part of Sequelize lifecycle.
+   * The `models/index` file will call this method automatically.
+   */
+  static associate(models: any) {
+    // todo
+    console.log('models', models);
+  }
 
   /** 用户注册 */
   public static async signup(attributes: UserSignupAttributes) {
