@@ -42,11 +42,7 @@ export async function signup(
     };
   }
 
-  const [, created] = await UserModel.signup({
-    username: payload.username,
-    email: payload.email,
-    password: payload.email,
-  });
+  const [, created] = await UserModel.signup(payload);
   // 已存在
   if (!created) {
     return {
@@ -55,7 +51,7 @@ export async function signup(
     };
   }
 
-  redirect('/');
+  redirect('/signup/success');
 }
 
 /** 发送验证码 */

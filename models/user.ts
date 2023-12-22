@@ -97,11 +97,12 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   /** 用户注册 */
   public static async signup(attributes: UserSignupAttributes) {
-    return this.findOrCreate({
+    const [user, created] = await this.findOrCreate({
       defaults: {
         ...attributes,
         emailVerified: new Date(),
       },
+      fields: ['username', 'password', 'email', 'emailVerified', 'salt'],
       where: {
         [Op.or]: [
           { username: attributes.username },
@@ -110,26 +111,28 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
       },
       raw: true,
     });
+    return [user, created];
   }
 
   /** 通过用户名和密码进行用户登录认证 */
   public static async signin({ username, password }: UserSigninAttributes) {
     if (!username || !password) {
-      return Promise.reject('username or password cannot be empty!');
+      return Promise.reject('用户名和密码不能为空');
     }
 
     const user = await this.findOne({
       where: { username },
+      // attributes: ['username', 'email'],
     });
 
     if (!user) {
-      return Promise.reject('user not found!');
+      return Promise.reject('用户不存在');
     }
 
     if (user.verifyPassword(password)) {
-      return user;
+      return user.get({ plain: true });
     }
-    return Promise.reject('username or password not correct');
+    return Promise.reject('密码不正确');
   }
 
   /**
@@ -139,7 +142,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
    * @param salt 盐
    * @return 返回一个64位长度的Hash字符串
    */
-  public static hashPassword(password: string, salt: string): string {
+  public hashPassword(password: string, salt: string): string {
     return createHmac('sha256', salt).update(password).digest('hex');
   }
 
@@ -149,7 +152,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
    * @param password
    */
   public verifyPassword(password: string) {
-    return User.hashPassword(password, this.salt) === this.password;
+    return this.hashPassword(password, this.salt) === this.password;
   }
 }
 
@@ -210,7 +213,7 @@ User.init(
 
 User.beforeCreate((model) => {
   if (model.password) {
-    model.password = User.hashPassword(model.password, model.salt);
+    model.password = model.hashPassword(model.password, model.salt);
   }
   // model.ip = fn("INET_ATON", model.ip); // INET_NTOA
 });

@@ -44,7 +44,7 @@ export const sequelize = new Sequelize({
   // protocol: null,
 
   // disable logging or provide a custom logging function; default: console.log
-  logging: false,
+  // logging: false,
 
   // you can also pass any dialect options to the underlying dialect library
   // - default is empty
@@ -106,6 +106,12 @@ export const sequelize = new Sequelize({
   // isolation level of each transaction
   // defaults to dialect default
   // isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ
+  logging: (queryString, queryObject: any) => {
+    console.log(queryString); // outputs a string
+    if (queryObject.type === 'INSERT') {
+      console.log(queryObject.bind);
+    }
+  },
 });
 
 /**

@@ -25,11 +25,12 @@ export const authOptions: AuthOptions = {
         password: { label: '密码', type: 'password' },
       },
       async authorize(credentials, req) {
-        const { username, password } = credentials || {};
+        const { username, password } = credentials;
 
         try {
           const user = await User.signin({ username, password });
-          return user.get({ plain: true }) ?? null;
+          console.log('user123', user);
+          return user;
         } catch (e) {
           throw Error(e);
         }

@@ -6,19 +6,21 @@ import {
 } from '@/components/buttons';
 
 import {
-  UserModel, RoleModel, AccountModel, sequelize,
+  UserModel, sequelize,
 } from '@/models';
 
 export default async function Home() {
   // await sequelize.sync({ force: true });
-  // AccountModel.create({
-  //   provider: 'ddd',
-  //   providerAccountId: 'ddddd',
-  //   type: 'oauth',
-  //   userId: 123,
+  // await UserModel.signup({
+  //   username: 'sobird',
+  //   password: 'sobird',
+  //   email: 'sobird@126.com',
   // });
+  // console.log('res', res);
+
   const user = await UserModel.findAll({ raw: true });
   console.log('user', user);
+
   return (
     <main
       style={{
