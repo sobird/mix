@@ -6,7 +6,7 @@
 
 import { Model, Order } from 'sequelize';
 
-class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
+class BaseModel<T extends {} = object, P extends {} = T> extends Model<T, P> {
   declare id: number;
 
   /** 分页查找模型数据 */

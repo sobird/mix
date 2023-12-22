@@ -5,7 +5,11 @@ import {
   RegisterButton,
 } from '@/components/buttons';
 
-export default function Home() {
+import { UserModel, RoleModel } from '@/models';
+
+export default async function Home() {
+  const user = await UserModel.findAll({ raw: true });
+  console.log('user', user);
   return (
     <main
       style={{
