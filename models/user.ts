@@ -13,7 +13,7 @@
 
 import { randomBytes, createHmac } from 'crypto';
 import {
-  DataTypes,
+  DataTypes, Op,
   InferAttributes, InferCreationAttributes, CreationOptional,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
@@ -40,7 +40,7 @@ export type UserCreationAttributes = InferCreationAttributes<User>;
 // 用户登录属性
 export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>;
 // 用户注册属性
-export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email' | 'emailVerified'>;
+export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
 class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   declare username: CreationOptional<string>;
@@ -97,13 +97,19 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   /** 用户注册 */
   public static async signup(attributes: UserSignupAttributes) {
-    const [user, created] = await this.findOrCreate({
-      defaults: attributes,
-      where: {
-        username: attributes.username,
+    return this.findOrCreate({
+      defaults: {
+        ...attributes,
+        emailVerified: new Date(),
       },
+      where: {
+        [Op.or]: [
+          { username: attributes.username },
+          { email: attributes.email },
+        ],
+      },
+      raw: true,
     });
-    return [user, created];
   }
 
   /** 通过用户名和密码进行用户登录认证 */

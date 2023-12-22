@@ -1,8 +1,7 @@
 'use server';
 
-import { PrismaClient, Prisma } from '@prisma/client';
-import prisma from '@/lib/prisma';
-import { SignUpZodWithRefine, SignUpAttributes } from '@/zod/user';
+import { WhereOptions } from 'sequelize';
+import { UserModel } from '@/models';
 
 /**
  * 用户是否存在
@@ -10,6 +9,7 @@ import { SignUpZodWithRefine, SignUpAttributes } from '@/zod/user';
  * @param where
  * @returns
  */
-export async function exists(where: Prisma.UserWhereInput) {
-  return prisma.user.exists(where);
+export async function exists(where: WhereOptions) {
+  const result = await UserModel.findOne({ where });
+  return result !== null;
 }

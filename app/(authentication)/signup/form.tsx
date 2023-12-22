@@ -15,13 +15,18 @@ import { signup } from '@/actions/auth';
 import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
 import FieldCaptcha from '@/components/field-captcha';
 
+const initialState: ServerActionState = {
+  success: true,
+  message: 'ok',
+};
+
 export const SignupForm = () => {
   const [form] = Form.useForm();
-  const [state, dispatch] = useFormState(signup, null);
+  const [state, dispatch] = useFormState(signup, initialState);
   console.log('state', state);
-  // if (!state?.success) {
-  //   message.error(state?.message);
-  // }
+  if (!state.success) {
+    message.error(state.message);
+  }
   return (
     <ConfigProvider componentSize="large">
       <Form
@@ -42,7 +47,7 @@ export const SignupForm = () => {
         <Form.Item name="confirmPassword" dependencies={['password']} rules={[SignUpPasswordRule]}>
           <Input.Password placeholder="密码确认" />
         </Form.Item>
-        <Form.Item hasFeedback name="email" rules={[SignUpFormRule]}>
+        <Form.Item hasFeedback name="email" validateDebounce={300} rules={[SignUpFormRule]}>
           <Input placeholder="邮箱" />
         </Form.Item>
         <Form.Item name="verificationCode" rules={[SignUpFormRule]}>

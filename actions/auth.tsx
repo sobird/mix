@@ -8,42 +8,54 @@
 
 'use server';
 
-import prisma from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 import { SignUpZodWithRefine, SignUpAttributes } from '@/zod/user';
 
 import { transporter } from '@/lib/mailer';
 import reactToHtml from '@/lib/reactToHtml';
 import CaptchaEmailBody from '@/components/email-template/captcha';
 import { generate, verify } from '@/lib/otp';
+import { UserModel } from '@/models';
 
-export async function signup(prevState, payload: SignUpAttributes) {
+type SignUpServerActionState = ServerActionState<SignUpAttributes>;
+
+export async function signup(
+  prevState: SignUpServerActionState,
+  payload: SignUpAttributes,
+): Promise<SignUpServerActionState> {
   const validatedFields = await SignUpZodWithRefine.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
       success: false,
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Sign Up.',
+      message: 'Validation Fields Failed to Sign Up.',
     };
   }
 
   // 验证码是否有效
   const isValid = verify(payload.verificationCode, payload.email);
 
-  // if (!isValid) {
-  //   return {
-  //     success: false,
-  //     message: '验证码无效',
-  //   };
-  // }
+  if (!isValid) {
+    return {
+      success: false,
+      message: '验证码无效',
+    };
+  }
 
-  const res = await prisma.user.create({
-    data: {
-      username: payload.username,
-      email: payload.email,
-      password: payload.email,
-    },
+  const [, created] = await UserModel.signup({
+    username: payload.username,
+    email: payload.email,
+    password: payload.email,
   });
-  return res;
+  // 已存在
+  if (!created) {
+    return {
+      success: false,
+      message: '账户已存在',
+    };
+  }
+
+  redirect('/');
 }
 
 /** 发送验证码 */

@@ -37,7 +37,7 @@ export const PasswordZod = z.object({
     required_error: '请输入确认密码',
   }),
 }).refine((data) => { return data.password === data.confirmPassword; }, {
-  message: "Passwords don't match",
+  message: '两次密码不一致',
   path: ['confirmPassword'],
 });
 
