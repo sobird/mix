@@ -5,7 +5,6 @@
  */
 
 import {
-  Model,
   DataTypes,
   type Optional,
   BelongsToManyGetAssociationsMixin,
@@ -19,7 +18,7 @@ import {
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
-import { sequelize } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 import type Role from './user';
 
 /** These are all the attributes in the Permission model */
@@ -33,7 +32,7 @@ export interface PermissionAttributes {
 /** Some attributes are optional in `Permission.build` and `Permission.create` calls */
 export type PermissionCreationAttributes = Optional<PermissionAttributes, 'id'>;
 
-class Permission extends Model<PermissionAttributes, PermissionCreationAttributes> {
+class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttributes> {
   declare id: number;
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
@@ -56,6 +55,10 @@ class Permission extends Model<PermissionAttributes, PermissionCreationAttribute
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
 
   declare countRoles: BelongsToManyCountAssociationsMixin;
+
+  static associate({ Role, RolePermission }) {
+    this.belongsToMany(Role, { through: RolePermission });
+  }
 }
 
 Permission.init(
@@ -77,7 +80,6 @@ Permission.init(
   },
   {
     sequelize,
-    modelName: 'permission',
   },
 );
 

@@ -39,7 +39,6 @@ Log.init(
   },
   {
     sequelize,
-    modelName: 'log',
   },
 );
 

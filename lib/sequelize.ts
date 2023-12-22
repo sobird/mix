@@ -90,6 +90,7 @@ export const sequelize = new Sequelize({
 
     // createdAt: 'createdAt',
     // updatedAt: 'updatedAt',
+    // noPrimaryKey: true,
   },
 
   // similar for sync: you can define this to always force sync for models

@@ -7,7 +7,7 @@
  */
 
 import {
-  DataTypes, type InferAttributes, InferCreationAttributes, CreationOptional,
+  DataTypes, type InferAttributes, InferCreationAttributes,
 } from 'sequelize';
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
@@ -39,6 +39,10 @@ class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
    * Connects the active session to a user in the database
    */
   userId: number;
+
+  static associate({ User }) {
+    this.belongsTo(User, { onDelete: 'cascade' });
+  }
 }
 
 Session.init(
@@ -61,7 +65,6 @@ Session.init(
   },
   {
     sequelize,
-    modelName: 'session',
   },
 );
 

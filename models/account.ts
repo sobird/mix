@@ -59,6 +59,10 @@ class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
   id_token?: string;
 
   session_state: CreationOptional<string>;
+
+  static associate({ User }) {
+    this.belongsTo(User, { onDelete: 'cascade' });
+  }
 }
 
 Account.init(
@@ -70,12 +74,12 @@ Account.init(
     },
     provider: {
       type: DataTypes.STRING,
-      allowNull: false,
+      primaryKey: true,
       comment: 'account provider',
     },
     providerAccountId: {
       type: DataTypes.STRING,
-      allowNull: false,
+      primaryKey: true,
       comment: 'account providerAccountId',
     },
     refresh_token: {

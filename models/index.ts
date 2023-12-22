@@ -22,6 +22,7 @@ import Group from './group';
 import RolePermission from './role-permission';
 import UserRole from './user-role';
 
+// Model alias
 export { User as UserModel };
 export { Account as AccountModel };
 export { Session as SessionModel };
@@ -30,20 +31,11 @@ export { Role as RoleModel };
 export { Permission as PermissionModel };
 export { Menu as MenuModel };
 export { Group as GroupModel };
-
-Account.belongsTo(User, { onDelete: 'cascade' });
-Session.belongsTo(User, { onDelete: 'cascade' });
-
-// UserRole
-// User.belongsToMany(Role, { through: UserRole });
-Role.belongsToMany(User, { through: UserRole });
-
-// RolePermission
-Role.belongsToMany(Permission, { through: RolePermission });
-Permission.belongsToMany(Role, { through: RolePermission });
+// Associations Model
+export { RolePermission as RolePermissionModel };
+export { UserRole as UserRoleModel };
 
 const { models } = sequelize;
-
 Object.values(models).forEach((model: any) => {
   model.associate?.(sequelize.models);
 });
