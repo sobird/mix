@@ -76,6 +76,13 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
   declare createPermission: BelongsToManyCreateAssociationMixin<Permission>;
 
   declare countPermissions: BelongsToManyCountAssociationsMixin;
+
+  static associate({
+    User, UserRole, Permission, RolePermission,
+  }) {
+    this.belongsToMany(User, { through: UserRole });
+    this.belongsToMany(Permission, { through: RolePermission });
+  }
 }
 
 Role.init(
@@ -106,7 +113,6 @@ Role.init(
   },
   {
     sequelize,
-    // modelName: 'role',
   },
 );
 

@@ -50,7 +50,6 @@ Menu.init(
   },
   {
     sequelize,
-    modelName: 'menu',
   },
 );
 
