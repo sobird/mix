@@ -39,22 +39,19 @@ const AuthAdapter: Adapter = {
 
     return User.findByPk(account.userId, {
       raw: true,
-    });
+    }) as any;
   },
   async updateUser(record) {
-    console.log('record', record);
-
     await User.update(record, { where: { id: record.id } });
-    const user = await User.findByPk(record.id, {
-      attributes: USER_ATTRIBUTES_DISPLAY,
-    });
-    return user!.get({ plain: true });
+    return User.findByPk(record.id, {
+      raw: true,
+    }) as any;
   },
   async deleteUser(userId) {
     await User.findByPk(userId);
     await User.destroy({ where: { id: userId } });
   },
-  async linkAccount(account) {
+  async linkAccount(account: any) {
     await Account.create(account);
   },
   async unlinkAccount({ providerAccountId, provider }) {
@@ -62,13 +59,15 @@ const AuthAdapter: Adapter = {
       where: { provider, providerAccountId },
     });
   },
-  async createSession(record) {
-    const session = await Session.create(record);
-    return session?.get({ plain: true }) ?? null;
+  async createSession(record: any) {
+    return Session.create(record, {
+      raw: true,
+    }) as any;
   },
   async getSessionAndUser(sessionToken) {
     const session = await Session.findOne({
       where: { sessionToken },
+      raw: true,
     });
 
     if (!session) {
@@ -76,7 +75,7 @@ const AuthAdapter: Adapter = {
     }
 
     const user = await User.findByPk(session.userId, {
-      attributes: USER_ATTRIBUTES_DISPLAY,
+      raw: true,
     });
 
     if (!user) {
@@ -84,8 +83,8 @@ const AuthAdapter: Adapter = {
     }
 
     return {
-      session: session?.get({ plain: true }),
-      user: user?.get({ plain: true }),
+      session,
+      user,
     };
   },
   async updateSession({ sessionToken, expires }) {
@@ -94,14 +93,14 @@ const AuthAdapter: Adapter = {
       { where: { sessionToken } },
     );
 
-    const session = await Session.findOne({ where: { sessionToken } });
-
-    return session?.get({ plain: true }) ?? null;
+    return Session.findOne({ where: { sessionToken }, raw: true }) as any;
   },
   async deleteSession(sessionToken) {
-    const session = await Session.findOne({ where: { sessionToken } });
-    await Session.destroy({ where: { sessionToken } });
-    return session?.get({ plain: true });
+    const session = await Session.findOne({ where: { sessionToken }, raw: true });
+    if (session) {
+      await Session.destroy({ where: { sessionToken } });
+    }
+    return session as any;
   },
 
   /**
@@ -112,16 +111,17 @@ const AuthAdapter: Adapter = {
    * @returns
    */
   async createVerificationToken(attributes) {
-    return VerificationToken.create(attributes) as any;
+    return VerificationToken.create(attributes, { raw: true });
   },
   async useVerificationToken({ identifier, token }) {
-    const tokenInstance = await VerificationToken.findOne({
+    const verificationToken = await VerificationToken.findOne({
       where: { identifier, token },
+      raw: true,
     });
 
     await VerificationToken.destroy({ where: { identifier } });
 
-    return tokenInstance?.get({ plain: true }) ?? null;
+    return verificationToken;
   },
 };
 

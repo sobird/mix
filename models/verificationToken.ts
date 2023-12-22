@@ -10,29 +10,33 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '@/lib/sequelize';
+import {
+  DataTypes,
+  type InferAttributes, InferCreationAttributes,
+} from 'sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */
-export interface VerificationTokenAttributes {
+export type VerificationTokenAttributes = InferAttributes<VerificationToken>;
+
+/** Some attributes are optional in `VerificationToken.build` and `VerificationToken.create` calls */
+export type VerificationTokenCreationAttributes = InferCreationAttributes<VerificationToken>;
+
+class VerificationToken extends BaseModel<VerificationTokenAttributes, VerificationTokenCreationAttributes> {
   /**
    * A hashed token, using the AuthConfig.secret value.
    */
   token: string;
+
   /**
    * The user's email address.
    */
   identifier: string;
+
   /**
    * The absolute date when the token expires.
    */
   expires: Date;
-}
-/** Some attributes are optional in `VerificationToken.build` and `VerificationToken.create` calls */
-export type VerificationTokenCreationAttributes = VerificationTokenAttributes;
-
-class VerificationToken extends Model<VerificationTokenAttributes, VerificationTokenCreationAttributes> {
-  declare id: number;
 }
 
 VerificationToken.init(
