@@ -9,7 +9,7 @@ import {
   DataTypes,
   type Optional,
 } from 'sequelize';
-import sequelize from '@/lib/sequelize';
+import { sequelize } from '@/lib/sequelize';
 
 /** These are all the attributes in the Group model */
 export interface GroupAttributes {

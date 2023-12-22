@@ -18,8 +18,7 @@ import {
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
-import BaseModel from '@/lib/model';
-import sequelize from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 import type User from './user';
 import type Permission from './permission';
 

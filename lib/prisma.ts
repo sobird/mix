@@ -1,11 +1,16 @@
 /**
  * prisma.ts
  *
+ * @deprecated 使用 Sequelize
+ *
  * sobird<i@sobird.me> at 2023/12/10 21:59:09 created.
  */
 
 import { PrismaClient, Prisma } from '@prisma/client';
 
+/**
+ * @deprecated
+ */
 const prisma = new PrismaClient().$extends({
   model: {
     $allModels: {
