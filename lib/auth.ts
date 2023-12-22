@@ -76,7 +76,7 @@ export const authOptions: AuthOptions = {
         ...session,
         user: {
           ...session.user,
-          username: (user as any).username,
+          // username: (user as any).username,
         },
       };
     },
