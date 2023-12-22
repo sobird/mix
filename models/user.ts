@@ -14,8 +14,6 @@
 import { randomBytes, createHmac } from 'crypto';
 import {
   DataTypes,
-  Model,
-  Optional,
   InferAttributes, InferCreationAttributes, CreationOptional,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
@@ -28,44 +26,30 @@ import {
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
-import { sequelize } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 import type Role from './role';
 
 /** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
-export interface UserAttributes {
-  id: string;
-  name?: string;
-  username?: string;
-  nickname?: string | null;
-  realname?: string | null;
-  /**
-   * The user's email address.
-   */
-  email: string;
-  /**
-   * Whether the user has verified their email address via an Email provider.
-   * It is null if the user has not signed in with the Email provider yet,
-   * or the date of the first successful signin.
-   */
-  emailVerified: null | Date;
-  password?: string;
-  salt: string;
-  ip: string;
-}
+export type UserAttributes = InferAttributes<User>;
+
 // Some attributes are optional in `User.build` and `User.create` calls
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'username' | 'password' | 'nickname' | 'realname' | 'salt' | 'ip'>;
+export type UserCreationAttributes = InferCreationAttributes<User>;
 // 用户登录属性
 export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>;
 // 用户注册属性
-export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
+export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email' | 'emailVerified'>;
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare id: CreationOptional<number>;
+class User extends BaseModel<UserAttributes, UserCreationAttributes> {
+  declare username: CreationOptional<string>;
 
-  declare username: string;
+  declare name: CreationOptional<string | null>;
+
+  declare nickname: CreationOptional<string>;
+
+  declare realname: CreationOptional<string>;
 
   declare salt: CreationOptional<string>;
 
@@ -73,7 +57,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
   declare email: string;
 
-  private createdAt: string;
+  declare emailVerified: CreationOptional<Date | null>;
 
   public ip: CreationOptional<string>;
 
@@ -103,9 +87,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  static associate(models: any) {
+  static associate({ Role, UserRole }) {
     // todo
-    this.belongsToMany(models.Role, { through: models.UserRole });
+    this.belongsToMany(Role, { through: UserRole });
   }
 
   /** 用户注册 */
@@ -162,13 +146,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     username: {
       type: DataTypes.STRING(32),
+      unique: true,
       comment: 'user name',
     },
     name: {
@@ -202,7 +182,7 @@ User.init(
       comment: 'user password hash',
     },
     salt: {
-      type: DataTypes.STRING(128),
+      type: DataTypes.STRING(32),
       allowNull: false,
       defaultValue: randomBytes(16).toString('hex'),
       comment: 'user salt',

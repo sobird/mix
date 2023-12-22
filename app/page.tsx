@@ -5,10 +5,10 @@ import {
   RegisterButton,
 } from '@/components/buttons';
 
-import db, { UserModel, RoleModel } from '@/models';
+import { UserModel, RoleModel, sequelize } from '@/models';
 
 export default async function Home() {
-  // await UserModel.sync({ force: true });
+  // await sequelize.sync({ force: true });
   const user = await UserModel.findAll({ raw: true });
   console.log('user', user);
   return (

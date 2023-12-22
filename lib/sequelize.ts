@@ -8,7 +8,9 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import { Sequelize, Model, Order } from 'sequelize';
+import {
+  Sequelize, Model, Order, CreationOptional,
+} from 'sequelize';
 import sqlite3 from 'sqlite3';
 
 /** 数据库链接实例 */
@@ -111,7 +113,7 @@ export const sequelize = new Sequelize({
  * sobird<i@sobird.me> at 2023/12/05 21:08:43 created.
  */
 export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
-  declare id: number;
+  declare id?: CreationOptional<any>;
 
   /**
    * Helper method for defining associations.

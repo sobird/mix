@@ -3,7 +3,7 @@ import type { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import { sendVerificationRequest } from './mailer';
-import AuthPrismaAdapter from './authPrismaAdapter';
+import AuthAdapter from './authSequelizeAdapter';
 import User from '@/models/user';
 
 export const authOptions: AuthOptions = {
@@ -11,7 +11,7 @@ export const authOptions: AuthOptions = {
   session: {
     // strategy: 'jwt',
   },
-  adapter: AuthPrismaAdapter,
+  adapter: AuthAdapter,
   // cookies: {},
   providers: [
     CredentialsProvider({
