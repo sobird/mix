@@ -9,6 +9,15 @@ import { Model, Order } from 'sequelize';
 class BaseModel<T extends {} = object, P extends {} = T> extends Model<T, P> {
   declare id: number;
 
+  /**
+   * Helper method for defining associations.
+   * This method is not a part of Sequelize lifecycle.
+   * The `models/index` file will call this method automatically.
+   */
+  static associate(models: any) {
+    // todo
+  }
+
   /** 分页查找模型数据 */
   public static async findAllWithPagination(query: PaginationSearchParams) {
     const ps = Number(query.ps) || 20;

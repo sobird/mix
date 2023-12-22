@@ -107,7 +107,7 @@ Role.init(
   },
   {
     sequelize,
-    modelName: 'role',
+    // modelName: 'role',
   },
 );
 

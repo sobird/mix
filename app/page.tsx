@@ -8,8 +8,9 @@ import {
 import { UserModel, RoleModel } from '@/models';
 
 export default async function Home() {
+  await UserModel.sync({ force: true });
   const user = await UserModel.findAll({ raw: true });
-  console.log('user', user);
+  // console.log('user', user);
   return (
     <main
       style={{
