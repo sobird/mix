@@ -41,10 +41,11 @@ Role.belongsToMany(User, { through: UserRole });
 Role.belongsToMany(Permission, { through: RolePermission });
 Permission.belongsToMany(Role, { through: RolePermission });
 
-// Object.keys(sequelize.models).forEach(modelName => {
-//   if (sequelize.models[modelName].associate) {
-//     sequelize.models[modelName].associate(sequelize.models);
-//   }
-// });
+const { models } = sequelize;
+
+Object.values(models).forEach((model: any) => {
+  console.log('model', model);
+  model.associate?.(sequelize.models);
+});
 
 export default sequelize;

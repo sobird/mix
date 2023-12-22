@@ -105,7 +105,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
    */
   static associate(models: any) {
     // todo
-    console.log('models', models);
+    this.belongsToMany(models.Role, { through: models.UserRole });
   }
 
   /** 用户注册 */
@@ -216,7 +216,6 @@ User.init(
   },
   {
     sequelize,
-    modelName: 'user',
   },
 );
 
