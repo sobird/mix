@@ -6,7 +6,7 @@ import {
 } from '@/components/buttons';
 
 import {
-  UserModel, sequelize,
+  UserModel, SessionModel, AccountModel, sequelize,
 } from '@/models';
 
 export default async function Home() {
@@ -18,8 +18,11 @@ export default async function Home() {
   // });
   // console.log('res', res);
 
-  const user = await UserModel.findAll({ raw: true });
-  console.log('user', user);
+  const session = await SessionModel.findAll({ raw: true });
+  console.log('session', session);
+
+  const account = await AccountModel.findAll({ raw: true });
+  console.log('account', account);
 
   return (
     <main

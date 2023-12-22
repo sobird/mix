@@ -122,7 +122,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
     const user = await this.findOne({
       where: { username },
-      // attributes: ['username', 'email'],
+      // attributes: ['username', 'email', 'password', 'salt'],
     });
 
     if (!user) {
@@ -142,7 +142,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
    * @param salt 盐
    * @return 返回一个64位长度的Hash字符串
    */
-  public hashPassword(password: string, salt: string): string {
+  public static hashPassword(password: string, salt: string): string {
     return createHmac('sha256', salt).update(password).digest('hex');
   }
 
@@ -152,7 +152,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
    * @param password
    */
   public verifyPassword(password: string) {
-    return this.hashPassword(password, this.salt) === this.password;
+    return User.hashPassword(password, this.salt) === this.password;
   }
 }
 
@@ -213,7 +213,7 @@ User.init(
 
 User.beforeCreate((model) => {
   if (model.password) {
-    model.password = model.hashPassword(model.password, model.salt);
+    model.password = User.hashPassword(model.password, model.salt);
   }
   // model.ip = fn("INET_ATON", model.ip); // INET_NTOA
 });

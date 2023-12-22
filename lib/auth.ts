@@ -9,7 +9,7 @@ import User from '@/models/user';
 export const authOptions: AuthOptions = {
   secret: 'sobird@2023',
   session: {
-    // strategy: 'jwt',
+    strategy: 'jwt',
   },
   adapter: AuthAdapter,
   // cookies: {},
@@ -25,12 +25,19 @@ export const authOptions: AuthOptions = {
         password: { label: '密码', type: 'password' },
       },
       async authorize(credentials, req) {
-        const { username, password } = credentials;
+        const { username, password } = credentials || {};
+
+        if (!username || !password) {
+          return null;
+        }
 
         try {
           const user = await User.signin({ username, password });
-          console.log('user123', user);
-          return user;
+          return {
+            name: user.username,
+            email: user.email,
+            id: user.id,
+          };
         } catch (e) {
           throw Error(e);
         }
