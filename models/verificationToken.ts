@@ -11,7 +11,7 @@
  */
 
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '@/lib/sequelize';
+import { sequelize } from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */
 export interface VerificationTokenAttributes {

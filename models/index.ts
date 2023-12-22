@@ -8,33 +8,34 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import sequelize from '@/lib/sequelize';
+import { sequelize } from '@/lib/sequelize';
 
 import User from './user';
 import Role from './role';
-import UserRole from './userRole';
 import Permission from './permission';
-import RolePermission from './role-permission';
 import Account from './account';
 import Session from './session';
 import VerificationToken from './verificationToken';
 import Menu from './menu';
 import Group from './group';
+// Associations Model
+import RolePermission from './role-permission';
+import UserRole from './user-role';
 
 export { User as UserModel };
-export const AccountModel = Account;
-export const SessionModel = Session;
-export const VerificationTokenModel = VerificationToken;
-export const RoleModel = Role;
-export const PermissionModel = Permission;
-export const MenuModel = Menu;
-export const GroupModel = Group;
+export { Account as AccountModel };
+export { Session as SessionModel };
+export { VerificationToken as VerificationTokenModel };
+export { Role as RoleModel };
+export { Permission as PermissionModel };
+export { Menu as MenuModel };
+export { Group as GroupModel };
 
 Account.belongsTo(User, { onDelete: 'cascade' });
 Session.belongsTo(User, { onDelete: 'cascade' });
 
 // UserRole
-User.belongsToMany(Role, { through: UserRole });
+// User.belongsToMany(Role, { through: UserRole });
 Role.belongsToMany(User, { through: UserRole });
 
 // RolePermission
@@ -44,8 +45,17 @@ Permission.belongsToMany(Role, { through: RolePermission });
 const { models } = sequelize;
 
 Object.values(models).forEach((model: any) => {
-  console.log('model', model);
   model.associate?.(sequelize.models);
 });
 
-export default sequelize;
+export { sequelize };
+export default {
+  User,
+  Account,
+  Session,
+  VerificationToken,
+  Role,
+  Permission,
+  Menu,
+  Group,
+};

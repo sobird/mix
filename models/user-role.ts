@@ -5,7 +5,7 @@
  */
 
 import { Model, DataTypes, type Optional } from 'sequelize';
-import sequelize from '@/lib/sequelize';
+import { sequelize } from '@/lib/sequelize';
 import User from './user';
 import Role from './role';
 

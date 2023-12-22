@@ -28,7 +28,7 @@ import {
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
-import sequelize from '@/lib/sequelize';
+import { sequelize } from '@/lib/sequelize';
 import type Role from './role';
 
 /** 隐私属性字段排除 */
