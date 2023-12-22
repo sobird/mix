@@ -9,7 +9,7 @@
  */
 
 import {
-  Sequelize, Model, Order, CreationOptional,
+  Sequelize, Model, CreationOptional,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
@@ -120,9 +120,7 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  static associate(models: any) {
-    // todo
-  }
+  static associate: (models: any) => void;
 
   /** 分页查找模型数据 */
   public static async findAllWithPagination(query: PaginationSearchParams) {
@@ -130,17 +128,17 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
     const pn = Number(query.pn) || 1;
     const offset = (pn - 1) * ps;
 
-    const orderBy = query.orderBy || 'createdAt,DESC';
-    const order: string[] = [];
-    if (!Array.isArray(orderBy)) {
-      order.push(orderBy);
-    }
+    // const orderBy = query.orderBy || 'createdAt,DESC';
+    // const order: string[] = [];
+    // if (!Array.isArray(orderBy)) {
+    //   order.push(orderBy);
+    // }
 
     try {
       const { count, rows } = await this.findAndCountAll({
         offset,
         limit: ps,
-        order: order.map((item) => { return item.split(','); }) as Order,
+        // order: order.map((item) => { return item.split(','); }) as Order,
         raw: true,
       });
       return {

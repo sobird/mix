@@ -6,12 +6,17 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
-import { Model, DataTypes, type Optional } from 'sequelize';
-import { sequelize } from '@/lib/sequelize';
+import {
+  DataTypes, type InferAttributes, InferCreationAttributes, CreationOptional,
+} from 'sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Session model */
-export interface SessionAttributes {
-  id?: number;
+export type SessionAttributes = InferAttributes<Session>;
+/** Some attributes are optional in `Session.build` and `Session.create` calls */
+export type SessionCreationAttributes = InferCreationAttributes<Session>;
+
+class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
   /**
    * The absolute date when the session expires.
    *
@@ -23,23 +28,17 @@ export interface SessionAttributes {
    * it will be removed from the database to clean up inactive sessions.
    */
   expires: Date;
+
   /**
    * A randomly generated value that is used to look up the session in the database when using "database" AuthConfig.strategy option.
    * This value is saved in a secure, HTTP-Only cookie on the client.
    */
   sessionToken: string;
+
   /**
    * Connects the active session to a user in the database
    */
   userId: number;
-}
-/** Some attributes are optional in `Session.build` and `Session.create` calls */
-export type SessionCreationAttributes = Optional<SessionAttributes, 'id'>;
-
-class Session extends Model<SessionAttributes, SessionCreationAttributes> {
-  declare id: number;
-
-  public userId!: number;
 }
 
 Session.init(

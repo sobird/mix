@@ -11,21 +11,27 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
-import { Model, DataTypes, type Optional } from 'sequelize';
-import { sequelize } from '@/lib/sequelize';
+import {
+  DataTypes,
+  type InferAttributes, InferCreationAttributes, CreationOptional,
+} from 'sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Account model */
-export interface AccountAttributes {
-  id?: number;
-  /**
-   * id of the user this account belongs to
-   */
-  userId: number;
-  type: 'oauth' | 'oidc' | 'email';
+export type AccountAttributes = InferAttributes<Account>;
+/** Some attributes are optional in `Account.build` and `Account.create` calls */
+export type AccountCreationAttributes = InferCreationAttributes<Account>;
+
+class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
+  public userId: number;
+
+  declare type: 'oauth' | 'oidc' | 'email';
+
   /**
    * Provider's id for this account. Eg.: 'google'
    */
   provider: string;
+
   /**
    * This value depends on the type of the provider being used to create the account.
    *
@@ -34,26 +40,25 @@ export interface AccountAttributes {
    * credentials: id returned from the authorize() callback
    */
   providerAccountId: string;
+
   refresh_token?: string;
+
   access_token?: string | undefined;
+
   /**
    * Calculated value based on [OAuth2TokenEndpointResponse.expires_in]([object Object]).
    * It is the absolute timestamp (in seconds) when the [OAuth2TokenEndpointResponse.access_token]([object Object]) expires.
    * This value can be used for implementing token rotation together with [OAuth2TokenEndpointResponse.refresh_token]([object Object]).
    */
   expires_at?: number;
+
   token_type?: string;
+
   scope?: string;
+
   id_token?: string;
-  session_state: string;
-}
-/** Some attributes are optional in `Account.build` and `Account.create` calls */
-export type AccountCreationAttributes = Optional<AccountAttributes, 'id' | 'userId'>;
 
-class Account extends Model<AccountAttributes, AccountCreationAttributes> {
-  declare id: number;
-
-  public userId: number;
+  session_state: CreationOptional<string>;
 }
 
 Account.init(
@@ -108,7 +113,6 @@ Account.init(
   },
   {
     sequelize,
-    modelName: 'account',
   },
 );
 
