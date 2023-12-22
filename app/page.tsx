@@ -17,7 +17,7 @@ export default async function Home() {
   //   type: 'oauth',
   //   userId: 123,
   // });
-  const user = await AccountModel.findAll({ raw: true });
+  const user = await UserModel.findAll({ raw: true });
   console.log('user', user);
   return (
     <main

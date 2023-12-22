@@ -17,12 +17,12 @@ interface PropsWithParams<P, S> {
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
-type ServerActionState<T> = {
+type ServerActionState<T = any> = {
   success: boolean;
   errors?: {
     [key in T]: string;
   };
-  message?: string | null;
+  message: string | null;
   revalidate?: {
     path: string,
     type?: string,
