@@ -9,6 +9,7 @@
  */
 
 import sequelize from '@/lib/sequelize';
+
 import User from './user';
 import Role from './role';
 import UserRole from './userRole';
@@ -20,7 +21,7 @@ import VerificationToken from './verificationToken';
 import Menu from './menu';
 import Group from './group';
 
-export const UserModel = User;
+export { User as UserModel };
 export const AccountModel = Account;
 export const SessionModel = Session;
 export const VerificationTokenModel = VerificationToken;
@@ -39,5 +40,11 @@ Role.belongsToMany(User, { through: UserRole });
 // RolePermission
 Role.belongsToMany(Permission, { through: RolePermission });
 Permission.belongsToMany(Role, { through: RolePermission });
+
+// Object.keys(sequelize.models).forEach(modelName => {
+//   if (sequelize.models[modelName].associate) {
+//     sequelize.models[modelName].associate(sequelize.models);
+//   }
+// });
 
 export default sequelize;
