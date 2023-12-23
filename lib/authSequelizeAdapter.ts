@@ -67,7 +67,6 @@ const AuthAdapter: Adapter = {
   async getSessionAndUser(sessionToken) {
     const session = await Session.findOne({
       where: { sessionToken },
-      raw: true,
     });
 
     if (!session) {
@@ -75,7 +74,7 @@ const AuthAdapter: Adapter = {
     }
 
     const user = await User.findByPk(session.userId, {
-      raw: true,
+      attributes: ['id', 'username', 'name', 'email'],
     });
 
     if (!user) {
@@ -83,8 +82,11 @@ const AuthAdapter: Adapter = {
     }
 
     return {
-      session,
-      user,
+      session: session?.get({ plain: true }) as any,
+      user: {
+        ...user.get(),
+        // image: 'image'
+      } as any,
     };
   },
   async updateSession({ sessionToken, expires }) {
