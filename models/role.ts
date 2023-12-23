@@ -6,7 +6,7 @@
 
 import {
   DataTypes,
-  type Optional,
+  type InferAttributes, InferCreationAttributes, CreationOptional,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
@@ -23,17 +23,18 @@ import type User from './user';
 import type Permission from './permission';
 
 /** These are all the attributes in the Role model */
-export interface RoleAttributes {
-  id?: number;
-  parentId?: number,
-  name: string;
-  description: string;
-}
+export type RoleAttributes = InferAttributes<Role>;
 /** Some attributes are optional in `Role.build` and `Role.create` calls */
-export type RoleCreationAttributes = Optional<RoleAttributes, 'id'>;
+export type RoleCreationAttributes = InferCreationAttributes<Role>;
 
 class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
-  declare id: number;
+  declare id?: CreationOptional<number>;
+
+  declare parentId?: CreationOptional<number>;
+
+  declare name: string;
+
+  declare description: CreationOptional<string>;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
 
@@ -87,21 +88,10 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
 
 Role.init(
   {
-    id: {
-      type: DataTypes.UUIDV4,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      primaryKey: true,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        notNull: {
-          msg: '请输入角色名称',
-        },
-      },
     },
     description: {
       type: DataTypes.STRING,

@@ -12,7 +12,7 @@ import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { destroy } from '@/actions/role';
+import { deleteRoleAction } from '@/actions/role';
 import RoleService from '@/services/role';
 
 type RoleTableData = Awaited<ReturnType<typeof prisma.role.findManyByPage>>;
@@ -91,10 +91,11 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
                     // htmlType="submit"
                   onClick={() => {
                     Modal.confirm({
-                      title: 'Do you Want to delete these items?',
-                      content: 'Some descriptions',
-                      onOk() {
-                        destroy(record.id);
+                      title: '系统提示',
+                      content: `是否确认删除角色：${record.name}？`,
+                      async onOk() {
+                        const result = await deleteRoleAction(record.id);
+                        console.log('result', result);
                       },
                     });
                   }}

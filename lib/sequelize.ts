@@ -130,7 +130,7 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
   static associate: (models: any) => void;
 
   /** 分页查找模型数据 */
-  public static async findAllWithPagination(query: PaginationSearchParams) {
+  public static async findManyByPage(query: PaginationSearchParams) {
     const ps = Number(query.ps) || 20;
     const pn = Number(query.pn) || 1;
     const offset = (pn - 1) * ps;

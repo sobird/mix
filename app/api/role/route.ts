@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
-import { UserModel, RoleModel, PermissionModel } from '@/models';
-import { UserExcludeAttributes } from '@/models/user';
-import prisma from '@/lib/prisma';
-import { create } from '@/actions/role';
+import { RoleModel } from '@/models';
+import { createRoleAction, updateRoleAction } from '@/actions/role';
 
 export async function GET(request: NextRequest) {
   const searchParams = Object.fromEntries(request.nextUrl.searchParams);
   try {
-    const roles = await prisma.role.findManyByPage(searchParams);
+    const roles = await RoleModel.findManyByPage(searchParams);
     return NextResponse.json(roles);
   } catch (error) {
     return NextResponse.json({
@@ -23,20 +20,20 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  const role = await create(null, body);
+  const role = await createRoleAction(null, body);
 
   return NextResponse.json(role);
 }
 
 /** 更新角色 */
 export async function PATCH(request: NextRequest) {
-  await RoleModel.sync({ force: true });
-  return NextResponse.json({
-    message: 'ok',
-  });
+  const body = await request.json();
+  const role = await updateRoleAction(null, body);
+  return NextResponse.json(role);
 }
 
 export async function DELETE(request: NextRequest) {
+  // todo
   const body = await request.json();
   console.log('body', body);
 }

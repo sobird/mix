@@ -5,8 +5,8 @@ import { useFormState } from 'react-dom';
 import { Form, Input, Button } from 'antd';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { ZodRule } from '@/zod/role';
-import { create } from '@/actions/role';
+import { RoleFormRule, RoleFormAttributes } from '@/zod/role';
+import { createRoleAction } from '@/actions/role';
 
 const formItemLayout = {
   labelCol: {
@@ -16,8 +16,8 @@ const formItemLayout = {
 };
 
 interface RoleFormProps {
-  action: typeof create,
-  initialValues?: object
+  action: typeof createRoleAction,
+  initialValues?: RoleFormAttributes
 }
 
 const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
@@ -27,8 +27,10 @@ const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
 
   return (
     <Form onFinish={dispatch} initialValues={initialValues} {...formItemLayout}>
-      <Form.Item hidden name="id" />
-      <Form.Item label="角色名称" name="name">
+      <Form.Item hidden name="id">
+        <Input name="id" hidden />
+      </Form.Item>
+      <Form.Item label="角色名称" name="name" rules={[RoleFormRule]}>
         <Input name="name" />
       </Form.Item>
       <Form.Item label="描述" name="description">

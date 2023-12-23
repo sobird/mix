@@ -6,8 +6,8 @@
 
 import React from 'react';
 import RoleForm from '../../create/form';
-import { update } from '@/actions/role';
-import prisma from '@/lib/prisma';
+import { updateRoleAction } from '@/actions/role';
+import { RoleModel } from '@/models';
 
 interface RoleEditPageProps {
   params: {
@@ -18,16 +18,14 @@ interface RoleEditPageProps {
 const Page: React.FC<RoleEditPageProps> = async ({ params }) => {
   const { id } = params;
 
-  const role = await prisma.role.findUnique({
+  const role = await RoleModel.findOne({
     where: {
       id,
     },
   });
 
-  console.log('role', role);
-
   return (
-    <RoleForm action={update} initialValues={role} />
+    <RoleForm action={updateRoleAction} initialValues={role?.get()} />
   );
 };
 
