@@ -9,7 +9,7 @@
  */
 
 import {
-  Sequelize, Model, CreationOptional,
+  Sequelize, Model, CreationOptional, ModelStatic, InferAttributes,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
@@ -130,7 +130,15 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
   static associate: (models: any) => void;
 
   /** 分页查找模型数据 */
-  public static async findManyByPage(query: PaginationSearchParams) {
+  public static async findManyByPage<M extends BaseModel>(
+    this: ModelStatic<M>,
+    query: PaginationSearchParams,
+  ): Promise<{
+      ps: number;
+      pn: number;
+      count: number;
+      rows: InferAttributes<M>[]
+    }> {
     const ps = Number(query.ps) || 20;
     const pn = Number(query.pn) || 1;
     const offset = (pn - 1) * ps;
@@ -149,14 +157,20 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
         raw: true,
       });
       return {
-        pn, ps, count, rows,
+        pn,
+        ps,
+        count,
+        rows,
       };
     } catch (err) {
       // console.log('err', err);
     }
 
     return {
-      pn, ps, count: 0, rows: [],
+      pn,
+      ps,
+      count: 0,
+      rows: [],
     };
   }
 }

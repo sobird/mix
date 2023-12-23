@@ -22,6 +22,15 @@ import Group from './group';
 import RolePermission from './role-permission';
 import UserRole from './user-role';
 
+export type { UserAttributes, UserCreationAttributes } from './user';
+export type { RoleAttributes, RoleCreationAttributes } from './role';
+export type { PermissionAttributes, PermissionCreationAttributes } from './permission';
+export type { AccountAttributes, AccountCreationAttributes } from './account';
+export type { SessionAttributes, SessionCreationAttributes } from './session';
+export type { VerificationTokenAttributes, VerificationTokenCreationAttributes } from './verificationToken';
+export type { MenuAttributes, MenuCreationAttributes } from './menu';
+export type { GroupAttributes, GroupCreationAttributes } from './group';
+
 // Model alias
 export { User as UserModel };
 export { Account as AccountModel };
