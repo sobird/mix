@@ -1,13 +1,17 @@
 /**
  * auth.ts
  *
+ *
  * @see https://authjs.dev/getting-started/typescript#module-augmentation
+ * @see https://github.com/nextauthjs/next-auth/blob/main/packages/core/src/lib/init.ts
  *
  * sobird<i@sobird.me> at 2023/11/28 21:14:31 created.
  */
 
 /* eslint-disable no-param-reassign */
 import { getServerSession, type AuthOptions, DefaultSession } from 'next-auth';
+import { encode } from 'next-auth/jwt';
+import { v4 as uuidv4 } from 'uuid';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import { GetServerSidePropsContext } from 'next';
@@ -45,13 +49,23 @@ declare module '@auth/core' {
   interface Account {}
 }
 
+const sessionOptions:AuthOptions['session'] = {
+  // strategy: 'jwt',
+  maxAge: 30 * 24 * 60 * 60, // 30 days
+  updateAge: 24 * 60 * 60, // 24 hours
+  generateSessionToken: uuidv4,
+};
+
+const jwt = {
+  async encode(params: any) {
+    return params.token?.sessionToken ?? encode(params);
+  },
+};
+
 export const authOptions: AuthOptions = {
   secret: 'sobird@2023',
-  session: {
-    // strategy: 'jwt',
-    // maxAge: 30 * 24 * 60 * 60, // 30 days
-    // updateAge: 24 * 60 * 60, // 24 hours
-  },
+  session: sessionOptions,
+  jwt,
   adapter: AuthAdapter,
   // cookies: {},
   providers: [
@@ -69,9 +83,10 @@ export const authOptions: AuthOptions = {
         username: {
           label: '用户',
           type: 'text',
+          value: 'sobird',
           placeholder: '请输入用户名',
         },
-        password: { label: '密码', type: 'password' },
+        password: { label: '密码', type: 'password', value: 'sobird' },
       },
       async authorize(credentials, req) {
         const { username, password } = credentials || {};
@@ -86,6 +101,7 @@ export const authOptions: AuthOptions = {
             name: user.username,
             email: user.email,
             id: user.id,
+            image: 'image',
           };
         } catch (e) {
           throw Error(e);
@@ -113,44 +129,57 @@ export const authOptions: AuthOptions = {
       // },
     }),
   ],
+
+  // export const defaultCallbacks: CallbacksOptions = {
+  //   signIn() {
+  //     return true
+  //   },
+  //   redirect({ url, baseUrl }) {
+  //     if (url.startsWith("/")) return `${baseUrl}${url}`
+  //     else if (new URL(url).origin === baseUrl) return url
+  //     return baseUrl
+  //   },
+  //   session({ session }) {
+  //     return session
+  //   },
+  //   jwt({ token }) {
+  //     return token
+  //   },
+  // }
   callbacks: {
-    async signIn({
-      user, account, profile, email, credentials,
-    }) {
-      console.log('signIn', user);
-      return false;
+    async signIn(/* {user, account, profile, email, credentials,} */) {
+      return true;
     },
 
-    session: ({
+    async session({
       session, token, user, trigger,
-    }) => {
-      console.log('Session Callback', {
-        session, token, user, trigger,
-      });
-
+    }) {
       return {
         ...session,
-        user: {
-          ...session.user,
-          // username: (user as any).username,
-        },
+        // user: {
+        //   ...session.user,
+        // },
       };
     },
 
-    jwt: ({
-      token, user, account, profile, trigger,
-    }) => {
-      const isNewUser = trigger === 'signUp';
-      console.log('JWT Callback', {
-        token, user, account, profile, isNewUser,
-      });
-
+    async jwt({
+      token, user, account,
+    }) {
       if (user) {
         token.id = user.id;
       }
       // Persist the OAuth access_token to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
+      }
+      // 支持credentials登录验证strategy: 'database'
+      if (account?.provider === 'credentials' && sessionOptions.strategy !== 'jwt') {
+        const session = await AuthAdapter.createSession!({
+          sessionToken: sessionOptions.generateSessionToken!() as any,
+          userId: user.id,
+          expires: new Date(Date.now() + sessionOptions.maxAge! * 1000),
+        });
+        token.sessionToken = session.sessionToken;
       }
       return token;
     },
