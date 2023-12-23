@@ -1,19 +1,68 @@
+/**
+ * auth.ts
+ *
+ * @see https://authjs.dev/getting-started/typescript#module-augmentation
+ *
+ * sobird<i@sobird.me> at 2023/11/28 21:14:31 created.
+ */
+
 /* eslint-disable no-param-reassign */
-import type { AuthOptions } from 'next-auth';
+import { getServerSession, type AuthOptions, DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
+import { GetServerSidePropsContext } from 'next';
 import { sendVerificationRequest } from './mailer';
 import AuthAdapter from './authSequelizeAdapter';
 import User from '@/models/user';
 
+declare module '@auth/core' {
+  /**
+   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+   */
+  interface Session {
+    user: {
+      /** The user's postal address. */
+      address: string
+      /**
+       * By default, TypeScript merges new interface properties and overwrite existing ones.
+       * In this case, the default session user properties will be overwritten, with the new one defined above.
+       * To keep the default session user properties,
+       * you need to add them back into the newly declared interface
+       */
+    } & DefaultSession['user'] // To keep the default types
+  }
+
+  /**
+   * The shape of the user object returned in the OAuth providers' `profile` callback,
+   * or the second parameter of the `session` callback, when using a database.
+   */
+  interface User {}
+
+  /**
+   * The shape of the account object returned in the OAuth providers' `account` callback,
+   * Usually contains information about the provider being used, like OAuth tokens (`access_token`, etc).
+   */
+  interface Account {}
+}
+
 export const authOptions: AuthOptions = {
   secret: 'sobird@2023',
   session: {
-    strategy: 'jwt',
+    // strategy: 'jwt',
+    // maxAge: 30 * 24 * 60 * 60, // 30 days
+    // updateAge: 24 * 60 * 60, // 24 hours
   },
   adapter: AuthAdapter,
   // cookies: {},
   providers: [
+    /**
+     * https://next-auth.js.org/configuration/providers/credentials
+     *
+     * NOTE
+     *
+     * The Credentials provider can only be used if JSON Web Tokens are enabled for sessions.
+     * Users authenticated with the Credentials provider are not persisted in the database.
+     */
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -65,6 +114,13 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({
+      user, account, profile, email, credentials,
+    }) {
+      console.log('signIn', user);
+      return false;
+    },
+
     session: ({
       session, token, user, trigger,
     }) => {
@@ -80,6 +136,7 @@ export const authOptions: AuthOptions = {
         },
       };
     },
+
     jwt: ({
       token, user, account, profile, trigger,
     }) => {
@@ -102,4 +159,16 @@ export const authOptions: AuthOptions = {
     // signIn: '/signin',
     verifyRequest: '/signin/verify',
   },
+};
+
+/**
+ * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
+ *
+ * @see https://next-auth.js.org/configuration/nextjs
+ */
+export const getServerAuthSession = (ctx: {
+  req: GetServerSidePropsContext['req'];
+  res: GetServerSidePropsContext['res'];
+}) => {
+  return getServerSession(ctx.req, ctx.res, authOptions);
 };

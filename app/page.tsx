@@ -18,11 +18,11 @@ export default async function Home() {
   // });
   // console.log('res', res);
 
-  const session = await SessionModel.findAll({ raw: true });
-  console.log('session', session);
+  // const session = await SessionModel.findAll({ raw: true });
+  // console.log('session', session);
 
-  const account = await AccountModel.findAll({ raw: true });
-  console.log('account', account);
+  // const account = await AccountModel.findAll({ raw: true });
+  // console.log('account', account);
 
   return (
     <main
