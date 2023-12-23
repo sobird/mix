@@ -10,8 +10,6 @@ import VerificationToken from '@/models/verificationToken';
 import Account from '@/models/account';
 import Session from '@/models/session';
 
-const USER_ATTRIBUTES_DISPLAY = ['id', 'username', 'email', 'nickname', 'realname'];
-
 const AuthAdapter: Adapter = {
   async createUser(record) {
     return User.create(record, { raw: true }) as any;
@@ -85,7 +83,7 @@ const AuthAdapter: Adapter = {
       session: session?.get({ plain: true }) as any,
       user: {
         ...user.get(),
-        // image: 'image'
+        image: 'image',
       } as any,
     };
   },
