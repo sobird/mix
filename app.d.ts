@@ -27,4 +27,4 @@ type ServerActionState<T = any> = {
     path: string,
     type?: string,
   }
-};
+} | null;

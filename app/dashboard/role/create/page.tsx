@@ -1,12 +1,11 @@
 import React from 'react';
-import { create } from '@/actions/role';
+import { createRoleAction } from '@/actions/role';
 import RoleForm from './form';
 
 const Page = () => {
   return (
     <div>
-
-      <RoleForm action={create} />
+      <RoleForm action={createRoleAction} />
     </div>
   );
 };

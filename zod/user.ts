@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { zodToRule } from '.';
+import { createFormRule } from '.';
 import { exists } from '@/actions/user';
 
 export const SignUpZod = z.object({
@@ -44,5 +44,5 @@ export const PasswordZod = z.object({
 export const SignUpZodWithRefine = z.intersection(SignUpZod, PasswordZod);
 export type SignUpAttributes = z.infer<typeof SignUpZodWithRefine>;
 
-export const SignUpFormRule = zodToRule(SignUpZod);
-export const SignUpPasswordRule = zodToRule(PasswordZod);
+export const SignUpFormRule = createFormRule(SignUpZod);
+export const SignUpPasswordRule = createFormRule(PasswordZod);

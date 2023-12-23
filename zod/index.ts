@@ -48,7 +48,7 @@ const getSchemaByPath = (schema: unknown, name: string[]) => {
  * @param schema
  * @returns
  */
-export const zodToRule = function zodToRule<T = unknown>(schema: z.ZodType<T>) {
+export const createFormRule = function createFormRule<T = unknown>(schema: z.ZodType<T>) {
   return ({ getFieldsValue }: FormInstance) => {
     return {
       validator: async ({ field }: { field: string }, value) => {
