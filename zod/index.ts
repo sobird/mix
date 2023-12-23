@@ -1,3 +1,9 @@
+/**
+ * @see https://github.com/logaretm/vee-validate/issues/4208
+ *
+ * sobird<i@sobird.me> at 2023/12/11 23:16:58 created.
+ */
+
 import {
   z, ZodEffects, ZodOptional, ZodObject, ZodArray,
 } from 'zod';

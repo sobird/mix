@@ -4,17 +4,20 @@
  *
  * @see https://authjs.dev/getting-started/typescript#module-augmentation
  * @see https://github.com/nextauthjs/next-auth/blob/main/packages/core/src/lib/init.ts
+ * @see https://github.com/nextauthjs/next-auth/discussions/4394
+ * @see https://remaster.com/blog/next-auth-jwt-session
  *
  * sobird<i@sobird.me> at 2023/11/28 21:14:31 created.
  */
 
 /* eslint-disable no-param-reassign */
-import { getServerSession, type AuthOptions, DefaultSession } from 'next-auth';
+import {
+  getServerSession, type AuthOptions, DefaultSession, CookiesOptions,
+} from 'next-auth';
 import { encode } from 'next-auth/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
-import { GetServerSidePropsContext } from 'next';
 import { sendVerificationRequest } from './mailer';
 import AuthAdapter from './authSequelizeAdapter';
 import User from '@/models/user';
@@ -48,6 +51,31 @@ declare module '@auth/core' {
    */
   interface Account {}
 }
+
+const cookiesOptions: Partial<CookiesOptions> = {
+  sessionToken: {
+    name: 'next-auth.session-token',
+    options: {
+      httpOnly: true,
+      sameSite: 'none',
+      path: '/',
+      domain: process.env.NEXT_PUBLIC_DOMAIN,
+      secure: true,
+    },
+  },
+  callbackUrl: {
+    name: 'next-auth.callback-url',
+    options: {
+
+    },
+  },
+  csrfToken: {
+    name: 'next-auth.csrf-token',
+    options: {
+
+    },
+  },
+};
 
 const sessionOptions:AuthOptions['session'] = {
   // strategy: 'jwt',
