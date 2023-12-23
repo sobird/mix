@@ -6,7 +6,7 @@
 
 'use client';
 
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import {
   Input, Button, Form, ConfigProvider, message,
@@ -23,18 +23,19 @@ const initialState: ServerActionState = {
 export const SignupForm = () => {
   const [form] = Form.useForm();
   const [state, dispatch] = useFormState(signup, initialState);
-  console.log('state', state);
-  if (!state.success) {
-    message.error(state.message);
-  }
+
+  useEffect(() => {
+    console.log('state', state);
+  }, [state?.success]);
   return (
     <ConfigProvider componentSize="large">
       <Form
         form={form}
-        onFinish={dispatch}
+        onFinish={(values) => {
+          dispatch(values);
+        }}
       >
         <Form.Item
-          hasFeedback
           name="username"
           validateDebounce={300}
           rules={[SignUpFormRule]}
@@ -47,7 +48,7 @@ export const SignupForm = () => {
         <Form.Item name="confirmPassword" dependencies={['password']} rules={[SignUpPasswordRule]}>
           <Input.Password placeholder="密码确认" />
         </Form.Item>
-        <Form.Item hasFeedback name="email" validateDebounce={300} rules={[SignUpFormRule]}>
+        <Form.Item name="email" validateDebounce={300} rules={[SignUpFormRule]}>
           <Input placeholder="邮箱" />
         </Form.Item>
         <Form.Item name="verificationCode" rules={[SignUpFormRule]}>
@@ -57,7 +58,10 @@ export const SignupForm = () => {
         <Button
           type="primary"
           style={{ width: '100%', borderColor: 'transparent' }}
-          htmlType="submit"
+          // htmlType="submit"
+          onClick={() => {
+            form.submit();
+          }}
         >
           立即注册
         </Button>

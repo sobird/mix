@@ -36,7 +36,6 @@ const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
       <Form.Item label="描述" name="description">
         <Input.TextArea name="description" />
       </Form.Item>
-
       <Button htmlType="submit">提交</Button>
     </Form>
   );
