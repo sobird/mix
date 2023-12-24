@@ -12,45 +12,16 @@
 
 /* eslint-disable no-param-reassign */
 import {
-  getServerSession, type AuthOptions, DefaultSession, CookiesOptions,
+  getServerSession, type AuthOptions,
 } from 'next-auth';
 import { encode } from 'next-auth/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import { sendVerificationRequest } from './mailer';
 import AuthAdapter from './authSequelizeAdapter';
 import User from '@/models/user';
-
-declare module '@auth/core' {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  interface Session {
-    user: {
-      /** The user's postal address. */
-      address: string
-      /**
-       * By default, TypeScript merges new interface properties and overwrite existing ones.
-       * In this case, the default session user properties will be overwritten, with the new one defined above.
-       * To keep the default session user properties,
-       * you need to add them back into the newly declared interface
-       */
-    } & DefaultSession['user'] // To keep the default types
-  }
-
-  /**
-   * The shape of the user object returned in the OAuth providers' `profile` callback,
-   * or the second parameter of the `session` callback, when using a database.
-   */
-  interface User {}
-
-  /**
-   * The shape of the account object returned in the OAuth providers' `account` callback,
-   * Usually contains information about the provider being used, like OAuth tokens (`access_token`, etc).
-   */
-  interface Account {}
-}
 
 // const cookiesOptions: Partial<CookiesOptions> = {
 //   sessionToken: {
@@ -78,7 +49,7 @@ declare module '@auth/core' {
 // };
 
 const sessionOptions:AuthOptions['session'] = {
-  // strategy: 'jwt',
+  // strategy: 'jwt', // default: database
   maxAge: 30 * 24 * 60 * 60, // 30 days
   updateAge: 24 * 60 * 60, // 24 hours
   generateSessionToken: uuidv4,
@@ -91,7 +62,6 @@ const jwt = {
 };
 
 export const authOptions: AuthOptions = {
-  // secret: 'sobird@2023',
   session: sessionOptions,
   jwt,
   adapter: AuthAdapter,
@@ -130,6 +100,7 @@ export const authOptions: AuthOptions = {
             email: user.email,
             id: user.id,
             image: 'image',
+            role: 'user',
           };
         } catch (e) {
           throw Error(e);
@@ -223,6 +194,6 @@ export const authOptions: AuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = () => {
-  return getServerSession(authOptions);
-};
+export function getServerAuthSession(...args: [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']] | [NextApiRequest, NextApiResponse] | []) {
+  return getServerSession(...args, authOptions);
+}
