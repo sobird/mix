@@ -1,5 +1,6 @@
 import type { NextFetchEvent } from 'next/server';
-import { withAuth, NextRequestWithAuth, NextAuthMiddlewareOptions } from 'next-auth/middleware';
+import { withAuth, NextRequestWithAuth } from 'next-auth/middleware';
+import { getSession } from 'next-auth/react';
 
 // export const config = {
 //   // matcher: ["/profile"],
@@ -30,9 +31,15 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized({ token }) {
-        console.log('token', token);
-        return true;
+      async authorized({ req, token }) {
+        const session = await getSession({
+          req: {
+            headers: {
+              cookie: req.cookies.toString(),
+            },
+          },
+        });
+        return !!session;
       },
     },
   },
