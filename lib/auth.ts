@@ -52,30 +52,30 @@ declare module '@auth/core' {
   interface Account {}
 }
 
-const cookiesOptions: Partial<CookiesOptions> = {
-  sessionToken: {
-    name: 'next-auth.session-token',
-    options: {
-      httpOnly: true,
-      sameSite: 'none',
-      path: '/',
-      domain: process.env.NEXT_PUBLIC_DOMAIN,
-      secure: true,
-    },
-  },
-  callbackUrl: {
-    name: 'next-auth.callback-url',
-    options: {
+// const cookiesOptions: Partial<CookiesOptions> = {
+//   sessionToken: {
+//     name: 'next-auth.session-token',
+//     options: {
+//       httpOnly: true,
+//       sameSite: 'none',
+//       path: '/',
+//       domain: process.env.NEXT_PUBLIC_DOMAIN,
+//       secure: true,
+//     },
+//   },
+//   callbackUrl: {
+//     name: 'next-auth.callback-url',
+//     options: {
 
-    },
-  },
-  csrfToken: {
-    name: 'next-auth.csrf-token',
-    options: {
+//     },
+//   },
+//   csrfToken: {
+//     name: 'next-auth.csrf-token',
+//     options: {
 
-    },
-  },
-};
+//     },
+//   },
+// };
 
 const sessionOptions:AuthOptions['session'] = {
   // strategy: 'jwt',
@@ -91,7 +91,7 @@ const jwt = {
 };
 
 export const authOptions: AuthOptions = {
-  secret: 'sobird@2023',
+  // secret: 'sobird@2023',
   session: sessionOptions,
   jwt,
   adapter: AuthAdapter,

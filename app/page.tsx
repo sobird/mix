@@ -24,6 +24,8 @@ export default async function Home() {
   // const account = await AccountModel.findAll({ raw: true });
   // console.log('account', account);
 
+  const user = await UserModel.findAll({ raw: true });
+  console.log('user', user);
   return (
     <main
       style={{
