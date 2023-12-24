@@ -3,6 +3,15 @@
 
 @HOST={{$dotenv NEXTAUTH_URL}}
 
+### 用户登录
+POST {{HOST}}/api/auth/login
+content-type: application/json
+
+{
+  "username": "sobird",
+  "password": "sobird"
+}
+
 ### 创建用户
 @usernameToPost=sobird-{{$randomInt 1 1000}}
 POST {{HOST}}/api/user

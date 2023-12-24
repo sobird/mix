@@ -6,10 +6,10 @@
 
 'use client';
 
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import {
-  Input, Button, Form, ConfigProvider, message,
+  Input, Button, Form, ConfigProvider,
 } from 'antd';
 import { signup } from '@/actions/auth';
 import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
