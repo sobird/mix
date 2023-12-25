@@ -86,7 +86,7 @@ export const authOptions: AuthOptions = {
         },
         password: { label: '密码', type: 'password', value: 'sobird' },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { username, password } = credentials || {};
 
         if (!username || !password) {

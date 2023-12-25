@@ -1,4 +1,4 @@
-import type { NextFetchEvent } from 'next/server';
+import { NextResponse, type NextFetchEvent } from 'next/server';
 import { withAuth, NextRequestWithAuth } from 'next-auth/middleware';
 import { getSession } from 'next-auth/react';
 
@@ -25,21 +25,38 @@ import { getSession } from 'next-auth/react';
 // }
 
 export default withAuth(
-  (request: NextRequestWithAuth, fetchEvent: NextFetchEvent) => {
-    //
-    console.log(request.nextauth);
+  async (request: NextRequestWithAuth, fetchEvent: NextFetchEvent) => {
+    const session = await getSession({
+      req: {
+        headers: {
+          cookie: request.cookies.toString(),
+        },
+      },
+    });
+    console.log('session', session);
+    console.log(request.sessionToken);
+
+    // return NextResponse.json({
+    //   message: 'ok',
+    // }, {
+    //   status: 402,
+    // });
   },
   {
     callbacks: {
       async authorized({ req, token }) {
-        const session = await getSession({
-          req: {
-            headers: {
-              cookie: req.cookies.toString(),
-            },
-          },
-        });
-        return !!session;
+        const { cookies } = req;
+        // 从数据库获取session信息
+        // const session = await getSession({
+        //   req: {
+        //     headers: {
+        //       cookie: cookies.toString(),
+        //     },
+        //   },
+        // });
+        const sessionToken = cookies.get('next-auth.session-token');
+        req.sessionToken = sessionToken;
+        return !!sessionToken;
       },
     },
   },
@@ -48,5 +65,5 @@ export default withAuth(
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
   // matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-  matcher: ['/dashboard'],
+  matcher: ['/dashboard/:path*'],
 };
