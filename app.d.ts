@@ -10,11 +10,6 @@ interface PaginationSearchParams {
   // orderBy?: string | string[];
 }
 
-interface PropsWithParams<P, S> {
-  params: P;
-  searchParams: S
-}
-
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
 type ServerActionState<T = any> = {
@@ -28,3 +23,5 @@ type ServerActionState<T = any> = {
     type?: string,
   }
 } | null;
+
+declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{ params: Params; searchParams: SearchParams }>;
