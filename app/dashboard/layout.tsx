@@ -7,7 +7,6 @@
 'use client';
 
 import classNames from 'classnames';
-import Link from 'next/link';
 import Header from '@/components/layout/dashboard/header';
 import Aside from '@/components/layout/dashboard/aside';
 import styles from './layout.module.scss';

@@ -14,6 +14,7 @@ import {
 import { signup } from '@/actions/auth';
 import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
 import FieldCaptcha from '@/components/field-captcha';
+import useServerAction from '@/hooks/useServerAction';
 
 const initialState: ServerActionState = {
   success: true,
@@ -22,7 +23,9 @@ const initialState: ServerActionState = {
 
 export const SignupForm = () => {
   const [form] = Form.useForm();
-  const [state, dispatch] = useFormState(signup, initialState);
+  const [state, dispatch, pending] = useServerAction(signup, initialState);
+
+  console.log('pending', pending);
 
   useEffect(() => {
     console.log('state', state);
@@ -57,6 +60,7 @@ export const SignupForm = () => {
 
         <Button
           type="primary"
+          disabled={pending}
           style={{ width: '100%', borderColor: 'transparent' }}
           // htmlType="submit"
           onClick={() => {

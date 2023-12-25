@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { RoleFormRule, RoleFormAttributes } from '@/zod/role';
 import { createRoleAction } from '@/actions/role';
+import useServerAction from '@/hooks/useServerAction';
 
 const formItemLayout = {
   labelCol: {
@@ -22,8 +23,7 @@ interface RoleFormProps {
 
 const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
   const initialState = {};
-  const [state, dispatch] = useFormState(action, initialState);
-  console.log('state', state);
+  const [state, dispatch, pending] = useServerAction(action, initialState);
 
   return (
     <Form onFinish={dispatch} initialValues={initialValues} {...formItemLayout}>
@@ -36,7 +36,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
       <Form.Item label="描述" name="description">
         <Input.TextArea name="description" />
       </Form.Item>
-      <Button htmlType="submit">提交</Button>
+      <Button type="primary" htmlType="submit" disabled={pending}>提交</Button>
     </Form>
   );
 };

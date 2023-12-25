@@ -13,7 +13,7 @@ export const RoleFormZod = z.object({
     invalid_type_error: '角色名称长度为3-12个字符',
     required_error: '角色名称不能为空',
   }).min(3, '角色名称长度不能少于3个字符').max(24, '角色名称长度不能大于24个字符'),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   parentId: z.number().int().optional(),
 });
 
