@@ -25,11 +25,6 @@ export const SignupForm = () => {
   const [form] = Form.useForm();
   const [state, dispatch, pending] = useServerAction(signup, initialState);
 
-  console.log('pending', pending);
-
-  useEffect(() => {
-    console.log('state', state);
-  }, [state?.success]);
   return (
     <ConfigProvider componentSize="large">
       <Form

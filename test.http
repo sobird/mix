@@ -1,0 +1,8 @@
+@HOST={{$dotenv NEXTAUTH_URL}}
+
+### 编辑角色 Server Action
+POST {{HOST}}/dashboard/role/1/edit
+#content-type: application/json
+Next-Action: 9ea78a2fb645528e7b21edcd16060556455664ba
+
+[{}, {id: 1, name: "超级管理员test", description: "test"}]

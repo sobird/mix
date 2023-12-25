@@ -4,6 +4,7 @@
  * sobird<i@sobird.me> at 2023/12/08 22:40:59 created.
  */
 
+import { NextPage } from 'next';
 import React from 'react';
 import RoleForm from '../../create/form';
 import { updateRoleAction } from '@/actions/role';
@@ -15,7 +16,7 @@ interface RoleEditPageProps {
   };
 }
 
-const Page: React.FC<RoleEditPageProps> = async ({ params }) => {
+const Page: NextPage<RoleEditPageProps> = async ({ params }) => {
   const { id } = params;
 
   const role = await RoleModel.findOne({

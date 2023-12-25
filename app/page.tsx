@@ -1,3 +1,4 @@
+import { NextPage } from 'next';
 import {
   LoginButton,
   LogoutButton,
@@ -9,7 +10,8 @@ import {
   UserModel, SessionModel, AccountModel, sequelize,
 } from '@/models';
 
-export default async function Home() {
+const HomePage: IAppPage<{ id: string }> = async (params) => {
+  console.log('params', params.searchParams.id);
   // await sequelize.sync({ force: true });
   // await UserModel.signup({
   //   username: 'sobird',
@@ -43,4 +45,6 @@ export default async function Home() {
       </div>
     </main>
   );
-}
+};
+
+export default HomePage;

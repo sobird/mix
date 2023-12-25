@@ -15,11 +15,9 @@ export const metadata: Metadata = {
   title: '角色管理',
 };
 
-interface RolePageProps extends PropsWithParams<any, PaginationSearchParams> {
-  //
-}
+type IRoleAppPage = IAppPage<PaginationSearchParams>;
 
-const RolePage: React.FC<RolePageProps> = async ({ searchParams }) => {
+const RolePage: IRoleAppPage = async ({ searchParams }) => {
   const rolesWithPage = await RoleModel.findManyByPage(searchParams);
 
   return (
