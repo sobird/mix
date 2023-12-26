@@ -17,6 +17,8 @@ function symbolize(query) {
   });
 }
 
+console.log('Op.or', Op.or);
+
 function ruleToSequelize(rule) {
   console.log('rule', rule);
   return rule.inverted ? { $not: rule.conditions } : rule.conditions;
@@ -25,7 +27,6 @@ function ruleToSequelize(rule) {
 export function toSequelizeQuery(ability, action, subject) {
   console.log('ability123', action, subject);
   const query = rulesToQuery(ability, action, subject, ruleToSequelize);
-  console.log('query', query);
   return query === null ? query : symbolize(query);
 }
 
