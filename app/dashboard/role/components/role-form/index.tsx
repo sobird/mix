@@ -23,6 +23,7 @@ interface RoleFormProps {
 const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
   const initialState = {};
   const [state, dispatch, pending] = useServerAction(action, initialState);
+  console.log('state', state);
 
   return (
     <Form onFinish={dispatch} initialValues={initialValues} {...formItemLayout}>

@@ -12,6 +12,7 @@ import {
   Sequelize, Model, CreationOptional, ModelStatic, InferAttributes,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
+import { AbilityTuple, MongoAbility } from '@casl/ability';
 import { accessibleBy } from '@/casl/toSequelizeQuery';
 
 /** 数据库链接实例 */
@@ -131,6 +132,12 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
   static associate: (models: any) => void;
 
   static accessibleBy = accessibleBy;
+
+  public static async findManyWithAccessible<T extends AbilityTuple>(ability: MongoAbility<T>) {
+    // todo
+
+    console.log('ability', ability);
+  }
 
   /** 分页查找模型数据 */
   public static async findManyByPage<M extends BaseModel>(
