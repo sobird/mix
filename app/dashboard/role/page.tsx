@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Button } from 'antd';
 import RoleTable from './table';
 import { RoleModel } from '@/models';
+import RoleFormModal from './components/role-form-modal';
 
 export const metadata: Metadata = {
   title: '角色管理',
@@ -24,6 +25,7 @@ const RolePage: IRoleAppPage = async ({ searchParams }) => {
     <div>
       <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
       <RoleTable data={rolesWithPage} />
+      <RoleFormModal />
     </div>
   );
 };
