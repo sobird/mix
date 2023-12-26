@@ -91,6 +91,7 @@ const HomePage: IAppPage<{ id: string }> = async () => {
 
   const ability2 = defineAbility((can, cannot) => {
     can('read', UserModel, { id: 1 });
+    can('read', UserModel, { id: 2 });
     cannot('delete', UserModel);
   });
   const users = await UserModel.accessibleBy(ability2);

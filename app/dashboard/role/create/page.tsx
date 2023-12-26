@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoleAction } from '@/actions/role';
-import RoleForm from './form';
+import RoleForm from '../components/role-form';
 
 const Page = () => {
   return (
