@@ -124,6 +124,7 @@ Role.init(
       },
     },
     sequelize,
+    modelName: 'Role',
   },
 );
 

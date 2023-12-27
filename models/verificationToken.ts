@@ -60,6 +60,7 @@ VerificationToken.init(
   },
   {
     sequelize,
+    modelName: 'VerificationToken',
   },
 );
 

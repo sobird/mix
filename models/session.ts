@@ -65,6 +65,7 @@ Session.init(
   },
   {
     sequelize,
+    modelName: 'Session',
   },
 );
 

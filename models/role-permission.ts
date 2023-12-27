@@ -45,6 +45,7 @@ RolePermission.init(
   },
   {
     sequelize,
+    modelName: 'RolePermission',
   },
 );
 

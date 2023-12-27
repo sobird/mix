@@ -117,6 +117,7 @@ Account.init(
   },
   {
     sequelize,
+    modelName: 'Account',
   },
 );
 
