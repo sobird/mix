@@ -102,6 +102,27 @@ Role.init(
     },
   },
   {
+    // defaultScope: {
+    //   where: {
+    //     parentId: 1,
+    //   },
+    // },
+    scopes: {
+      random(test) {
+        console.log('test', test);
+        return {
+          where: {
+            id: Math.random(),
+          },
+        };
+      },
+
+      parent: {
+        where: {
+          parentId: 1,
+        },
+      },
+    },
     sequelize,
   },
 );

@@ -1,4 +1,4 @@
-import { type NextFetchEvent } from 'next/server';
+import { NextResponse, type NextFetchEvent } from 'next/server';
 import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
 
 // export const config = {
@@ -33,6 +33,12 @@ export default withAuth(
     // }, {
     //   status: 402,
     // });
+
+    return NextResponse.next({
+      // headers: {
+      //   nextauth,
+      // },
+    });
   },
   {
     callbacks: {

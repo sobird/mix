@@ -8,6 +8,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { getToken } from 'next-auth/jwt';
+import { cookies } from 'next/headers';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 import { RoleModel } from '@/models';
 
@@ -17,6 +19,14 @@ export async function createRoleAction(
   prevState: RoleFormServerActionState,
   payload: RoleFormAttributes,
 ): Promise<RoleFormServerActionState> {
+  const token = await getToken({
+    req: {
+      cookies: cookies(),
+    },
+  });
+
+  console.log('token_createRoleAction', token);
+
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
