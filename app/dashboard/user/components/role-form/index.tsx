@@ -41,11 +41,14 @@ const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
       <Form.Item hidden name="id">
         <Input name="id" hidden />
       </Form.Item>
-      <Form.Item label="角色名称" name="name" rules={[RoleFormRule]}>
+      <Form.Item label="用户名" name="username">
         <Input name="name" />
       </Form.Item>
-      <Form.Item label="描述" name="description">
-        <Input.TextArea name="description" />
+      <Form.Item label="邮箱" name="email">
+        <Input name="email" />
+      </Form.Item>
+      <Form.Item label="角色" name="roles">
+        <Input name="roles" />
       </Form.Item>
       <Button type="primary" htmlType="submit" disabled={pending}>提交</Button>
     </Form>

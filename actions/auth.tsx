@@ -19,6 +19,13 @@ import { UserModel } from '@/models';
 
 type SignUpServerActionState = ServerActionState<SignUpAttributes>;
 
+/**
+ * 前台注册用户
+ *
+ * @param prevState
+ * @param payload
+ * @returns
+ */
 export async function signup(
   prevState: SignUpServerActionState,
   payload: SignUpAttributes,

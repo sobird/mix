@@ -287,6 +287,9 @@ const Aside: React.FunctionComponent = () => {
           mode="inline"
         >
           <Menu.SubMenu key="dashboard" title="系统管理">
+            <Menu.Item key={`${DASHBOARD}/user`}>
+              <Link href={`${DASHBOARD}/user`}>用户管理</Link>
+            </Menu.Item>
             <Menu.Item key={`${DASHBOARD}/role`}>
               <Link href={`${DASHBOARD}/role`}>角色管理</Link>
             </Menu.Item>

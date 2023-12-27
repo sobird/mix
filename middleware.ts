@@ -26,7 +26,7 @@ import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
 export default withAuth(
   async (request: NextRequestWithAuth, fetchEvent: NextFetchEvent) => {
     const { nextauth } = request;
-    console.log('nextauth', nextauth);
+    // console.log('nextauth', nextauth);
 
     // return NextResponse.json({
     //   message: 'ok',

@@ -101,7 +101,7 @@ export const authOptions: AuthOptions = {
             email: user.email,
             id: user.id,
             image: 'image',
-            role: 'user',
+            role: 'admin',
           };
         } catch (e) {
           throw Error(e);
@@ -170,6 +170,7 @@ export const authOptions: AuthOptions = {
       console.log('jwt-callback', token, user, account);
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       // Persist the OAuth access_token to the token right after signin
       if (account) {

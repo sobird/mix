@@ -8,25 +8,24 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { getToken } from 'next-auth/jwt';
-import { cookies } from 'next/headers';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 import { RoleModel } from '@/models';
+import { getServerAuthToken } from '@/lib/auth';
+import { defineAbilitiesFor } from '@/lib/ability';
 
 type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;
 
+/**
+ * 角色为admin的用户可以创建
+ *
+ * @param prevState
+ * @param payload
+ * @returns
+ */
 export async function createRoleAction(
   prevState: RoleFormServerActionState,
   payload: RoleFormAttributes,
 ): Promise<RoleFormServerActionState> {
-  const token = await getToken({
-    req: {
-      cookies: cookies(),
-    },
-  });
-
-  console.log('token_createRoleAction', token);
-
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
@@ -58,6 +57,16 @@ export async function updateRoleAction(
   prevState: RoleFormServerActionState,
   payload: RoleFormAttributes,
 ): Promise<RoleFormServerActionState> {
+  const token = await getServerAuthToken();
+  const ability = defineAbilitiesFor(token);
+
+  if (ability.cannot('update', 'Role')) {
+    return {
+      success: false,
+      message: '您没有更新角色的权限',
+    };
+  }
+
   const validated = RoleFormZod.safeParse(payload);
 
   if (!validated.success) {
