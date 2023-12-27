@@ -6,11 +6,11 @@
  */
 
 import {
-  createMongoAbility, ForcedSubject, AbilityBuilder, MongoAbility, CreateAbility,
+  createMongoAbility, ForcedSubject, AbilityBuilder, MongoAbility, CreateAbility, InferSubjects,
 } from '@casl/ability';
 import Models from '@/models';
 
-type Subjects = keyof typeof Models | 'all';
+type Subjects = InferSubjects<keyof typeof Models | 'all'>;
 type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage' | 'invite';
 
 type AppAbilities = [
@@ -37,13 +37,13 @@ const rolePermissions: Record<Roles, DefinePermissions> = {
 /**
  * @param user contains details about logged in user: its id, name, email, role, etc
  */
-export function defineAbilitiesFor(user: User) {
+export function defineAbilitiesFor(user) {
   const builder = new AbilityBuilder<AppAbility>(createMongoAbility);
 
   if (typeof rolePermissions[user.role] === 'function') {
     rolePermissions[user.role](user, builder);
   } else {
-    throw new Error(`Trying to use unknown role "${user.role}"`);
+    // throw new Error(`Trying to use unknown role "${user.role}"`);
   }
 
   return builder.build();

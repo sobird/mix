@@ -74,3 +74,6 @@ npx prisma init --datasource-provider sqlite
 ```
 
 ### id vs cuid vs uuid ？
+
+
+## casl

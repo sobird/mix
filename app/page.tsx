@@ -42,12 +42,17 @@ const HomePage: IAppPage<{ id: string }> = async () => {
 
   const ability = defineAbilitiesFor(token);
   ability.update([
+    // {
+    //   action: 'create',
+    //   subject: 'User',
+    // },
     {
-      action: 'create',
-      subject: 'User',
+      action: 'read',
+      subject: '/test',
     },
   ]);
-  console.log('ability', ability.can('create', subject('User', user2)));
+
+  console.log('ability', ability.can('read', '/test1'));
 
   return (
     <main

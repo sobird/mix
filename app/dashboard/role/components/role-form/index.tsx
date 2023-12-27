@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Form, Input, Button } from 'antd';
+import React, { useEffect } from 'react';
+import {
+  Form, Input, Button, message,
+} from 'antd';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { RoleFormRule, RoleFormAttributes } from '@/zod/role';
@@ -21,9 +23,18 @@ interface RoleFormProps {
 }
 
 const RoleForm: React.FC<RoleFormProps> = ({ action, initialValues }) => {
-  const initialState = {};
+  const initialState = null;
   const [state, dispatch, pending] = useServerAction(action, initialState);
-  console.log('state', state);
+
+  useEffect(() => {
+    if (!state) {
+      return;
+    }
+
+    if (!state.success) {
+      message.error(state.message);
+    }
+  }, [state]);
 
   return (
     <Form onFinish={dispatch} initialValues={initialValues} {...formItemLayout}>
