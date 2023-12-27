@@ -14,11 +14,12 @@
 import {
   getServerSession, type AuthOptions,
 } from 'next-auth';
-import { encode } from 'next-auth/jwt';
+import { encode, getToken } from 'next-auth/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
+import { cookies } from 'next/headers';
 import { sendVerificationRequest } from './mailer';
 import AuthAdapter from './authSequelizeAdapter';
 import User from '@/models/user';
@@ -199,4 +200,12 @@ export const authOptions: AuthOptions = {
  */
 export function getServerAuthSession(...args: [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']] | [NextApiRequest, NextApiResponse] | []) {
   return getServerSession(...args, authOptions);
+}
+
+export function getServerAuthToken() {
+  return getToken({
+    req: {
+      cookies: cookies(),
+    } as any,
+  });
 }

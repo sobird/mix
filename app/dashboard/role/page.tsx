@@ -20,6 +20,10 @@ type IRoleAppPage = IAppPage<PaginationSearchParams>;
 
 const RolePage: IRoleAppPage = async ({ searchParams }) => {
   const rolesWithPage = await RoleModel.findManyByPage(searchParams);
+  const roles = await RoleModel.scope([{
+    method: ['random', 'dd'],
+  }, 'parent']).findAll({ raw: true });
+  console.log('roles', roles);
 
   return (
     <div>
