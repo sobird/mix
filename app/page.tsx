@@ -27,9 +27,6 @@ const HomePage: IAppPage<{ id: string }> = async () => {
   // const account = await AccountModel.findAll({ raw: true });
   // console.log('account', account);
 
-  console.log('sequelize.models', sequelize.models);
-  console.log('UserModel', UserModel.getAttributes());
-
   const user2 = await UserModel.findOne({
     where: {
       id: 3,
@@ -40,10 +37,16 @@ const HomePage: IAppPage<{ id: string }> = async () => {
   const user = {
     id: 3,
     isAdmin: false,
-    role: 'admin',
+    role: 'member',
   };
 
   const ability = defineAbilitiesFor(user);
+  ability.update([
+    {
+      action: 'create',
+      subject: 'User',
+    },
+  ]);
   console.log('ability', ability.can('create', subject('User', user2)));
 
   return (

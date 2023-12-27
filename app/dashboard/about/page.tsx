@@ -4,10 +4,10 @@ import { Button } from 'antd';
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { updateUser } from '@/store/slices/app';
-import { submitAbout } from '@/lib/actions';
 
 const AboutPage = () => {
   const appState = useAppSelector((state) => { return state.app; });
+  console.log('appState', appState);
 
   const dispatch = useAppDispatch();
 
@@ -23,7 +23,7 @@ const AboutPage = () => {
         Dispatch
       </Button>
 
-      <form action={submitAbout}>
+      <form>
         <input name="username" />
         <button type="submit">submit</button>
       </form>

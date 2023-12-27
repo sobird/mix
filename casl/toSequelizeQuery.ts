@@ -17,8 +17,6 @@ function symbolize(query) {
   });
 }
 
-console.log('Op.or', Op.or);
-
 function ruleToSequelize(rule) {
   console.log('rule', rule);
   return rule.inverted ? { $not: rule.conditions } : rule.conditions;

@@ -28,6 +28,7 @@ export interface PermissionAttributes {
   description: string;
   operator: string;
   target: string;
+  rules: object;
 }
 /** Some attributes are optional in `Permission.build` and `Permission.create` calls */
 export type PermissionCreationAttributes = Optional<PermissionAttributes, 'id'>;
@@ -77,10 +78,15 @@ Permission.init(
     target: {
       type: DataTypes.STRING,
     },
+    rules: {
+      type: DataTypes.TEXT,
+    },
   },
   {
     sequelize,
   },
 );
+
+// Permission.beforeFind()
 
 export default Permission;

@@ -49,7 +49,7 @@ import User from '@/models/user';
 // };
 
 const sessionOptions:AuthOptions['session'] = {
-  // strategy: 'jwt', // default: database
+  strategy: 'jwt', // default: database
   maxAge: 30 * 24 * 60 * 60, // 30 days
   updateAge: 24 * 60 * 60, // 24 hours
   generateSessionToken: uuidv4,
@@ -153,6 +153,8 @@ export const authOptions: AuthOptions = {
     async session({
       session, token, user, trigger,
     }) {
+      console.log('session-callback', token, user, trigger);
+
       return {
         ...session,
         // user: {
@@ -164,6 +166,7 @@ export const authOptions: AuthOptions = {
     async jwt({
       token, user, account,
     }) {
+      console.log('jwt-callback', token, user, account);
       if (user) {
         token.id = user.id;
       }

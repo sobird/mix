@@ -110,7 +110,7 @@ export const sequelize = new Sequelize({
   // isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ
   logging: (queryString, queryObject: any) => {
     console.log(queryString); // outputs a string
-    if (queryObject.type === 'INSERT') {
+    if (queryObject.type === 'INSERT' || queryObject.type === 'UPDATE') {
       console.log(queryObject.bind);
     }
   },
@@ -167,20 +167,14 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
         raw: true,
       });
       return {
-        pn,
-        ps,
-        count,
-        rows,
+        pn, ps, count, rows,
       };
     } catch (err) {
       // console.log('err', err);
     }
 
     return {
-      pn,
-      ps,
-      count: 0,
-      rows: [],
+      pn, ps, count: 0, rows: [],
     };
   }
 }
