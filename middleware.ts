@@ -1,6 +1,5 @@
-import { NextResponse, type NextFetchEvent } from 'next/server';
-import { withAuth, NextRequestWithAuth } from 'next-auth/middleware';
-import { getSession } from 'next-auth/react';
+import { type NextFetchEvent } from 'next/server';
+import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
 
 // export const config = {
 //   // matcher: ["/profile"],
@@ -26,15 +25,8 @@ import { getSession } from 'next-auth/react';
 
 export default withAuth(
   async (request: NextRequestWithAuth, fetchEvent: NextFetchEvent) => {
-    const session = await getSession({
-      req: {
-        headers: {
-          cookie: request.cookies.toString(),
-        },
-      },
-    });
-    console.log('session', session);
-    console.log(request.sessionToken);
+    const { nextauth } = request;
+    console.log('nextauth', nextauth);
 
     // return NextResponse.json({
     //   message: 'ok',
@@ -55,7 +47,6 @@ export default withAuth(
         //   },
         // });
         const sessionToken = cookies.get('next-auth.session-token');
-        req.sessionToken = sessionToken;
         return !!sessionToken;
       },
     },
