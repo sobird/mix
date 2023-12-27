@@ -33,6 +33,7 @@ Organization.init(
   },
   {
     sequelize,
+    modelName: 'Organization',
   },
 );
 

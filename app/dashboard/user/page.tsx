@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { Button } from 'antd';
 import UserTable from './table';
 import { UserModel } from '@/models';
-import UserFormModal from './components/role-form-modal';
 
 export const metadata: Metadata = {
   title: '用户管理',
@@ -23,9 +22,8 @@ const UserPage: IUserAppPage = async ({ searchParams }) => {
 
   return (
     <div>
-      <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
+      <Link href="/dashboard/user/create"><Button type="primary">创建用户</Button></Link>
       <UserTable data={userWithPage} />
-      {/* <UserFormModal /> */}
     </div>
   );
 };

@@ -46,7 +46,7 @@ export { UserRole as UserRoleModel };
 
 const { models } = sequelize;
 Object.values(models).forEach((model: any) => {
-  model.associate?.(sequelize.models);
+  model.associate?.(models);
 });
 
 export { sequelize };

@@ -91,7 +91,6 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
    * The `models/index` file will call this method automatically.
    */
   static associate({ Role, UserRole }) {
-    // todo
     this.belongsToMany(Role, { through: UserRole });
   }
 
@@ -208,6 +207,7 @@ User.init(
   },
   {
     sequelize,
+    modelName: 'User',
   },
 );
 
