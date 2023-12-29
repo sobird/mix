@@ -10,7 +10,10 @@ import Link from 'next/link';
 import { Button } from 'antd';
 import RoleTable from './table';
 import { RoleModel } from '@/models';
-import RoleFormModal from './components/role-form-modal';
+
+import RoleForm from './components/role-form';
+import { createRoleAction } from '@/actions/role';
+import withActionFormModal from '@/components/with-action-form-modal';
 
 export const metadata: Metadata = {
   title: '角色管理',
@@ -18,18 +21,16 @@ export const metadata: Metadata = {
 
 type IRoleAppPage = IAppPage<PaginationSearchParams>;
 
+const RoleFormModal = withActionFormModal({ ActionForm: RoleForm, title: '创建角色', trigger: '俺妞妞' });
+
 const RolePage: IRoleAppPage = async ({ searchParams }) => {
   const rolesWithPage = await RoleModel.findManyByPage(searchParams);
-  const roles = await RoleModel.scope([{
-    method: ['random', 'dd'],
-  }, 'parent']).findAll({ raw: true });
-  console.log('roles', roles);
 
   return (
     <div>
       <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
+      <RoleFormModal action={createRoleAction}>按钮</RoleFormModal>
       <RoleTable data={rolesWithPage} />
-      <RoleFormModal />
     </div>
   );
 };
