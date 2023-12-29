@@ -6,13 +6,13 @@
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 
-export default function useServerAction<State, Payload>(
-  action: (state: Awaited<State>, payload: Payload) => State | Promise<State>,
-  initialState: Awaited<State>,
+export default function useServerAction<State, Payload = unknown>(
+  action: FormServerAction<State, Payload>,
+  initialState?: Awaited<State>,
   permalink?: string,
 ): [State, (payload: Payload) => void, boolean] {
   const [pending, setPending] = useState(false);
-  const [state, dispatch] = useFormState(action, initialState, permalink);
+  const [state, dispatch] = useFormState<State, Payload>(action, initialState, permalink);
 
   useEffect(() => {
     setPending(false);

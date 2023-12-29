@@ -19,9 +19,20 @@ type ServerActionState<T = any> = {
   };
   message: string | null;
   revalidate?: {
-    path: string,
-    type?: string,
-  }
+    path: string;
+    type?: string;
+  };
 } | null;
 
-declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{ params: Params; searchParams: SearchParams }>;
+declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{
+  params: Params;
+  searchParams: SearchParams;
+}>;
+
+interface FormServerAction<State = ServerActionState, Payload = unknown> {
+  (state: Awaited<State>, payload: Payload): Promise<State>;
+}
+
+type ServerAction<State = ServerActionState, Payload = unknown> =
+  | FormServerAction
+  | ((payload: Payload) => Promise<State>);

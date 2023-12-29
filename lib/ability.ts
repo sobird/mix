@@ -22,8 +22,9 @@ export type AppAbility = MongoAbility<AppAbilities>;
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>;
 
 type DefinePermissions = (user: User, builder: AbilityBuilder<AppAbility>) => void;
-type Roles = 'member' | 'admin';
+type Roles = 'member' | 'admin' | 'visitor';
 
+/** 系统预设角色权限规则 */
 const rolePermissions: Record<Roles, DefinePermissions> = {
   member(user, { can }) {
     can('invite', 'User');
@@ -31,6 +32,10 @@ const rolePermissions: Record<Roles, DefinePermissions> = {
   },
   admin(user, { can }) {
     can('manage', 'all', { id: user.id });
+  },
+  // 未登录用户 访客
+  visitor(user, { can }) {
+    //
   },
 };
 
