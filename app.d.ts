@@ -12,16 +12,19 @@ interface PaginationSearchParams {
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
-type ServerActionState<T = any> = {
+/**
+ * 至少三种状态(1.初始化，2.成功，3.失败)
+ * 1.initial
+ * 2.success
+ * 3.fail
+ */
+type ServerActionState<Errors = any, Data = any> = {
   success: boolean;
-  errors?: {
-    [key in T]: string;
-  };
   message: string | null;
-  revalidate?: {
-    path: string;
-    type?: string;
+  errors?: {
+    [key in Errors]: string;
   };
+  data: Data;
 } | null;
 
 declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{
