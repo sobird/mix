@@ -22,10 +22,7 @@ type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;
  * @param payload
  * @returns
  */
-export async function createRoleAction(
-  prevState: RoleFormServerActionState,
-  payload: RoleFormAttributes,
-): Promise<RoleFormServerActionState> {
+export async function createRoleAction(payload: RoleFormAttributes): Promise<RoleFormServerActionState> {
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
@@ -51,6 +48,10 @@ export async function createRoleAction(
 
   revalidatePath('/dashboard/role');
   redirect('/dashboard/role');
+}
+
+export async function createRoleActionWithState() {
+//
 }
 
 export async function updateRoleAction(
