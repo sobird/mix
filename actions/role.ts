@@ -47,7 +47,6 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
   }
 
   revalidatePath('/dashboard/role');
-  redirect('/dashboard/role');
 }
 
 export async function createRoleActionWithState() {
