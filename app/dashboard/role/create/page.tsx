@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useTransition } from 'react';
+import React from 'react';
 import { redirect } from 'next/navigation';
 import { createRoleAction } from '@/actions/role';
 import RoleForm from '../components/role-form';
@@ -8,7 +8,13 @@ import RoleForm from '../components/role-form';
 const Page = () => {
   return (
     <div>
-      <RoleForm action={createRoleAction} />
+      <RoleForm
+        action={createRoleAction}
+        onFinish={(state) => {
+          console.log('onFinish', state);
+          redirect('/dashboard/role');
+        }}
+      />
     </div>
   );
 };

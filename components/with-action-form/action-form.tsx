@@ -40,6 +40,8 @@ const ActionForm: React.FC<ActionFormProps> = ({
   ...props
 }) => {
   const [state, dispatch, pending] = useServerAction(action, null);
+  console.log('state', state);
+
   useUpdate(() => {
     if (state && state.success === false) {
       // 失败显示失败信息
