@@ -14,7 +14,6 @@ const withActionFormModal = (
   actionFormModalProps: ActionFormModalProps,
 ) => {
   return ({ children, ...actionFormProps }: ActionFormProps) => {
-    console.log('children', children);
     return (
       <ActionFormModal
         actionFormProps={actionFormProps}

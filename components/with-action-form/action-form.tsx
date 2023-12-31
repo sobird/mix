@@ -6,17 +6,24 @@
 
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Form, FormProps, FormInstance, message,
 } from 'antd';
 import Submitter, { type SubmitterProps } from '@/components/submitter';
-import useServerAction from '@/hooks/useServerAction';
+import { useServerAction, useUpdate } from '@/hooks';
 
 export interface ActionFormProps extends Omit<FormProps, 'action'> {
-  action?: FormServerAction;
+  action: FormServerAction;
   submitter?: SubmitterProps<{ form?: FormInstance<any>; }> | false;
-  /** async server action finish */
+  /**
+   * async server action finish
+   *
+   * 如果 server action 中使用 redirect 函数 将不会触发，因为成功后会跳转页面，执行不了后面的回调函数
+   *
+   * @param state
+   * @returns
+   */
   onFinish?: (state: ServerActionState) => void;
   /** async server action failed */
   onFailed?: (state: ServerActionState) => void;
@@ -32,21 +39,14 @@ const ActionForm: React.FC<ActionFormProps> = ({
   onFailed,
   ...props
 }) => {
-  const [state, dispatch, pending] = useServerAction(action);
-  console.log('state', state);
-  useEffect(() => {
-    if (!state) {
-      return;
-    }
-
-    if (state.success) {
-      console.log('onFinish', onFinish);
-      onFinish?.(state);
-    } else {
-      onFailed?.(state);
-      // 提交失败显示失败信息
+  const [state, dispatch, pending] = useServerAction(action, null);
+  useUpdate(() => {
+    if (state && state.success === false) {
+      // 失败显示失败信息
       message.error(state.message);
+      return onFailed?.(state);
     }
+    return onFinish?.(state);
   }, [state]);
 
   let { labelCol } = props;

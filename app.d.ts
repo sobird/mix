@@ -12,6 +12,11 @@ interface PaginationSearchParams {
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
+declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{
+  params: Params;
+  searchParams: SearchParams;
+}>;
+
 /**
  * 至少三种状态(1.初始化，2.成功，3.失败)
  * 1.initial
@@ -24,18 +29,13 @@ type ServerActionState<Errors = any, Data = any> = {
   errors?: {
     [key in Errors]: string;
   };
-  data: Data;
+  data?: Data;
 } | null;
 
-declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{
-  params: Params;
-  searchParams: SearchParams;
-}>;
-
-interface FormServerAction<State = ServerActionState, Payload = unknown> {
-  (state: Awaited<State>, payload: Payload): Promise<State>;
+interface FormServerAction<Payload = unknown, State = ServerActionState> {
+  (payload: Payload, state?: Awaited<State>): Promise<State>;
 }
 
-type ServerAction<State = ServerActionState, Payload = unknown> =
+type ServerAction<Payload = unknown, State = ServerActionState> =
   | FormServerAction
   | ((payload: Payload) => Promise<State>);

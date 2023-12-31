@@ -34,7 +34,7 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
 
   declare name: string;
 
-  declare description: CreationOptional<string>;
+  declare description: CreationOptional<string> | null;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
 
