@@ -17,7 +17,7 @@ const withActionFormModal = (
   return ({ children, ...actionFormProps }: ActionFormProps) => {
     return (
       <ActionFormModal
-        trigger={children}
+        trigger={children as JSX.Element}
         {...actionFormModalProps}
       >
         <ActionForm {...actionFormProps} />

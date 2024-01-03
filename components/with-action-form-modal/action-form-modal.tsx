@@ -6,12 +6,12 @@
 
 'use client';
 
-import React, { useState, useMemo, PropsWithChildren } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button, Modal, ModalProps } from 'antd';
 
 export interface ActionFormModalProps extends ModalProps {
-  trigger?: React.ReactNode | false;
-  children: JSX.Element;
+  trigger?: JSX.Element | string;
+  children?: JSX.Element;
 }
 
 const ActionFormModal: React.FC<ActionFormModalProps> = ({
@@ -51,12 +51,18 @@ const ActionFormModal: React.FC<ActionFormModalProps> = ({
     });
   }, [setOpen, trigger]);
 
-  const childrenDom = React.cloneElement(children, {
-    ...children.props,
-    onFinish: async (state) => {
-      setOpen(false);
-    },
-  });
+  const childrenDom = useMemo(() => {
+    if (!children) {
+      return null;
+    }
+
+    return React.cloneElement(children, {
+      ...children.props,
+      onFinish: () => {
+        setOpen(false);
+      },
+    });
+  }, [setOpen, children]);
 
   return (
     <>

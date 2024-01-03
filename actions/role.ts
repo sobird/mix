@@ -62,8 +62,6 @@ export async function updateRoleAction(
   const token = await getServerAuthToken();
   const ability = defineAbilitiesFor(token);
 
-  console.log('token', token);
-
   if (ability.cannot('update', 'Role')) {
     return {
       status: ActionStatus.FAILURE,
