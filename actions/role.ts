@@ -12,6 +12,7 @@ import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 import { RoleModel } from '@/models';
 import { getServerAuthToken } from '@/lib/auth';
 import { defineAbilitiesFor } from '@/lib/ability';
+import { ActionStatus } from '.';
 
 type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;
 
@@ -26,7 +27,7 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
-      success: false,
+      status: ActionStatus.SUCCESS,
       errors: validated.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Role.',
     };
@@ -41,7 +42,7 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
 
   if (!created) {
     return {
-      success: false,
+      status: ActionStatus.FAILURE,
       message: '角色名已存在',
     };
   }

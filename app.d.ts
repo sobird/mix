@@ -24,13 +24,13 @@ declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<
  * 3.fail
  */
 type ServerActionState<Errors = any, Data = any> = {
-  success: boolean;
-  message: string | null;
+  status: import('@/actions').ActionStatus;
+  message?: string | null;
   errors?: {
     [key in Errors]: string;
   };
   data?: Data;
-} | null;
+} | null | undefined;
 
 interface FormServerAction<Payload = unknown, State = ServerActionState> {
   (payload: Payload, state?: Awaited<State>): Promise<State>;
