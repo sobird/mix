@@ -14,7 +14,7 @@ export interface ActionFormModalProps extends ModalProps {
   trigger?: JSX.Element | false;
   children?: JSX.Element;
   ActionForm: React.FC<ActionFormProps>;
-  actionFormProps?: ActionFormProps;
+  actionFormProps: ActionFormProps;
 }
 
 const ActionFormModal: React.FC<ActionFormModalProps> = ({
@@ -36,9 +36,6 @@ const ActionFormModal: React.FC<ActionFormModalProps> = ({
   const handleCancel = () => {
     setOpen(false);
   };
-
-  // console.log('slot', actionForm);
-  console.log('children', children);
 
   const triggerDom = useMemo(() => {
     if (!trigger) {

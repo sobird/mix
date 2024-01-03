@@ -164,6 +164,7 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
         offset,
         limit: ps,
         // order: order.map((item) => { return item.split(','); }) as Order,
+        order: [['createdAt', 'DESC']],
         raw: true,
       });
       return {
