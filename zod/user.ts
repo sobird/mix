@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { createFormRule } from '.';
-import { exists } from '@/actions/user';
+import { existsAction } from '@/actions/user';
 
-export const SignUpZod = z.object({
+export const UserZod = z.object({
   username: z.string({
     required_error: '请输入用户名',
   }).regex(/^[a-zA-Z][a-zA-Z0-9_]{1,20}$/, '长度在2~20位之间，包含字母、数字、下划线')
@@ -10,7 +10,7 @@ export const SignUpZod = z.object({
       if (!username) {
         return true;
       }
-      return !await exists({ username });
+      return !await existsAction({ username });
     }, {
       message: '用户名已存在',
     }),
@@ -20,13 +20,10 @@ export const SignUpZod = z.object({
     if (!email) {
       return true;
     }
-    return !await exists({ email });
+    return !await existsAction({ email });
   }, {
     message: '邮箱已存在',
   }),
-  verificationCode: z.string({
-    required_error: '请输入验证码',
-  }).regex(/^\d{6}$/, '验证码为6位数字'),
 });
 
 export const PasswordZod = z.object({
@@ -41,8 +38,19 @@ export const PasswordZod = z.object({
   path: ['confirmPassword'],
 });
 
+export const VerificationCodeZod = z.object({
+  verificationCode: z.string({
+    required_error: '请输入验证码',
+  }).regex(/^\d{6}$/, '验证码为6位数字'),
+});
+
+export const SignUpZod = z.intersection(UserZod, VerificationCodeZod);
 export const SignUpZodWithRefine = z.intersection(SignUpZod, PasswordZod);
+export const CreateUserZodWithRefine = z.intersection(UserZod, PasswordZod);
+
 export type SignUpAttributes = z.infer<typeof SignUpZodWithRefine>;
+export type CreateUserAttributes = z.infer<typeof CreateUserZodWithRefine>;
 
 export const SignUpFormRule = createFormRule(SignUpZod);
-export const SignUpPasswordRule = createFormRule(PasswordZod);
+export const UserPasswordRule = createFormRule(PasswordZod);
+export const CreateUserFormRule = createFormRule(UserZod);

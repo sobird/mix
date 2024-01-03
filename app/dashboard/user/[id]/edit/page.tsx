@@ -6,7 +6,7 @@
 
 import { NextPage } from 'next';
 import React from 'react';
-import RoleForm from '../../components/role-form';
+import RoleForm from '../../components/user-form';
 import { updateRoleAction } from '@/actions/role';
 import { RoleModel } from '@/models';
 
