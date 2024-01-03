@@ -55,15 +55,16 @@ export async function createRoleActionWithState() {
 }
 
 export async function updateRoleAction(
-  prevState: RoleFormServerActionState,
   payload: RoleFormAttributes,
 ): Promise<RoleFormServerActionState> {
   const token = await getServerAuthToken();
   const ability = defineAbilitiesFor(token);
 
+  console.log('token', token);
+
   if (ability.cannot('update', 'Role')) {
     return {
-      success: false,
+      status: ActionStatus.FAILURE,
       message: '您没有更新角色的权限',
     };
   }
@@ -72,17 +73,26 @@ export async function updateRoleAction(
 
   if (!validated.success) {
     return {
-      success: false,
+      status: ActionStatus.FAILURE,
       errors: validated.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Update Role.',
     };
   }
 
-  RoleModel.update(validated.data, {
-    where: {
-      id: payload.id,
-    },
-  });
+  try {
+    await RoleModel.update(validated.data, {
+      where: {
+        id: payload.id,
+      },
+    });
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '角色名已存在',
+      };
+    }
+  }
 
   revalidatePath('/dashboard/role');
   redirect('/dashboard/role');
