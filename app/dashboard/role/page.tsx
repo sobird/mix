@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 type IRoleAppPage = IAppPage<PaginationSearchParams>;
 
-const RoleFormModal = withActionFormModal({ ActionForm: RoleForm, title: '创建角色', trigger: '俺妞妞' });
+const RoleFormModal = withActionFormModal(RoleForm, { title: '创建角色' });
 
 const RolePage: IRoleAppPage = async ({ searchParams }) => {
   const rolesWithPage = await RoleModel.findManyByPage(searchParams);
