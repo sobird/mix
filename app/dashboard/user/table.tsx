@@ -10,16 +10,16 @@ import { FC } from 'react';
 import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { RoleModel, RoleAttributes } from '@/models';
+import { UserModel, UserAttributes } from '@/models';
 import { deleteRoleAction } from '@/actions/role';
 
-type RoleTableData = Awaited<ReturnType<typeof RoleModel.findManyByPage<RoleModel>>>;
+type UserTableData = Awaited<ReturnType<typeof UserModel.findManyByPage<UserModel>>>;
 
-interface RoleTableProps {
-  data: RoleTableData
+interface UserTableProps {
+  data: UserTableData
 }
 
-const RoleTable:FC<RoleTableProps> = ({ data }) => {
+const UserTable:FC<UserTableProps> = ({ data }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -30,7 +30,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
       padding: '0.5rem',
     }}
     >
-      <Table<RoleAttributes>
+      <Table<UserAttributes>
         pagination={{
           hideOnSinglePage: true,
           position: ['bottomCenter'],
@@ -56,7 +56,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
       >
         <Table.Column title="用户名" dataIndex="username" />
         <Table.Column title="邮箱" dataIndex="email" />
-        <Table.Column<RoleAttributes>
+        <Table.Column<UserAttributes>
           title="创建时间"
           dataIndex="createdAt"
           render={(value, record) => {
@@ -97,4 +97,4 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
   );
 };
 
-export default RoleTable;
+export default UserTable;

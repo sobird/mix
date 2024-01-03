@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import type { NamePath } from 'antd/lib/form/interface';
 import useInterval from '@/hooks/useInterval';
-import { sendCaptchaEmail } from '@/actions/auth';
+import { sendCaptchaEmailAction } from '@/actions/user';
 
 export type FieldCaptchaProps = {
   value?: InputProps['value'];
@@ -41,7 +41,7 @@ const FieldCaptcha: React.FC<FieldCaptchaProps> = ({
   countDown,
   identifierName = 'identifier',
   onCaptcha = async (mobile) => {
-    await sendCaptchaEmail(mobile);
+    await sendCaptchaEmailAction(mobile);
   },
   buttonTextRender = (count) => {
     return count ? `${count} 秒后重新获取` : '获取验证码';

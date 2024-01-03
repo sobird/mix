@@ -6,24 +6,22 @@
 
 'use client';
 
-import { useEffect } from 'react';
-import { useFormState } from 'react-dom';
 import {
   Input, Button, Form, ConfigProvider,
 } from 'antd';
-import { signup } from '@/actions/auth';
-import { SignUpFormRule, SignUpPasswordRule } from '@/zod/user';
+import { signUpAction } from '@/actions/user';
+import { SignUpFormRule, UserPasswordRule } from '@/zod/user';
 import FieldCaptcha from '@/components/field-captcha';
 import useServerAction from '@/hooks/useServerAction';
-
-const initialState: ServerActionState = {
-  success: true,
-  message: 'ok',
-};
+import { ActionStatus } from '@/actions';
 
 export const SignupForm = () => {
+  const initialState: ServerActionState = {
+    status: ActionStatus.INITIAL,
+    message: 'initial state',
+  };
   const [form] = Form.useForm();
-  const [state, dispatch, pending] = useServerAction(signup, initialState);
+  const [, dispatch, pending] = useServerAction(signUpAction, initialState);
 
   return (
     <ConfigProvider componentSize="large">
@@ -40,10 +38,10 @@ export const SignupForm = () => {
         >
           <Input placeholder="用户名" />
         </Form.Item>
-        <Form.Item name="password" rules={[SignUpPasswordRule]}>
+        <Form.Item name="password" rules={[UserPasswordRule]}>
           <Input.Password placeholder="登录密码" />
         </Form.Item>
-        <Form.Item name="confirmPassword" dependencies={['password']} rules={[SignUpPasswordRule]}>
+        <Form.Item name="confirmPassword" dependencies={['password']} rules={[UserPasswordRule]}>
           <Input.Password placeholder="密码确认" />
         </Form.Item>
         <Form.Item name="email" validateDebounce={300} rules={[SignUpFormRule]}>

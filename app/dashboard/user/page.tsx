@@ -8,8 +8,8 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from 'antd';
-import UserTable from './table';
 import { UserModel } from '@/models';
+import UserTable from './table';
 
 export const metadata: Metadata = {
   title: '用户管理',

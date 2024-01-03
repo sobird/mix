@@ -95,7 +95,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   }
 
   /** 用户注册 */
-  public static async signup(attributes: UserSignupAttributes) {
+  public static async signUp(attributes: UserSignupAttributes) {
     const [user, created] = await this.findOrCreate({
       defaults: {
         ...attributes,
