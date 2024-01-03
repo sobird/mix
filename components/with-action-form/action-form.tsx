@@ -12,6 +12,7 @@ import {
 } from 'antd';
 import Submitter, { type SubmitterProps } from '@/components/submitter';
 import { useServerAction, useUpdate } from '@/hooks';
+import { ActionStatus } from '@/actions';
 
 export interface ActionFormProps extends Omit<FormProps, 'action'> {
   action: FormServerAction;
@@ -39,13 +40,19 @@ const ActionForm: React.FC<ActionFormProps> = ({
   onFailed,
   ...props
 }) => {
-  const [state, dispatch, pending] = useServerAction(action, null);
-  console.log('state', state);
+  const initialState = {
+    status: ActionStatus.INITIAL,
+    message: 'initial',
+  };
+  const [state, dispatch, pending] = useServerAction(action, initialState);
 
   useUpdate(() => {
-    if (state && state.success === false) {
+    if (state?.status === ActionStatus.INITIAL) {
+      return;
+    }
+    if (state && state.status === ActionStatus.FAILURE) {
       // 失败显示失败信息
-      message.error(state.message);
+      message.error(state?.message);
       return onFailed?.(state);
     }
     return onFinish?.(state);
