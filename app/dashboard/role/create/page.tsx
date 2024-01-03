@@ -13,7 +13,10 @@ const Page = () => {
           console.log('onFinish', state);
           redirect('/dashboard/role');
         }}
-      />
+      >
+        额外字段
+
+      </RoleForm>
     </div>
   );
 };

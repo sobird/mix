@@ -50,8 +50,10 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
   revalidatePath('/dashboard/role');
 }
 
-export async function createRoleActionWithState() {
-//
+// 创建角色成功跳转列表页
+export async function createRoleActionWithRedirect(payload: RoleFormAttributes) {
+  createRoleAction(payload);
+  redirect('/dashboard/role');
 }
 
 export async function updateRoleAction(

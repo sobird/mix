@@ -11,15 +11,17 @@ import ActionFormModal, { ActionFormModalProps } from './action-form-modal';
 import { ActionFormProps } from '@/components/with-action-form/action-form';
 
 const withActionFormModal = (
+  ActionForm: React.FC<ActionFormProps>,
   actionFormModalProps: ActionFormModalProps,
 ) => {
   return ({ children, ...actionFormProps }: ActionFormProps) => {
     return (
       <ActionFormModal
-        actionFormProps={actionFormProps}
-        trigger={<div>ddd</div>}
+        trigger={children}
         {...actionFormModalProps}
-      />
+      >
+        <ActionForm {...actionFormProps} />
+      </ActionFormModal>
     );
   };
 };

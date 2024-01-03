@@ -8,12 +8,12 @@
 
 'use client';
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Form, Input } from 'antd';
 import { RoleFormRule } from '@/zod/role';
 import withActionForm from '@/components/with-action-form';
 
-const RoleForm = () => {
+const RoleForm: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Form.Item hidden name="id">
@@ -25,6 +25,7 @@ const RoleForm = () => {
       <Form.Item label="备注" name="description">
         <Input.TextArea name="description" />
       </Form.Item>
+      {children}
     </>
   );
 };
