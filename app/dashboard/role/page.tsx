@@ -29,7 +29,7 @@ const RolePage: IRoleAppPage = async ({ searchParams }) => {
   return (
     <div>
       <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
-      <RoleFormModal action={createRoleAction}>按钮</RoleFormModal>
+      <RoleFormModal action={createRoleAction}>创建角色</RoleFormModal>
       <RoleTable data={rolesWithPage} />
     </div>
   );
