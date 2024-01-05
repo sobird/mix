@@ -14,7 +14,7 @@ import Submitter, { type SubmitterProps } from '@/components/submitter';
 import { useServerAction, useUpdate } from '@/hooks';
 import { ActionStatus } from '@/actions';
 
-export interface ActionFormProps extends Omit<FormProps, 'action'> {
+export interface ActionFormProps extends Omit<FormProps, 'action'>, WithFormProps {
   action: FormServerAction;
   submitter?: SubmitterProps<{ form?: FormInstance<any>; }> | false;
   /**

@@ -14,6 +14,7 @@ import {
 import sqlite3 from 'sqlite3';
 import { AbilityTuple, MongoAbility } from '@casl/ability';
 import { accessibleBy } from '@/casl/toSequelizeQuery';
+import type { Models } from '@/models';
 
 /** 数据库链接实例 */
 export const sequelize = new Sequelize({
@@ -129,7 +130,7 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  static associate: (models: any) => void;
+  declare static associate: (models: Models) => void;
 
   static accessibleBy = accessibleBy;
 
