@@ -59,7 +59,19 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   declare emailVerified: CreationOptional<Date | null>;
 
+  declare mobile: CreationOptional<string>;
+
+  declare gender: CreationOptional<string>;
+
+  declare avatar: CreationOptional<string>;
+
   public ip: CreationOptional<string>;
+
+  declare createdBy: CreationOptional<number>;
+
+  declare updatedBy: CreationOptional<number>;
+
+  // method
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
@@ -95,13 +107,13 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   }
 
   /** 用户注册 */
-  public static async signUp(attributes: UserSignupAttributes) {
+  public static async signUp(attributes: UserSignupAttributes, fields?: (keyof UserAttributes)[]) {
     const [user, created] = await this.findOrCreate({
       defaults: {
         ...attributes,
         emailVerified: new Date(),
       },
-      fields: ['username', 'password', 'email', 'emailVerified', 'salt'],
+      fields,
       where: {
         [Op.or]: [
           { username: attributes.username },
@@ -188,6 +200,16 @@ User.init(
       type: DataTypes.DATE,
       comment: 'email verified',
     },
+    mobile: {
+      type: DataTypes.STRING(11),
+    },
+    gender: {
+      type: DataTypes.ENUM('male', 'female', 'unknown'),
+      defaultValue: 'unknown',
+    },
+    avatar: {
+      type: DataTypes.STRING,
+    },
     password: {
       type: DataTypes.STRING(128),
       comment: 'user password hash',
@@ -203,6 +225,12 @@ User.init(
       allowNull: false,
       defaultValue: 0,
       comment: 'user last login ip',
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+    },
+    updatedBy: {
+      type: DataTypes.INTEGER,
     },
   },
   {

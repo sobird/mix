@@ -8,7 +8,7 @@ import { NextPage } from 'next';
 import React from 'react';
 import UserForm from '../../components/user-form';
 import { updateUserAction } from '@/actions/user';
-import { UserModel } from '@/models';
+import { UserModel, RoleModel } from '@/models';
 
 interface UserEditPageProps {
   params: {
@@ -26,10 +26,15 @@ const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
     attributes: {
       exclude: ['password'],
     },
+    include: [{
+      model: RoleModel,
+    }],
   });
 
+  console.log('users', user?.get());
+
   return (
-    <UserForm action={updateUserAction} initialValues={user?.get()} />
+    <UserForm action={updateUserAction} initialValues={user?.get()} mode="update" />
   );
 };
 

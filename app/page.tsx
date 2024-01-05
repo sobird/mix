@@ -30,18 +30,6 @@ const HomePage: IAppPage<{ id: string }> = async () => {
   // const session = await SessionModel.findAll({ raw: true });
   // console.log('session', session);
 
-  // const account = await AccountModel.findAll({ raw: true });
-  // console.log('account', account);
-
-  const user2 = await UserModel.findOne({
-    where: {
-      id: 3,
-    },
-    raw: true,
-  });
-
-  console.log('token', token);
-
   const ability = defineAbilityFor(token);
   ability.update([
     // {
@@ -55,6 +43,9 @@ const HomePage: IAppPage<{ id: string }> = async () => {
   ]);
 
   console.log('ability', ability.can('read', '/test1'));
+
+  const users = await UserModel.findAll({ raw: true });
+  console.log('users', users);
 
   return (
     <main

@@ -44,13 +44,7 @@ export { Group as GroupModel };
 export { RolePermission as RolePermissionModel };
 export { UserRole as UserRoleModel };
 
-const { models } = sequelize;
-Object.values(models).forEach((model: any) => {
-  model.associate?.(models);
-});
-
-export { sequelize };
-export default {
+const models = {
   User,
   Account,
   Session,
@@ -59,4 +53,14 @@ export default {
   Permission,
   Menu,
   Group,
+  RolePermission,
+  UserRole,
 };
+Object.values(models).forEach((model: any) => {
+  model.associate?.(sequelize.models);
+});
+
+export type Models = typeof models;
+
+export { sequelize };
+export default models;

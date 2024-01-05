@@ -44,7 +44,7 @@ export async function signUpAction(
     };
   }
 
-  const [, created] = await UserModel.signUp(payload);
+  const [, created] = await UserModel.signUp(payload, ['username', 'password', 'email', 'emailVerified', 'salt']);
   // 已存在
   if (!created) {
     return {

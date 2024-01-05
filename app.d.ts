@@ -39,3 +39,7 @@ interface FormServerAction<Payload = unknown, State = ServerActionState> {
 type ServerAction<Payload = unknown, State = ServerActionState> =
   | FormServerAction
   | ((payload: Payload) => Promise<State>);
+
+type WithFormProps = {
+  mode?: 'create' | 'update' | 'detail'
+};
