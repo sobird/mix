@@ -13,7 +13,7 @@ import {
   UserModel, SessionModel, AccountModel, sequelize,
 } from '@/models';
 
-import { defineAbilitiesFor } from '@/lib/ability';
+import { defineAbilityFor } from '@/lib/ability';
 import { getServerAuthToken } from '@/lib/auth';
 
 const HomePage: IAppPage<{ id: string }> = async () => {
@@ -40,7 +40,9 @@ const HomePage: IAppPage<{ id: string }> = async () => {
     raw: true,
   });
 
-  const ability = defineAbilitiesFor(token);
+  console.log('token', token);
+
+  const ability = defineAbilityFor(token);
   ability.update([
     // {
     //   action: 'create',

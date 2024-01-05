@@ -11,7 +11,7 @@ import { redirect } from 'next/navigation';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 import { RoleModel } from '@/models';
 import { getServerAuthToken } from '@/lib/auth';
-import { defineAbilitiesFor } from '@/lib/ability';
+import { defineAbilityFor } from '@/lib/ability';
 import { ActionStatus } from '.';
 
 type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;
@@ -60,7 +60,7 @@ export async function updateRoleAction(
   payload: RoleFormAttributes,
 ): Promise<RoleFormServerActionState> {
   const token = await getServerAuthToken();
-  const ability = defineAbilitiesFor(token);
+  const ability = defineAbilityFor(token);
 
   if (ability.cannot('update', 'Role')) {
     return {
