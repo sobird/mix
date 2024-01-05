@@ -13,7 +13,7 @@ import {
 } from '@/zod/user';
 import { ActionStatus } from '.';
 
-type SignUpServerActionState = ServerActionState<SignUpAttributes>;
+type UserServerActionState = ServerActionState<SignUpAttributes>;
 
 /**
  * 注册用户
@@ -24,7 +24,7 @@ type SignUpServerActionState = ServerActionState<SignUpAttributes>;
  */
 export async function signUpAction(
   payload: SignUpAttributes,
-): Promise<SignUpServerActionState> {
+): Promise<UserServerActionState> {
   const validatedFields = await SignUpZodWithRefine.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
@@ -58,7 +58,7 @@ export async function signUpAction(
 
 export async function createUserAction(
   payload: CreateUserAttributes,
-): Promise<SignUpServerActionState> {
+): Promise<UserServerActionState> {
   const validatedFields = await CreateUserZodWithRefine.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
@@ -78,6 +78,38 @@ export async function createUserAction(
   }
 
   redirect('/dashboard/user');
+}
+
+export async function updateUserAction(
+  payload: CreateUserAttributes,
+): Promise<UserServerActionState> {
+  const validated = RoleFormZod.safeParse(payload);
+
+  if (!validated.success) {
+    return {
+      status: ActionStatus.FAILURE,
+      errors: validated.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Role.',
+    };
+  }
+
+  try {
+    await RoleModel.update(validated.data, {
+      where: {
+        id: payload.id,
+      },
+    });
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '角色名已存在',
+      };
+    }
+  }
+
+  revalidatePath('/dashboard/role');
+  redirect('/dashboard/role');
 }
 
 /**

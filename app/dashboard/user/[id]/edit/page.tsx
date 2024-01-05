@@ -6,28 +6,31 @@
 
 import { NextPage } from 'next';
 import React from 'react';
-import RoleForm from '../../components/user-form';
-import { updateRoleAction } from '@/actions/role';
-import { RoleModel } from '@/models';
+import UserForm from '../../components/user-form';
+import { updateUserAction } from '@/actions/user';
+import { UserModel } from '@/models';
 
-interface RoleEditPageProps {
+interface UserEditPageProps {
   params: {
     id: string;
   };
 }
 
-const Page: NextPage<RoleEditPageProps> = async ({ params }) => {
+const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
   const { id } = params;
 
-  const role = await RoleModel.findOne({
+  const user = await UserModel.findOne({
     where: {
       id,
+    },
+    attributes: {
+      exclude: ['password'],
     },
   });
 
   return (
-    <RoleForm action={updateRoleAction} initialValues={role?.get()} />
+    <UserForm action={updateUserAction} initialValues={user?.get()} />
   );
 };
 
-export default Page;
+export default UserEditPage;

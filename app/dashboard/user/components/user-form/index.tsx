@@ -7,27 +7,33 @@ import {
 import { CreateUserFormRule, UserPasswordRule } from '@/zod/user';
 import withActionForm from '@/components/with-action-form';
 
-const RoleForm: React.FC = () => {
+type UserFormProps = {
+  mode: 'create' | 'edit' | 'read'
+};
+
+const UserForm: React.FC = () => {
   return (
     <>
       <Form.Item
         name="username"
+        label="用户名"
         validateDebounce={300}
         rules={[CreateUserFormRule]}
+        required
       >
-        <Input placeholder="用户名" />
+        <Input />
       </Form.Item>
-      <Form.Item name="password" rules={[UserPasswordRule]}>
+      <Form.Item label="登录密码" name="password" rules={[UserPasswordRule]}>
         <Input.Password placeholder="登录密码" />
       </Form.Item>
-      <Form.Item name="confirmPassword" dependencies={['password']} rules={[UserPasswordRule]}>
+      <Form.Item label="密码确认" name="confirmPassword" dependencies={['password']} rules={[UserPasswordRule]}>
         <Input.Password placeholder="密码确认" />
       </Form.Item>
-      <Form.Item name="email" validateDebounce={300} rules={[CreateUserFormRule]}>
+      <Form.Item label="用户邮箱" name="email" validateDebounce={300} rules={[CreateUserFormRule]}>
         <Input placeholder="邮箱" />
       </Form.Item>
     </>
   );
 };
 
-export default withActionForm(RoleForm);
+export default withActionForm(UserForm);
