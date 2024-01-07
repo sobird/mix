@@ -1,15 +1,16 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { WhereOptions } from 'sequelize';
+import { WhereOptions, Op } from 'sequelize';
 
+import { revalidatePath } from 'next/cache';
 import { UserModel } from '@/models';
 import { generate, verify } from '@/lib/otp';
 import { transporter } from '@/lib/mailer';
 import reactToHtml from '@/lib/reactToHtml';
 import CaptchaEmailBody from '@/components/email-template/captcha';
 import {
-  SignUpZodWithRefine, SignUpAttributes, CreateUserZodWithRefine, CreateUserAttributes,
+  SignUpZod, SignUpAttributes, UserWithPasswordZod, UserAttributes, UserZod,
 } from '@/zod/user';
 import { ActionStatus } from '.';
 
@@ -25,7 +26,7 @@ type UserServerActionState = ServerActionState<SignUpAttributes>;
 export async function signUpAction(
   payload: SignUpAttributes,
 ): Promise<UserServerActionState> {
-  const validatedFields = await SignUpZodWithRefine.safeParseAsync(payload);
+  const validatedFields = await SignUpZod.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
       status: ActionStatus.FAILURE,
@@ -57,9 +58,9 @@ export async function signUpAction(
 }
 
 export async function createUserAction(
-  payload: CreateUserAttributes,
+  payload: UserAttributes,
 ): Promise<UserServerActionState> {
-  const validatedFields = await CreateUserZodWithRefine.safeParseAsync(payload);
+  const validatedFields = await UserWithPasswordZod.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
       status: ActionStatus.FAILURE,
@@ -80,10 +81,11 @@ export async function createUserAction(
   redirect('/dashboard/user');
 }
 
+// 更新用户信息
 export async function updateUserAction(
-  payload: CreateUserAttributes,
+  payload: UserAttributes,
 ): Promise<UserServerActionState> {
-  const validated = RoleFormZod.safeParse(payload);
+  const validated = UserZod.safeParse(payload);
 
   if (!validated.success) {
     return {
@@ -94,7 +96,7 @@ export async function updateUserAction(
   }
 
   try {
-    await RoleModel.update(validated.data, {
+    await UserModel.update(validated.data, {
       where: {
         id: payload.id,
       },
@@ -103,7 +105,7 @@ export async function updateUserAction(
     if (error.name === 'SequelizeUniqueConstraintError') {
       return {
         status: ActionStatus.FAILURE,
-        message: '角色名已存在',
+        message: '用户已存在',
       };
     }
   }
@@ -118,7 +120,16 @@ export async function updateUserAction(
  * @param where
  * @returns
  */
-export async function existsAction(where: WhereOptions) {
+export async function existsAction(InternalWhere: WhereOptions, id?: number) {
+  let where = InternalWhere;
+  if (id) {
+    where = {
+      ...InternalWhere,
+      id: {
+        [Op.ne]: id,
+      },
+    };
+  }
   const result = await UserModel.findOne({ where });
   return result !== null;
 }

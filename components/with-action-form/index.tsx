@@ -11,10 +11,10 @@ import ActionForm, { ActionFormProps } from './action-form';
 
 const withActionForm = (Slot: any) => {
   return (actionFormProps: ActionFormProps) => {
-    const { children, mode = 'create' } = actionFormProps;
+    const { children, mode = 'create', data } = actionFormProps;
     return (
       <ActionForm {...actionFormProps}>
-        <Slot mode={mode}>{children}</Slot>
+        <Slot mode={mode} data={data}>{children}</Slot>
       </ActionForm>
     );
   };

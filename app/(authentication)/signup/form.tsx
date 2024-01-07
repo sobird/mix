@@ -10,7 +10,7 @@ import {
   Input, Button, Form, ConfigProvider,
 } from 'antd';
 import { signUpAction } from '@/actions/user';
-import { SignUpFormRule, UserPasswordRule } from '@/zod/user';
+import { SignUpFormRule, passwordRule } from '@/zod/user';
 import FieldCaptcha from '@/components/field-captcha';
 import useServerAction from '@/hooks/useServerAction';
 import { ActionStatus } from '@/actions';
@@ -38,10 +38,10 @@ export const SignupForm = () => {
         >
           <Input placeholder="用户名" />
         </Form.Item>
-        <Form.Item name="password" rules={[UserPasswordRule]}>
+        <Form.Item name="password" rules={[passwordRule]}>
           <Input.Password placeholder="登录密码" />
         </Form.Item>
-        <Form.Item name="confirmPassword" dependencies={['password']} rules={[UserPasswordRule]}>
+        <Form.Item name="confirmPassword" dependencies={['password']} rules={[passwordRule]}>
           <Input.Password placeholder="密码确认" />
         </Form.Item>
         <Form.Item name="email" validateDebounce={300} rules={[SignUpFormRule]}>
