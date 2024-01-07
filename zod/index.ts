@@ -5,7 +5,7 @@
  */
 
 import {
-  z, ZodEffects, ZodOptional, ZodObject, ZodArray,
+  z, ZodEffects, ZodOptional, ZodObject, ZodArray, ZodIntersection,
 } from 'zod';
 import { FormInstance } from 'antd/es/form';
 import { ValidatorRule } from 'rc-field-form/es/interface';
@@ -25,8 +25,13 @@ const isZodArray = (schema: unknown): schema is ZodArray<any> => {
   return schema instanceof ZodArray;
 };
 
+const isZodIntersection = (schema: unknown): schema is ZodIntersection<any, any> => {
+  return schema instanceof ZodIntersection;
+};
+
 const getSchemaByPath = (schema: unknown, name: string[]) => {
   const path = name;
+
   if (path.length < 1) {
     return schema;
   }
@@ -42,6 +47,10 @@ const getSchemaByPath = (schema: unknown, name: string[]) => {
     path.shift();
     const { element } = schema;
     return getSchemaByPath(element, path);
+  }
+
+  if (isZodIntersection(schema)) {
+    // todo
   }
 
   return schema;

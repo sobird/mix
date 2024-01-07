@@ -41,5 +41,6 @@ type ServerAction<Payload = unknown, State = ServerActionState> =
   | ((payload: Payload) => Promise<State>);
 
 type WithFormProps = {
-  mode?: 'create' | 'update' | 'detail'
+  mode?: 'create' | 'update' | 'detail';
+  data?: any;
 };

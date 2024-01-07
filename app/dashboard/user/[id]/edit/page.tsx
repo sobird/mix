@@ -6,7 +6,7 @@
 
 import { NextPage } from 'next';
 import React from 'react';
-import UserForm from '../../components/user-form';
+import UserForm from '@/app/dashboard/user/components/user-form';
 import { updateUserAction } from '@/actions/user';
 import { UserModel, RoleModel } from '@/models';
 
@@ -30,8 +30,6 @@ const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
       model: RoleModel,
     }],
   });
-
-  console.log('users', user?.get());
 
   return (
     <UserForm action={updateUserAction} initialValues={user?.get()} mode="update" />
