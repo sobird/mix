@@ -49,7 +49,6 @@ function DebounceSelect<ValueType extends SelectValueType = any>({
     return debounce(search, delay);
   }, [fetcher, delay]);
 
-  console.log('options', options);
   return (
     <Select
       labelInValue

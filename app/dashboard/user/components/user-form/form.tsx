@@ -38,7 +38,7 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item name="realname" label="真实姓名">
+        <Form.Item name="realname" label="真实姓名" rules={[UserFormRule]}>
           <Input placeholder="用户真实姓名" />
         </Form.Item>
       </Col>

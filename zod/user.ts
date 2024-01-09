@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createFormRule } from '.';
 import { existsAction } from '@/actions/user';
+import { isChineseName } from '@/utils/validator';
 
 export const UsernameZod = z.object({
   id: z.number().optional(),
@@ -51,7 +52,11 @@ export const VerificationCodeZod = z.object({
 });
 
 export const Ohters = z.object({
-  // todo
+  realname: z.string().refine((realname) => {
+    return isChineseName(realname);
+  }, {
+    message: '请输入正确的中文名',
+  }),
 });
 
 export const UserZod = Ohters.and(UsernameZod).and(EmailZod);
@@ -69,4 +74,4 @@ export const SignUpFormRule = createFormRule(SignUpWithCaptchaZod);
 export const usernameRule = createFormRule(UsernameZod);
 export const passwordRule = createFormRule(PasswordZod);
 export const emailRule = createFormRule(EmailZod);
-export const UserFormRule = createFormRule(UserZod);
+export const UserFormRule = createFormRule(Ohters);
