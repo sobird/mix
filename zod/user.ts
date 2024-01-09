@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { createFormRule } from '.';
 import { existsAction } from '@/actions/user';
-import { isChineseName } from '@/utils/validator';
+import { isChineseName, isMobilePhone } from '@/utils/validator';
 
-export const UsernameZod = z.object({
+const usernameZod = z.object({
   id: z.number().optional(),
   username: z.string({
     required_error: '请输入用户名',
@@ -18,7 +18,7 @@ export const UsernameZod = z.object({
   path: ['username'],
 });
 
-export const EmailZod = z.object({
+const emailZod = z.object({
   id: z.number().optional(),
   email: z.string({
     required_error: '请输入邮箱',
@@ -33,7 +33,7 @@ export const EmailZod = z.object({
   path: ['email'],
 });
 
-export const PasswordZod = z.object({
+const passwordZod = z.object({
   password: z.string({
     required_error: '请输入密码',
   }).regex(/^(?![0-9]+)(?![a−zA−Z]+)[0-9A-Za-z]{6,20}$/, '长度在6~20位之间，必须包含字母、数字，不能全是数字'),
@@ -45,33 +45,40 @@ export const PasswordZod = z.object({
   path: ['confirmPassword'],
 });
 
-export const VerificationCodeZod = z.object({
+const verificationCodeZod = z.object({
   verificationCode: z.string({
     required_error: '请输入验证码',
   }).regex(/^\d{6}$/, '验证码为6位数字'),
 });
 
-export const Ohters = z.object({
+const ohtersZod = z.object({
+  nickname: z.string().regex(/^[\d\w_\u4E00-\u9FFF]{2,20}$/, '长度在2~20位之间，包含中文、字母、数字、下划线').or(z.literal('')),
   realname: z.string().refine((realname) => {
     return isChineseName(realname);
   }, {
     message: '请输入正确的中文名',
+  }).or(z.literal('')),
+  mobile: z.string().refine((mobile) => {
+    return isMobilePhone(mobile);
+  }, {
+    message: '请输入正确的手机号',
   }),
 });
 
-export const UserZod = Ohters.and(UsernameZod).and(EmailZod);
+export const UserZod = ohtersZod.and(usernameZod).and(emailZod);
 
 // 用户注册需要验证码认证
-export const SignUpWithCaptchaZod = z.intersection(UserZod, VerificationCodeZod);
-export const SignUpZod = z.intersection(SignUpWithCaptchaZod, PasswordZod);
-export const UserWithPasswordZod = z.intersection(UserZod, PasswordZod);
+const SignUpWithCaptchaZod = z.intersection(UserZod, verificationCodeZod);
+export const SignUpZod = z.intersection(SignUpWithCaptchaZod, passwordZod);
+export const UserWithPasswordZod = z.intersection(UserZod, passwordZod);
 
 export type SignUpAttributes = z.infer<typeof SignUpZod>;
 export type UserAttributes = z.infer<typeof UserWithPasswordZod>;
 
 // antd form rule
 export const SignUpFormRule = createFormRule(SignUpWithCaptchaZod);
-export const usernameRule = createFormRule(UsernameZod);
-export const passwordRule = createFormRule(PasswordZod);
-export const emailRule = createFormRule(EmailZod);
-export const UserFormRule = createFormRule(Ohters);
+export const usernameRule = createFormRule(usernameZod);
+export const passwordRule = createFormRule(passwordZod);
+export const emailRule = createFormRule(emailZod);
+export const verificationCodeRule = createFormRule(verificationCodeZod);
+export const UserFormRule = createFormRule(ohtersZod);

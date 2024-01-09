@@ -85,7 +85,7 @@ export async function createUserAction(
 export async function updateUserAction(
   payload: UserAttributes,
 ): Promise<UserServerActionState> {
-  const validated = UserZod.safeParse(payload);
+  const validated = await UserZod.safeParseAsync(payload);
 
   if (!validated.success) {
     return {
@@ -110,8 +110,8 @@ export async function updateUserAction(
     }
   }
 
-  revalidatePath('/dashboard/role');
-  redirect('/dashboard/role');
+  revalidatePath('/dashboard/user');
+  redirect('/dashboard/user');
 }
 
 /**

@@ -33,6 +33,7 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
           name="nickname"
           label="用户昵称"
           validateDebounce={300}
+          rules={[UserFormRule]}
         >
           <Input placeholder="用户昵称" />
         </Form.Item>
@@ -69,7 +70,7 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item label="手机号码" name="mobile">
+        <Form.Item label="手机号码" name="mobile" rules={[UserFormRule]}>
           <Input placeholder="用户手机号码" />
         </Form.Item>
       </Col>

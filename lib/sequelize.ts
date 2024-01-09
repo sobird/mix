@@ -110,8 +110,8 @@ export const sequelize = new Sequelize({
   // defaults to dialect default
   // isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ
   logging: (queryString, queryObject: any) => {
-    console.log(queryString); // outputs a string
-    if (queryObject.type === 'INSERT' || queryObject.type === 'UPDATE') {
+    console.log(queryObject.type, '==>', queryString); // outputs a string
+    if (queryObject.type === 'INSERT' || queryObject.type === 'BULKUPDATE') {
       console.log(queryObject.bind);
     }
   },
