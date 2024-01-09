@@ -53,6 +53,10 @@ const getSchemaByPath = (schema: unknown, name: string[]) => {
     // todo
   }
 
+  if (isZodOptional(schema)) {
+    // todo
+  }
+
   return schema;
 };
 
