@@ -5,7 +5,7 @@ import {
   Row, Col, Form, Input,
 } from 'antd';
 import {
-  UserFormRule, usernameRule, emailRule, passwordRule,
+  userFormRule, usernameRule, emailRule, passwordRule,
 } from '@/zod/user';
 import withActionForm from '@/components/with-action-form';
 import DebounceSelect from '@/components/debounce-select';
@@ -33,13 +33,13 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
           name="nickname"
           label="用户昵称"
           validateDebounce={300}
-          rules={[UserFormRule]}
+          rules={[userFormRule]}
         >
           <Input placeholder="用户昵称" />
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item name="realname" label="真实姓名" rules={[UserFormRule]}>
+        <Form.Item name="realname" label="真实姓名" rules={[userFormRule]}>
           <Input placeholder="用户真实姓名" />
         </Form.Item>
       </Col>
@@ -70,7 +70,7 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item label="手机号码" name="mobile" rules={[UserFormRule]}>
+        <Form.Item label="手机号码" name="mobile" rules={[userFormRule]}>
           <Input placeholder="用户手机号码" />
         </Form.Item>
       </Col>
