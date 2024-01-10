@@ -51,7 +51,7 @@ function DebounceSelect<ValueType extends SelectValueType = any>({
 
   return (
     <Select
-      labelInValue
+      // labelInValue
       filterOption={false}
       onSearch={onSearch}
       notFoundContent={fetching ? <Spin size="small" /> : null}

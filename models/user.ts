@@ -205,7 +205,6 @@ User.init(
     },
     gender: {
       type: DataTypes.ENUM('male', 'female', 'unknown'),
-      defaultValue: 'unknown',
     },
     avatar: {
       type: DataTypes.STRING,

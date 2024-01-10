@@ -44,7 +44,7 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item name="gender" label="性别">
+        <Form.Item name="gender" label="性别" rules={[userFormRule]}>
           <Input placeholder="性别" />
         </Form.Item>
       </Col>
