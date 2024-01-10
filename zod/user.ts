@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createFormRule } from '.';
-import { existsAction } from '@/actions/user';
+import { existsAction, verifyVerificationCode } from '@/actions/user';
 import { analyzePassword, isChineseName, isMobilePhone } from '@/utils/validator';
 
 const usernameZod = z
@@ -89,12 +89,21 @@ const passwordZod = z
   );
 
 const verificationCodeZod = z.object({
+  email: z.string(),
   verificationCode: z
     .string({
       required_error: '请输入验证码',
     })
     .regex(/^\d{6}$/, '验证码为6位数字'),
-});
+}).refine(
+  async (payload) => {
+    return verifyVerificationCode(payload);
+  },
+  {
+    message: '验证码错误',
+    path: ['verificationCode'],
+  },
+);
 
 const ohtersZod = z.object({
   nickname: z
@@ -128,15 +137,13 @@ const ohtersZod = z.object({
 export const UserZod = ohtersZod.and(usernameZod).and(emailZod);
 
 // 用户注册需要验证码认证
-const SignUpWithCaptchaZod = z.intersection(UserZod, verificationCodeZod);
-export const SignUpZod = z.intersection(SignUpWithCaptchaZod, passwordZod);
+export const SignUpZod = usernameZod.and(passwordZod).and(verificationCodeZod).and(emailZod);
 export const UserWithPasswordZod = z.intersection(UserZod, passwordZod);
 
 export type SignUpAttributes = z.infer<typeof SignUpZod>;
 export type UserAttributes = z.infer<typeof UserWithPasswordZod>;
 
 // antd form rule
-export const SignUpFormRule = createFormRule(SignUpWithCaptchaZod);
 export const usernameRule = createFormRule(usernameZod);
 export const passwordRule = createFormRule(passwordZod);
 export const emailRule = createFormRule(emailZod);

@@ -35,16 +35,6 @@ export async function signUpAction(
     };
   }
 
-  // 验证码是否有效
-  const isValid = verify(payload.verificationCode, payload.email);
-
-  if (!isValid) {
-    return {
-      status: ActionStatus.FAILURE,
-      message: '验证码无效',
-    };
-  }
-
   const [, created] = await UserModel.signUp(payload, ['username', 'password', 'email', 'emailVerified', 'salt']);
   // 已存在
   if (!created) {
@@ -132,6 +122,10 @@ export async function existsAction(InternalWhere: WhereOptions, id?: number) {
   }
   const result = await UserModel.findOne({ where });
   return result !== null;
+}
+
+export async function verifyVerificationCode(payload: { verificationCode: string, email: string }) {
+  return verify(payload.verificationCode, payload.email);
 }
 
 /** 发送验证码 */
