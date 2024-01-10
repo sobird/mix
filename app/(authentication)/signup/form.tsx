@@ -24,7 +24,6 @@ export const SignupForm = () => {
   };
   const [form] = Form.useForm();
   const [, dispatch, pending] = useServerAction(signUpAction, initialState);
-
   return (
     <ConfigProvider componentSize="large">
       <Form
@@ -49,7 +48,7 @@ export const SignupForm = () => {
         <Form.Item name="email" validateDebounce={300} rules={[emailRule]}>
           <Input placeholder="邮箱" />
         </Form.Item>
-        <Form.Item name="verificationCode" rules={[verificationCodeRule]}>
+        <Form.Item name="verificationCode" validateDebounce={300} rules={[verificationCodeRule]}>
           <FieldCaptcha identifierName="email" fieldProps={{ placeholder: '请输入邮箱验证码' }} />
         </Form.Item>
 
