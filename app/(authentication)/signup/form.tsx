@@ -10,7 +10,9 @@ import {
   Input, Button, Form, ConfigProvider,
 } from 'antd';
 import { signUpAction } from '@/actions/user';
-import { SignUpFormRule, passwordRule } from '@/zod/user';
+import {
+  usernameRule, passwordRule, emailRule, verificationCodeRule,
+} from '@/zod/user';
 import FieldCaptcha from '@/components/field-captcha';
 import useServerAction from '@/hooks/useServerAction';
 import { ActionStatus } from '@/actions';
@@ -34,7 +36,7 @@ export const SignupForm = () => {
         <Form.Item
           name="username"
           validateDebounce={300}
-          rules={[SignUpFormRule]}
+          rules={[usernameRule]}
         >
           <Input placeholder="用户名" />
         </Form.Item>
@@ -44,10 +46,10 @@ export const SignupForm = () => {
         <Form.Item name="confirmPassword" dependencies={['password']} rules={[passwordRule]}>
           <Input.Password placeholder="密码确认" />
         </Form.Item>
-        <Form.Item name="email" validateDebounce={300} rules={[SignUpFormRule]}>
+        <Form.Item name="email" validateDebounce={300} rules={[emailRule]}>
           <Input placeholder="邮箱" />
         </Form.Item>
-        <Form.Item name="verificationCode" rules={[SignUpFormRule]}>
+        <Form.Item name="verificationCode" rules={[verificationCodeRule]}>
           <FieldCaptcha identifierName="email" fieldProps={{ placeholder: '请输入邮箱验证码' }} />
         </Form.Item>
 
