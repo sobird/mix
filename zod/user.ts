@@ -105,6 +105,7 @@ const verificationCodeZod = z.object({
   },
 );
 
+// 通用字段校验
 const ohtersZod = z.object({
   nickname: z
     .string()
@@ -134,18 +135,17 @@ const ohtersZod = z.object({
     .or(z.literal('')),
 });
 
-export const UserZod = ohtersZod.and(usernameZod).and(emailZod);
+// 前台注册
+export const signUpZod = usernameZod.and(passwordZod).and(verificationCodeZod).and(emailZod);
+export const updateUserZod = ohtersZod.and(usernameZod).and(emailZod);
+export const createUserZod = z.intersection(updateUserZod, passwordZod);
 
-// 用户注册需要验证码认证
-export const SignUpZod = usernameZod.and(passwordZod).and(verificationCodeZod).and(emailZod);
-export const UserWithPasswordZod = z.intersection(UserZod, passwordZod);
-
-export type SignUpAttributes = z.infer<typeof SignUpZod>;
-export type UserAttributes = z.infer<typeof UserWithPasswordZod>;
+export type SignUpAttributes = z.infer<typeof signUpZod>;
+export type UserAttributes = z.infer<typeof createUserZod>;
 
 // antd form rule
 export const usernameRule = createFormRule(usernameZod);
 export const passwordRule = createFormRule(passwordZod);
 export const emailRule = createFormRule(emailZod);
 export const verificationCodeRule = createFormRule(verificationCodeZod);
-export const UserFormRule = createFormRule(ohtersZod);
+export const userFormRule = createFormRule(ohtersZod);

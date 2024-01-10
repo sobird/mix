@@ -10,7 +10,7 @@ import { transporter } from '@/lib/mailer';
 import reactToHtml from '@/lib/reactToHtml';
 import CaptchaEmailBody from '@/components/email-template/captcha';
 import {
-  SignUpZod, SignUpAttributes, UserWithPasswordZod, UserAttributes, UserZod,
+  signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod,
 } from '@/zod/user';
 import { ActionStatus } from '.';
 
@@ -26,7 +26,7 @@ type UserServerActionState = ServerActionState<SignUpAttributes>;
 export async function signUpAction(
   payload: SignUpAttributes,
 ): Promise<UserServerActionState> {
-  const validatedFields = await SignUpZod.safeParseAsync(payload);
+  const validatedFields = await signUpZod.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
       status: ActionStatus.FAILURE,
@@ -50,7 +50,7 @@ export async function signUpAction(
 export async function createUserAction(
   payload: UserAttributes,
 ): Promise<UserServerActionState> {
-  const validatedFields = await UserWithPasswordZod.safeParseAsync(payload);
+  const validatedFields = await createUserZod.safeParseAsync(payload);
   if (!validatedFields.success) {
     return {
       status: ActionStatus.FAILURE,
@@ -75,7 +75,7 @@ export async function createUserAction(
 export async function updateUserAction(
   payload: UserAttributes,
 ): Promise<UserServerActionState> {
-  const validated = await UserZod.safeParseAsync(payload);
+  const validated = await updateUserZod.safeParseAsync(payload);
 
   if (!validated.success) {
     return {
