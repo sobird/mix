@@ -53,7 +53,7 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
       <>
         <Col span={12}>
           <Form.Item label="登录密码" name="password" rules={[passwordRule]} required>
-            <Input.Password placeholder="登录密码" />
+            <Input.Password placeholder="密码(由8-16位大小写字母、数字及特殊字符组成)" />
           </Form.Item>
         </Col>
         <Col span={12}>
