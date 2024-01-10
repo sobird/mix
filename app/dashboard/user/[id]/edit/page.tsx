@@ -31,6 +31,8 @@ const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
     }],
   });
 
+  console.log('user', user?.get());
+
   return (
     <UserForm action={updateUserAction} initialValues={user?.get()} mode="update" />
   );

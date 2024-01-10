@@ -133,6 +133,8 @@ const ohtersZod = z.object({
       },
     )
     .or(z.literal('')),
+  gender: z.enum(['male', 'female', 'unknown']),
+  roles: z.array(z.number()),
 });
 
 // 前台注册

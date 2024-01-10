@@ -81,7 +81,7 @@ export async function updateUserAction(
     return {
       status: ActionStatus.FAILURE,
       errors: validated.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Role.',
+      message: 'Missing Fields. Failed to Update User.',
     };
   }
 
