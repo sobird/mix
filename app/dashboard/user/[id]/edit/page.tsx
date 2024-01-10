@@ -28,13 +28,15 @@ const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
     },
     include: [{
       model: RoleModel,
+      attributes: ['id'],
     }],
   });
 
-  console.log('user', user?.get());
+  const { Roles, ...initialValues } = user?.get({ plain: true }) || {};
+  (initialValues as any).roles = Roles?.map((item) => { return item.id; });
 
   return (
-    <UserForm action={updateUserAction} initialValues={user?.get()} mode="update" />
+    <UserForm action={updateUserAction} initialValues={initialValues} mode="update" />
   );
 };
 

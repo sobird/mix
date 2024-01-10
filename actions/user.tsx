@@ -26,11 +26,11 @@ type UserServerActionState = ServerActionState<SignUpAttributes>;
 export async function signUpAction(
   payload: SignUpAttributes,
 ): Promise<UserServerActionState> {
-  const validatedFields = await signUpZod.safeParseAsync(payload);
-  if (!validatedFields.success) {
+  const validated = await signUpZod.safeParseAsync(payload);
+  if (!validated.success) {
     return {
       status: ActionStatus.FAILURE,
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: validated.error.flatten().fieldErrors,
       message: 'Validation Fields Failed to Sign Up.',
     };
   }
@@ -50,16 +50,27 @@ export async function signUpAction(
 export async function createUserAction(
   payload: UserAttributes,
 ): Promise<UserServerActionState> {
-  const validatedFields = await createUserZod.safeParseAsync(payload);
-  if (!validatedFields.success) {
+  const validated = await createUserZod.safeParseAsync(payload);
+  if (!validated.success) {
     return {
       status: ActionStatus.FAILURE,
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: validated.error.flatten().fieldErrors,
       message: 'Validation Fields Failed to Sign Up.',
     };
   }
-
-  const [, created] = await UserModel.signUp(payload);
+  const { data } = validated;
+  const [user, created] = await UserModel.findOrCreate({
+    defaults: {
+      ...data,
+      emailVerified: new Date(),
+    },
+    where: {
+      [Op.or]: [
+        { username: data.username },
+        { email: data.email },
+      ],
+    },
+  });
   // 已存在
   if (!created) {
     return {
@@ -67,6 +78,8 @@ export async function createUserAction(
       message: '账户已存在',
     };
   }
+
+  user.setRoles(data.roles);
 
   redirect('/dashboard/user');
 }
@@ -86,11 +99,15 @@ export async function updateUserAction(
   }
 
   try {
-    await UserModel.update(validated.data, {
+    const { data } = validated;
+    const user = await UserModel.findOne({
       where: {
         id: payload.id,
       },
     });
+
+    user?.update(data);
+    user?.setRoles(data.roles);
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       return {
@@ -102,6 +119,16 @@ export async function updateUserAction(
 
   revalidatePath('/dashboard/user');
   redirect('/dashboard/user');
+}
+
+export async function deleteUserAction(id: string) {
+  const user = await UserModel.destroy({
+    where: {
+      id,
+    },
+  });
+  revalidatePath('/dashboard/user');
+  return user;
 }
 
 /**

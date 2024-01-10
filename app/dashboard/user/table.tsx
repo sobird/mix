@@ -11,7 +11,7 @@ import { Button, Table, Modal } from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { UserModel, UserAttributes } from '@/models';
-import { deleteRoleAction } from '@/actions/role';
+import { deleteUserAction } from '@/actions/user';
 
 type UserTableData = Awaited<ReturnType<typeof UserModel.findManyByPage<UserModel>>>;
 
@@ -78,10 +78,9 @@ const UserTable:FC<UserTableProps> = ({ data }) => {
                   onClick={() => {
                     Modal.confirm({
                       title: '系统提示',
-                      content: `是否确认删除角色：${record.name}？`,
+                      content: `是否确认删除用户：${record.username} ？`,
                       async onOk() {
-                        const result = await deleteRoleAction(record.id);
-                        console.log('result', result);
+                        await deleteUserAction(record.id);
                       },
                     });
                   }}

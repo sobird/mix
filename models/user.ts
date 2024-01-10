@@ -28,6 +28,7 @@ import {
 } from 'sequelize';
 import { sequelize, BaseModel } from '@/lib/sequelize';
 import type Role from './role';
+import { type RoleAttributes } from './role';
 
 /** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
@@ -70,6 +71,8 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   declare createdBy: CreationOptional<number>;
 
   declare updatedBy: CreationOptional<number>;
+
+  declare Roles?: CreationOptional<RoleAttributes[]>;
 
   // method
 
