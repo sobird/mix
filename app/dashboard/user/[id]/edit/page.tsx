@@ -32,9 +32,8 @@ const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
     }],
   });
 
-  const { Roles, ...initialValues } = user?.get({ plain: true }) || {};
+  const { Roles, ...initialValues } = user?.toJSON() || {};
   (initialValues as any).roles = Roles?.map((item) => { return item.id; });
-
   return (
     <UserForm action={updateUserAction} initialValues={initialValues} mode="update" />
   );

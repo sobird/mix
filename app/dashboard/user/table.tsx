@@ -56,13 +56,9 @@ const UserTable:FC<UserTableProps> = ({ data }) => {
       >
         <Table.Column title="用户名" dataIndex="username" />
         <Table.Column title="邮箱" dataIndex="email" />
-        <Table.Column<UserAttributes>
+        <Table.Column
           title="创建时间"
           dataIndex="createdAt"
-          render={(value, record) => {
-            // console.log('record', record);
-            return value?.toString();
-          }}
         />
         <Table.Column<any>
           title="操作"

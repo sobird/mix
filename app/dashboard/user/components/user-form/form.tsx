@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-  Row, Col, Form, Input,
+  Row, Col, Form, Input, DatePicker,
 } from 'antd';
 import {
   userFormRule, usernameRule, emailRule, passwordRule,
@@ -77,6 +77,12 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
       <Col span={12}>
         <Form.Item label="角色" name="roles">
           <DebounceSelect options={roleOptions} mode="multiple" placeholder="请选择" />
+        </Form.Item>
+      </Col>
+
+      <Col span={12}>
+        <Form.Item label="创建时间" name="createdAt">
+          <DatePicker />
         </Form.Item>
       </Col>
     </Row>
