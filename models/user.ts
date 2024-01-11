@@ -27,6 +27,7 @@ import {
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 import { sequelize, BaseModel } from '@/lib/sequelize';
+import dayjs from '@/utils/dayjs';
 import type Role from './role';
 import { type RoleAttributes } from './role';
 
@@ -233,6 +234,13 @@ User.init(
     },
     updatedBy: {
       type: DataTypes.INTEGER,
+    },
+
+    createdAt: {
+      type: DataTypes.DATE,
+      get() {
+        return dayjs(this.dataValues.createdAt).format();
+      },
     },
   },
   {

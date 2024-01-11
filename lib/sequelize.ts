@@ -5,6 +5,8 @@
  * Postgres, MySQL, MariaDB, SQLite, DB2 and Microsoft SQL Server.
  * It features solid transaction support, relations, eager and lazy loading, read replication and more.
  *
+ * @see https://javascript.plainenglish.io/why-you-should-be-cautious-with-sequelize-raw-options-5aaae9fc3ebd
+ *
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
@@ -125,6 +127,8 @@ export const sequelize = new Sequelize({
 export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
   declare id?: CreationOptional<any>;
 
+  declare createdAt: CreationOptional<Date>;
+
   /**
    * Helper method for defining associations.
    * This method is not a part of Sequelize lifecycle.
@@ -166,10 +170,9 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
         limit: ps,
         // order: order.map((item) => { return item.split(','); }) as Order,
         order: [['createdAt', 'DESC']],
-        raw: true,
       });
       return {
-        pn, ps, count, rows,
+        pn, ps, count, rows: rows.map((el) => { return el.toJSON(); }),
       };
     } catch (err) {
       // console.log('err', err);
