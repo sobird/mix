@@ -4,6 +4,7 @@ import React from 'react';
 import {
   Row, Col, Form, Input, DatePicker,
 } from 'antd';
+import dayjs from '@/utils/dayjs';
 import {
   userFormRule, usernameRule, emailRule, passwordRule,
 } from '@/zod/user';
@@ -80,11 +81,37 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         </Form.Item>
       </Col>
 
-      <Col span={12}>
-        <Form.Item label="创建时间" name="createdAt">
-          <DatePicker />
-        </Form.Item>
-      </Col>
+      {mode !== 'create' && (
+      <>
+        <Col span={12}>
+          <Form.Item
+            label="更新时间"
+            name="updatedAt"
+            getValueProps={(originValue) => {
+              return {
+                value: dayjs(originValue),
+              };
+            }}
+          >
+            <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            label="创建时间"
+            name="createdAt"
+            getValueProps={(originValue) => {
+              return {
+                value: dayjs(originValue),
+              };
+            }}
+          >
+            <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
+          </Form.Item>
+        </Col>
+      </>
+      )}
+
     </Row>
   );
 };
