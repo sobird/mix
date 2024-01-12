@@ -5,6 +5,7 @@
  */
 
 import { NextPage } from 'next';
+import { notFound } from 'next/navigation';
 import React from 'react';
 import UserForm from '@/app/dashboard/user/components/user-form';
 import { updateUserAction } from '@/actions/user';
@@ -32,8 +33,13 @@ const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
     }],
   });
 
-  const { Roles, ...initialValues } = user?.toJSON() || {};
+  if (!user) {
+    notFound();
+  }
+
+  const { Roles, ...initialValues } = user.toJSON();
   (initialValues as any).roles = Roles?.map((item) => { return item.id; });
+
   return (
     <UserForm action={updateUserAction} initialValues={initialValues} mode="update" />
   );

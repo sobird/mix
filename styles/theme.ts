@@ -16,7 +16,7 @@ const config: ThemeConfig = {
     // disabled
     // colorBgContainerDisabled: '#fff',
     // colorTextDisabled: '#444',
-    // motion: false,
+    motion: false,
 
     fontFamily: '',
     fontSize: 14,

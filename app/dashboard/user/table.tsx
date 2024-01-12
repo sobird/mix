@@ -7,7 +7,9 @@
 'use client';
 
 import { FC } from 'react';
-import { Button, Table, Modal } from 'antd';
+import {
+  Button, Table, Modal, Switch,
+} from 'antd';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { UserModel, UserAttributes } from '@/models';
@@ -59,6 +61,13 @@ const UserTable:FC<UserTableProps> = ({ data }) => {
         <Table.Column
           title="创建时间"
           dataIndex="createdAt"
+        />
+        <Table.Column
+          title="状态"
+          dataIndex="status"
+          render={(status) => {
+            return <Switch disabled checkedChildren="正常" unCheckedChildren="停用" defaultChecked={status} />;
+          }}
         />
         <Table.Column<any>
           title="操作"
