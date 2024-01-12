@@ -80,7 +80,7 @@ export async function createUserAction(
   }
 
   user.setRoles(data.roles);
-
+  revalidatePath('/dashboard/user');
   redirect('/dashboard/user');
 }
 

@@ -69,6 +69,8 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   public ip: CreationOptional<string>;
 
+  declare status: CreationOptional<boolean>;
+
   declare createdBy: CreationOptional<number>;
 
   declare updatedBy: CreationOptional<number>;
@@ -228,6 +230,10 @@ User.init(
       allowNull: false,
       defaultValue: 0,
       comment: 'user last login ip',
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     createdBy: {
       type: DataTypes.INTEGER,

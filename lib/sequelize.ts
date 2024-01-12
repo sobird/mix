@@ -119,6 +119,11 @@ export const sequelize = new Sequelize({
   },
 });
 
+// sequelize.addHook('beforeDefine', (attributes) => {
+//   // todo
+//   console.log('attributes', attributes);
+// });
+
 /**
  * 模型基类
  *

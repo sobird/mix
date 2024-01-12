@@ -110,6 +110,7 @@ const ohtersZod = z.object({
   nickname: z
     .string()
     .regex(/^[\d\w_\u4E00-\u9FFF]{2,20}$/, '长度在2~20位之间，包含中文、字母、数字、下划线')
+    .optional()
     .or(z.literal('')),
   realname: z
     .string()
@@ -121,6 +122,7 @@ const ohtersZod = z.object({
         message: '请输入正确的中文名',
       },
     )
+    .optional()
     .or(z.literal('')),
   mobile: z
     .string()
@@ -132,9 +134,13 @@ const ohtersZod = z.object({
         message: '请输入正确的手机号',
       },
     )
+    .optional()
     .or(z.literal('')),
-  gender: z.enum(['male', 'female', 'unknown']),
-  roles: z.array(z.number()),
+  gender: z.enum(['male', 'female', 'unknown']).optional().or(z.literal('')),
+  roles: z.array(z.number()).optional(),
+  status: z.boolean({
+    required_error: '状态未选择',
+  }),
 });
 
 // 前台注册

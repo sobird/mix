@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-  Row, Col, Form, Input, DatePicker,
+  Row, Col, Form, Input, DatePicker, Radio,
 } from 'antd';
 import dayjs from '@/utils/dayjs';
 import {
@@ -78,6 +78,14 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
       <Col span={12}>
         <Form.Item label="角色" name="roles">
           <DebounceSelect options={roleOptions} mode="multiple" placeholder="请选择" />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item label="状态" name="status" initialValue rules={[userFormRule]}>
+          <Radio.Group>
+            <Radio value>正常</Radio>
+            <Radio value={false}>禁用</Radio>
+          </Radio.Group>
         </Form.Item>
       </Col>
 

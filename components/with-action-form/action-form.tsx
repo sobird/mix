@@ -46,6 +46,8 @@ const ActionForm: React.FC<ActionFormProps> = ({
   };
   const [state, dispatch, pending] = useServerAction(action, initialState);
 
+  console.log('state', state);
+
   useUpdate(() => {
     if (state?.status === ActionStatus.INITIAL) {
       return;
