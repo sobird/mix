@@ -10,6 +10,7 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
+import debug from 'debug';
 import {
   Sequelize, Model, CreationOptional, ModelStatic, InferAttributes,
 } from 'sequelize';
@@ -111,10 +112,12 @@ export const sequelize = new Sequelize({
   // isolation level of each transaction
   // defaults to dialect default
   // isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ
-  logging: (queryString, queryObject: any) => {
-    console.log(queryObject.type, '==>', queryString); // outputs a string
-    if (queryObject.type === 'INSERT' || queryObject.type === 'BULKUPDATE') {
-      console.log(queryObject.bind);
+  logging: (sql, queryObject: any) => {
+    const { type, bind } = queryObject;
+    const log = debug(`app:sql:${type}`);
+    log(sql);
+    if (['INSERT', 'UPDATE', 'BULKUPDATE'].includes(type)) {
+      log(bind);
     }
   },
 });
@@ -145,7 +148,6 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
 
   public static async findManyWithAccessible<T extends AbilityTuple>(ability: MongoAbility<T>) {
     // todo
-
     console.log('ability', ability);
   }
 
