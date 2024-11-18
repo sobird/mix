@@ -4,16 +4,17 @@
  * sobird<i@sobird.me> at 2023/12/05 15:10:21 created.
  */
 
-import React from 'react';
+import { Button } from 'antd';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Button } from 'antd';
-import RoleTable from './table';
+import React from 'react';
+
+import { createRoleAction } from '@/actions/role';
+import withActionFormModal from '@/components/with-action-form-modal';
 import { RoleModel } from '@/models';
 
 import RoleForm from './components/role-form';
-import { createRoleAction } from '@/actions/role';
-import withActionFormModal from '@/components/with-action-form-modal';
+import RoleTable from './table';
 
 export const metadata: Metadata = {
   title: '角色管理',
