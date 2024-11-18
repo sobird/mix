@@ -10,17 +10,17 @@
 
 import { sequelize } from '@/lib/sequelize';
 
-import User from './user';
-import Role from './role';
-import Permission from './permission';
 import Account from './account';
-import Session from './session';
-import VerificationToken from './verificationToken';
-import Menu from './menu';
 import Group from './group';
+import Menu from './menu';
+import Permission from './permission';
+import Role from './role';
 // Associations Model
 import RolePermission from './role-permission';
+import Session from './session';
+import User from './user';
 import UserRole from './user-role';
+import VerificationToken from './verificationToken';
 
 export type { UserAttributes, UserCreationAttributes } from './user';
 export type { RoleAttributes, RoleCreationAttributes } from './role';

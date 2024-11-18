@@ -8,10 +8,11 @@
 
 'use client';
 
-import React, { PropsWithChildren } from 'react';
 import { Form, Input } from 'antd';
-import { RoleFormRule } from '@/zod/role';
+import React, { PropsWithChildren } from 'react';
+
 import withActionForm from '@/components/with-action-form';
+import { RoleFormRule } from '@/zod/role';
 
 const RoleForm: React.FC<PropsWithChildren> = ({ children }) => {
   return (
