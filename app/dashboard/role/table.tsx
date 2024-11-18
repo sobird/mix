@@ -6,12 +6,13 @@
 
 'use client';
 
-import { FC } from 'react';
 import { Button, Table, Modal } from 'antd';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { RoleModel, RoleAttributes } from '@/models';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { FC } from 'react';
+
 import { deleteRoleAction } from '@/actions/role';
+import { RoleModel, RoleAttributes } from '@/models';
 
 type RoleTableData = Awaited<ReturnType<typeof RoleModel.findManyByPage<RoleModel>>>;
 

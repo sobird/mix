@@ -12,9 +12,9 @@ interface PaginationSearchParams {
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
-declare type IAppPage<SearchParams = {}, Params = {}> = import('next').NextPage<{
-  params: Params;
-  searchParams: SearchParams;
+declare type AppPage<Params = {}, SearchParams = {}> = import('next').NextPage<{
+  params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
 }>;
 
 /**
