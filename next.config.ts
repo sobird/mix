@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  experimental: {
-    // typedRoutes: true,
-    esmExternals: false,
-    serverComponentsExternalPackages: ['sequelize'],
-  },
+  // experimental: {
+  //   // typedRoutes: true,
+  //   esmExternals: false,
+  // },
+  serverExternalPackages: ['sequelize'],
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.

@@ -7,10 +7,12 @@
 'use client';
 
 import classNames from 'classnames';
-import Header from '@/components/layout/dashboard/header';
+
 import Aside from '@/components/layout/dashboard/aside';
-import styles from './layout.module.scss';
+import Header from '@/components/layout/dashboard/header';
 import { useAppSelector } from '@/store';
+
+import styles from './layout.module.scss';
 
 export default function DashboardLayout({ children }: {
   children: React.ReactNode

@@ -6,17 +6,18 @@
  * sobird<i@sobird.me> at 2023/11/27 13:21:49 created.
  */
 
-import { cookies } from 'next/headers';
-import { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
-import config from '@/styles/theme';
+import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { cookies } from 'next/headers';
+
+import mix from '@/assets/mix.svg';
 import StyledComponentsRegistry from '@/lib/antd';
 import StoreProvider from '@/store/provider';
-import mix from '@/assets/mix.svg';
 import '@/styles/presets.scss';
 import { TOGGLE_ASIDE } from '@/store/slices/app';
+import config from '@/styles/theme';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,10 +27,10 @@ export const metadata: Metadata = {
   icons: mix.src,
 };
 
-export default function RootLayout({ children }: {
+export default async function RootLayout({ children }: {
   children: React.ReactNode
 }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const collapsedCookie = cookieStore.get(TOGGLE_ASIDE);
 
   return (

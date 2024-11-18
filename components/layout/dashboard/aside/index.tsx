@@ -9,27 +9,24 @@
 
 'use client';
 
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { message, Button, Menu } from 'antd';
-import classNames from 'classnames';
-
 import {
   PlusCircleOutlined, MinusCircleOutlined, PlusCircleFilled, MinusCircleFilled,
 } from '@ant-design/icons';
-
+import { message, Button, Menu } from 'antd';
+import classNames from 'classnames';
+import Link from 'next/link';
 import {
   usePathname, useSearchParams, useParams, useRouter,
 } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 // import { useLocation } from 'react-router-dom';
 import MenuService, { Favorites } from '@/services/menu';
-
 import { useAppSelector, useAppDispatch } from '@/store';
 import { toggleAside } from '@/store/slices/app';
 import { fetchMenu, removeFavMenuItem, insertFavMenuItem } from '@/store/slices/menu';
-import TitleWithBadge from './components/title-with-badge';
 
+import TitleWithBadge from './components/title-with-badge';
 import styles from './index.module.scss';
 
 const { Item, SubMenu, Divider } = Menu;
