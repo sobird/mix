@@ -6,14 +6,15 @@
 
 'use client';
 
-import { FC } from 'react';
 import {
   Button, Table, Modal, Switch,
 } from 'antd';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { UserModel, UserAttributes } from '@/models';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { FC } from 'react';
+
 import { deleteUserAction } from '@/actions/user';
+import { UserModel, UserAttributes } from '@/models';
 
 type UserTableData = Awaited<ReturnType<typeof UserModel.findManyByPage<UserModel>>>;
 

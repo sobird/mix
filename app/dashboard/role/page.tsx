@@ -20,12 +20,15 @@ export const metadata: Metadata = {
   title: '角色管理',
 };
 
-type IRoleAppPage = IAppPage<PaginationSearchParams>;
-
 const RoleFormModal = withActionFormModal(RoleForm, { title: '创建角色' });
 
-const RolePage: IRoleAppPage = async ({ searchParams }) => {
-  const rolesWithPage = await RoleModel.findManyByPage(searchParams);
+interface SearchParams extends PaginationSearchParams {
+  //
+}
+
+const RolePage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
+  const { pn, ps } = await searchParams;
+  const rolesWithPage = await RoleModel.findManyByPage({ pn, ps });
 
   return (
     <div>

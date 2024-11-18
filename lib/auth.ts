@@ -11,18 +11,20 @@
  */
 
 /* eslint-disable no-param-reassign */
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
+import { cookies } from 'next/headers';
 import {
   getServerSession, type AuthOptions,
 } from 'next-auth';
 import { encode, getToken } from 'next-auth/jwt';
-import { v4 as uuidv4 } from 'uuid';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
-import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
-import { cookies } from 'next/headers';
-import { sendVerificationRequest } from './mailer';
-import AuthAdapter from './authSequelizeAdapter';
+import { v4 as uuidv4 } from 'uuid';
+
 import User from '@/models/user';
+
+import AuthAdapter from './authSequelizeAdapter';
+import { sendVerificationRequest } from './mailer';
 
 // const cookiesOptions: Partial<CookiesOptions> = {
 //   sessionToken: {
@@ -203,10 +205,10 @@ export function getServerAuthSession(...args: [GetServerSidePropsContext['req'],
   return getServerSession(...args, authOptions);
 }
 
-export function getServerAuthToken() {
+export async function getServerAuthToken() {
   return getToken({
     req: {
-      cookies: cookies(),
+      cookies: await cookies(),
     } as any,
   });
 }

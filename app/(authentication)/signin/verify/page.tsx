@@ -3,19 +3,25 @@
  *
  * sobird<i@sobird.me> at 2023/11/29 22:38:08 created.
  */
-import Image from 'next/image';
-import { Metadata } from 'next';
 import { Result, Button } from 'antd';
-import mix from '@/assets/mix.svg';
+import { Metadata } from 'next';
+
 import { getEmailLoginUrl } from '@/utils/emailLogin';
+
 import styles from './page.module.scss';
 
 export const metadata: Metadata = {
   title: '登录电子邮箱',
 };
 
-export default function Home({ searchParams }: any) {
-  const emailLoginUrl = getEmailLoginUrl(decodeURIComponent(searchParams.email));
+interface SearchParams {
+  email: string;
+}
+
+export default async function Home({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const { email } = await searchParams;
+
+  const emailLoginUrl = getEmailLoginUrl(decodeURIComponent(email));
   return (
     <div>
       <Result

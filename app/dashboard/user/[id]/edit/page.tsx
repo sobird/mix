@@ -4,21 +4,19 @@
  * sobird<i@sobird.me> at 2023/12/08 22:40:59 created.
  */
 
-import { NextPage } from 'next';
 import { notFound } from 'next/navigation';
 import React from 'react';
-import UserForm from '@/app/dashboard/user/components/user-form';
+
 import { updateUserAction } from '@/actions/user';
+import UserForm from '@/app/dashboard/user/components/user-form';
 import { UserModel, RoleModel } from '@/models';
 
-interface UserEditPageProps {
-  params: {
-    id: string;
-  };
+interface UserEditPageParams {
+  id: string;
 }
 
-const UserEditPage: NextPage<UserEditPageProps> = async ({ params }) => {
-  const { id } = params;
+const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
+  const { id } = await params;
 
   const user = await UserModel.findOne({
     where: {

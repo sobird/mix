@@ -4,21 +4,25 @@
  * sobird<i@sobird.me> at 2023/12/05 15:10:21 created.
  */
 
-import React from 'react';
+import { Button } from 'antd';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Button } from 'antd';
+import React from 'react';
+
 import { UserModel } from '@/models';
+
 import UserTable from './table';
 
 export const metadata: Metadata = {
   title: '用户管理',
 };
 
-type IUserAppPage = IAppPage<PaginationSearchParams>;
+interface SearchParams extends PaginationSearchParams {
+  //
+}
 
-const UserPage: IUserAppPage = async ({ searchParams }) => {
-  const userWithPage = await UserModel.findManyByPage(searchParams);
+const UserPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
+  const userWithPage = await UserModel.findManyByPage(await searchParams);
 
   return (
     <div>

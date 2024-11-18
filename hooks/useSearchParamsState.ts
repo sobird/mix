@@ -4,8 +4,8 @@
  * sobird<i@sobird.me> at 2023/10/05 10:13:44 created.
  */
 
-import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 let singletonSearchParams = null;
 

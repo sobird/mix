@@ -4,9 +4,9 @@
  * sobird<i@sobird.me> at 2023/10/05 23:50:18 created.
  */
 
-import React, { ComponentProps } from 'react';
 import { Table } from 'antd';
 import { useSearchParams } from 'next/navigation';
+import React, { ComponentProps } from 'react';
 
 const MTable: React.FC<ComponentProps<typeof Table>> = ({ children, pagination, ...props }) => {
   const [searchParamPn, setSearchParamPn] = useSearchParamsState('pn', '1');
