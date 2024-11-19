@@ -10,12 +10,12 @@ import {
   RegisterButton,
 } from '@/components/buttons';
 import { defineAbilityFor } from '@/lib/ability';
-import { getServerAuthToken } from '@/lib/auth';
 import {
   UserModel, SessionModel, AccountModel, sequelize,
 } from '@/models';
+import { getServerAuthToken } from '@/services/auth/auth';
 
-const HomePage: IAppPage<{ id: string }> = async () => {
+const HomePage = async () => {
   const token = await getServerAuthToken();
   console.log('getServerAuthToken', token);
   // await sequelize.sync({ force: true });
@@ -41,10 +41,12 @@ const HomePage: IAppPage<{ id: string }> = async () => {
     },
   ]);
 
-  console.log('ability', ability.can('read', '/test1'));
+  console.log('ability', ability);
 
-  const users = await UserModel.findAll({ raw: true });
-  console.log('users', users);
+  console.log('ability', ability.can('read', '/test'));
+
+  const users = await UserModel.findAll({ include: [UserModel.associations.Roles] });
+  console.log('users', users[0].createdAt);
 
   return (
     <main

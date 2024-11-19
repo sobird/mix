@@ -8,6 +8,7 @@
 import {
   createMongoAbility, ForcedSubject, AbilityBuilder, MongoAbility, CreateAbility, InferSubjects,
 } from '@casl/ability';
+
 import Models, { UserAttributes } from '@/models';
 
 type Subjects = InferSubjects<keyof typeof Models | 'all'>;

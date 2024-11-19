@@ -10,14 +10,18 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import debug from 'debug';
+import { AbilityTuple, MongoAbility } from '@casl/ability';
+import log4js from 'log4js';
 import {
-  Sequelize, Model, CreationOptional, ModelStatic, InferAttributes,
+  Sequelize, Model, CreationOptional, ModelStatic, InferAttributes, ModelOptions, DataTypes,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
-import { AbilityTuple, MongoAbility } from '@casl/ability';
+
 import { accessibleBy } from '@/casl/toSequelizeQuery';
 import type { Models } from '@/models';
+
+const logger = log4js.getLogger('sequelize');
+logger.level = log4js.levels.DEBUG;
 
 /** 数据库链接实例 */
 export const sequelize = new Sequelize({
@@ -114,10 +118,9 @@ export const sequelize = new Sequelize({
   // isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ
   logging: (sql, queryObject: any) => {
     const { type, bind } = queryObject;
-    const log = debug(`app:sql:${type}`);
-    log(sql);
+    logger.debug(type, sql);
     if (['INSERT', 'UPDATE', 'BULKUPDATE'].includes(type)) {
-      log(bind);
+      logger.debug(bind);
     }
   },
 });
@@ -127,15 +130,19 @@ export const sequelize = new Sequelize({
 //   console.log('attributes', attributes);
 // });
 
+type Initattributes<MS extends ModelStatic<Model>, M extends InstanceType<MS>> = Omit<Parameters<typeof Model.init<MS, M>>[0], 'updatedAt' | 'createdAt'>;
+
 /**
  * 模型基类
  *
  * sobird<i@sobird.me> at 2023/12/05 21:08:43 created.
  */
 export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
-  declare id?: CreationOptional<any>;
+  // declare id: CreationOptional<string>;
 
   declare createdAt: CreationOptional<Date>;
+
+  declare updatedAt: CreationOptional<Date>;
 
   /**
    * Helper method for defining associations.
@@ -188,5 +195,22 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
     return {
       pn, ps, count: 0, rows: [],
     };
+  }
+
+  public static define<MS extends ModelStatic<BaseModel>, M extends InstanceType<MS>>(
+    this: MS,
+    attributes: Initattributes<MS, M>,
+    options: ModelOptions<M>,
+  ): MS {
+    return super.init({
+      ...attributes,
+
+      createdAt: DataTypes.DATE,
+      updatedAt: DataTypes.DATE,
+    }, {
+      sequelize,
+      deletedAt: true,
+      ...options,
+    }) as unknown as MS;
   }
 }

@@ -9,6 +9,7 @@
     "dev": "DEBUG=app:* next dev",
     "start": "next start",
     "build": "next build",
+    "db:seed": "NODE_OPTIONS=--import=./node_modules/@sobird/ts-node/register.js node scripts/seed",
     "lint": "next lint",
     "test": "jest"
   },
@@ -25,8 +26,9 @@
     "debug": "^4.3.4",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
+    "log4js": "^6.9.1",
     "next": "^15.0.3",
-    "next-auth": "^4.24.5",
+    "next-auth": "^4.24.10",
     "nodemailer": "^6.9.7",
     "otplib": "^12.0.1",
     "prisma": "^5.7.0",
@@ -39,6 +41,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@sobird/ts-node": "^1.0.0",
     "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.14.202",
     "@types/node": "20.10.0",

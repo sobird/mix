@@ -1,7 +1,8 @@
 import { createTransport, type SendMailOptions } from 'nodemailer';
-import reactToHtml from '@/lib/reactToHtml';
+
 import Authentication from '@/components/email-template/authentication';
 import CaptchaEmailBody from '@/components/email-template/captcha';
+import reactToHtml from '@/lib/reactToHtml';
 
 // 创建发送邮件的对象
 export const transporter = createTransport({

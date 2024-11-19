@@ -1,7 +1,9 @@
 import { z } from 'zod';
-import { createFormRule } from '.';
+
 import { existsAction, verifyVerificationCode } from '@/actions/user';
 import { analyzePassword, isChineseName, isMobilePhone } from '@/utils/validator';
+
+import { createFormRule } from '.';
 
 const usernameZod = z
   .object({
