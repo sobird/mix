@@ -1,3 +1,4 @@
+type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 /**
  * 数据列表分页查询参数
  */

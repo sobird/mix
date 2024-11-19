@@ -8,10 +8,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
-import { RoleModel } from '@/models';
-import { getServerAuthToken } from '@/lib/auth';
+
 import { defineAbilityFor } from '@/lib/ability';
+import { getServerAuthToken } from '@/services/auth/auth';
+import { RoleModel } from '@/models';
+import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
+
 import { ActionStatus } from '.';
 
 type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;

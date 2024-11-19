@@ -9,6 +9,7 @@
 import {
   DataTypes, type InferAttributes, InferCreationAttributes,
 } from 'sequelize';
+
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Session model */

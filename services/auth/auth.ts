@@ -1,5 +1,5 @@
 /**
- * auth.ts
+ * Next-Auth Config
  *
  *
  * @see https://authjs.dev/getting-started/typescript#module-augmentation
@@ -19,12 +19,13 @@ import {
 import { encode, getToken } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
+import GithubProvider from 'next-auth/providers/github';
 import { v4 as uuidv4 } from 'uuid';
 
 import User from '@/models/user';
 
 import AuthAdapter from './authSequelizeAdapter';
-import { sendVerificationRequest } from './mailer';
+import { sendVerificationRequest } from '../../lib/mailer';
 
 // const cookiesOptions: Partial<CookiesOptions> = {
 //   sessionToken: {
@@ -51,7 +52,7 @@ import { sendVerificationRequest } from './mailer';
 //   },
 // };
 
-const sessionOptions:AuthOptions['session'] = {
+const sessionOptions: AuthOptions['session'] = {
   strategy: 'jwt', // default: database
   maxAge: 30 * 24 * 60 * 60, // 30 days
   updateAge: 24 * 60 * 60, // 24 hours
@@ -101,14 +102,18 @@ export const authOptions: AuthOptions = {
           return {
             name: user.username,
             email: user.email,
-            id: user.id,
+            id: user.id as unknown as string,
             image: 'image',
-            role: 'admin',
+            role: 'manage',
           };
         } catch (e) {
           throw Error(e);
         }
       },
+    }),
+    GithubProvider({
+      clientId: 'sobird',
+      clientSecret: 'sobird',
     }),
     /**
      * The Email authentication provider can only be used if a database is configured.
@@ -191,7 +196,7 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    // signIn: '/signin',
+    signIn: '/signin',
     verifyRequest: '/signin/verify',
   },
 };

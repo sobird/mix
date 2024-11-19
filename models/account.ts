@@ -15,7 +15,8 @@ import {
   DataTypes,
   type InferAttributes, InferCreationAttributes, CreationOptional,
 } from 'sequelize';
-import { sequelize, BaseModel } from '@/lib/sequelize';
+
+import { BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Account model */
 export type AccountAttributes = InferAttributes<Account>;
@@ -65,7 +66,7 @@ class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
   }
 }
 
-Account.init(
+Account.define(
   {
     type: {
       type: DataTypes.STRING,
@@ -116,7 +117,6 @@ Account.init(
     },
   },
   {
-    sequelize,
     modelName: 'Account',
   },
 );

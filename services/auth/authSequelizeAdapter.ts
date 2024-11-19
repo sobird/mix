@@ -1,14 +1,15 @@
 /**
- * Custom Adapter
+ * Next-Auth Custom Adapter
  *
  * sobird<i@sobird.me> at 2023/11/29 10:18:40 created.
  */
 
-import type { Adapter } from '@auth/core/adapters';
-import User from '@/models/user';
-import VerificationToken from '@/models/verificationToken';
 import Account from '@/models/account';
 import Session from '@/models/session';
+import User from '@/models/user';
+import VerificationToken from '@/models/verificationToken';
+
+import type { Adapter } from '@auth/core/adapters';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {

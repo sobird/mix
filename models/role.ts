@@ -7,6 +7,7 @@
 import {
   DataTypes,
   type InferAttributes, InferCreationAttributes, CreationOptional,
+  Association,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
@@ -18,9 +19,11 @@ import {
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
+
 import { sequelize, BaseModel } from '@/lib/sequelize';
-import type User from './user';
+
 import type Permission from './permission';
+import type User from './user';
 
 /** These are all the attributes in the Role model */
 export type RoleAttributes = InferAttributes<Role>;
@@ -28,7 +31,7 @@ export type RoleAttributes = InferAttributes<Role>;
 export type RoleCreationAttributes = InferCreationAttributes<Role>;
 
 class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
-  declare id?: CreationOptional<number>;
+  declare id: CreationOptional<number>;
 
   declare parentId?: CreationOptional<number>;
 
@@ -77,6 +80,11 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
   declare createPermission: BelongsToManyCreateAssociationMixin<Permission>;
 
   declare countPermissions: BelongsToManyCountAssociationsMixin;
+
+  declare static associations: {
+    Users: Association<Role, User>;
+    Permissions: Association<Role, Permission>;
+  };
 
   static associate({
     User, UserRole, Permission, RolePermission,

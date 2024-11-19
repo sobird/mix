@@ -5,11 +5,11 @@
  * sobird<i@sobird.me> at 2023/11/29 10:18:40 created.
  */
 
+import prisma from '../../lib/prisma';
 import type {
   Adapter, AdapterAccount, AdapterUser, AdapterSession,
 } from '@auth/core/adapters';
 import type { Prisma } from '@prisma/client';
-import prisma from './prisma';
 
 const AuthAdapter: Adapter = {
   async createUser(data) {

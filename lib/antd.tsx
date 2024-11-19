@@ -7,9 +7,10 @@
 
 'use client';
 
-import React from 'react';
-import { useServerInsertedHTML } from 'next/navigation';
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
+import { useServerInsertedHTML } from 'next/navigation';
+import React from 'react';
+
 import type Entity from '@ant-design/cssinjs/es/Cache';
 
 const StyledComponentsRegistry = ({ children }: React.PropsWithChildren) => {

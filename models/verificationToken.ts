@@ -14,6 +14,7 @@ import {
   DataTypes,
   type InferAttributes, InferCreationAttributes,
 } from 'sequelize';
+
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */
@@ -50,7 +51,7 @@ VerificationToken.init(
     identifier: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: 'user id',
+      comment: 'User id',
     },
     expires: {
       type: DataTypes.DATE,

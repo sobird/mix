@@ -1,17 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { sequelize } from '@/models';
 
-const prisma = new PrismaClient();
-
-async function main() {
-  // ... you will write your Prisma Client queries here
-}
-
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+const res = await sequelize.sync({ alter: true });
+console.log('install models:', res.models);

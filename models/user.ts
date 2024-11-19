@@ -12,9 +12,13 @@
  */
 
 import { randomBytes, createHmac } from 'crypto';
+
 import {
   DataTypes, Op,
-  InferAttributes, InferCreationAttributes, CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  Association,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
@@ -25,18 +29,18 @@ import {
   BelongsToManyHasAssociationsMixin,
   BelongsToManyCreateAssociationMixin,
   BelongsToManyCountAssociationsMixin,
+  NonAttribute,
 } from 'sequelize';
-import { sequelize, BaseModel } from '@/lib/sequelize';
-import dayjs from '@/utils/dayjs';
+
+import { BaseModel } from '@/lib/sequelize';
+
 import type Role from './role';
-import { type RoleAttributes } from './role';
 
 /** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
 export type UserAttributes = InferAttributes<User>;
-
 // Some attributes are optional in `User.build` and `User.create` calls
 export type UserCreationAttributes = InferCreationAttributes<User>;
 // 用户登录属性
@@ -45,6 +49,8 @@ export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
 class User extends BaseModel<UserAttributes, UserCreationAttributes> {
+  declare id: CreationOptional<number>;
+
   declare username: CreationOptional<string>;
 
   declare name: CreationOptional<string | null>;
@@ -75,10 +81,12 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   declare updatedBy: CreationOptional<number>;
 
-  declare Roles?: CreationOptional<RoleAttributes[]>;
+  declare Roles?: NonAttribute<Role[]>;
 
-  // method
-
+  // associates method
+  // Since TS cannot determine model association at compile time
+  // we have to declare them here purely virtually
+  // these will not exist until `Model.init` was called.
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
   /** Remove all previous associations and set the new ones */
@@ -112,6 +120,10 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
     this.belongsToMany(Role, { through: UserRole });
   }
 
+  declare static associations: {
+    Roles: Association<User, Role>;
+  };
+
   /** 用户注册 */
   public static async signUp(attributes: UserSignupAttributes, fields?: (keyof UserAttributes)[]) {
     const [user, created] = await this.findOrCreate({
@@ -134,7 +146,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   /** 通过用户名和密码进行用户登录认证 */
   public static async signin({ username, password }: UserSigninAttributes) {
     if (!username || !password) {
-      return Promise.reject('用户名和密码不能为空');
+      throw Error('用户名和密码不能为空');
     }
 
     const user = await this.findOne({
@@ -143,13 +155,13 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
     });
 
     if (!user) {
-      return Promise.reject('用户不存在');
+      throw Error('用户不存在');
     }
 
     if (user.verifyPassword(password)) {
       return user.get({ plain: true });
     }
-    return Promise.reject('密码不正确');
+    throw Error('密码不正确');
   }
 
   /**
@@ -173,8 +185,13 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   }
 }
 
-User.init(
+User.define(
   {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     username: {
       type: DataTypes.STRING(32),
       unique: true,
@@ -243,21 +260,17 @@ User.init(
       type: DataTypes.INTEGER,
     },
 
-    createdAt: {
-      type: DataTypes.DATE,
-      get() {
-        return dayjs(this.dataValues.createdAt).format();
-      },
-    },
+    // createdAt: DataTypes.DATE,
+    // updatedAt: DataTypes.DATE,
   },
   {
-    sequelize,
     modelName: 'User',
   },
 );
 
 User.beforeCreate((model) => {
   if (model.password) {
+    // eslint-disable-next-line no-param-reassign
     model.password = User.hashPassword(model.password, model.salt);
   }
   // model.ip = fn("INET_ATON", model.ip); // INET_NTOA

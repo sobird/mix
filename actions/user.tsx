@@ -1,17 +1,18 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { WhereOptions, Op } from 'sequelize';
 
-import { revalidatePath } from 'next/cache';
-import { UserModel } from '@/models';
-import { generate, verify } from '@/lib/otp';
-import { transporter } from '@/lib/mailer';
-import reactToHtml from '@/lib/reactToHtml';
 import CaptchaEmailBody from '@/components/email-template/captcha';
+import { transporter } from '@/lib/mailer';
+import { generate, verify } from '@/lib/otp';
+import reactToHtml from '@/lib/reactToHtml';
+import { UserModel } from '@/models';
 import {
   signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod,
 } from '@/zod/user';
+
 import { ActionStatus } from '.';
 
 type UserServerActionState = ServerActionState<SignUpAttributes>;
