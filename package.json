@@ -11,7 +11,8 @@
     "build": "next build",
     "db:seed": "NODE_OPTIONS=--import=./node_modules/@sobird/ts-node/register.js node scripts/seed",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@auth/core": "^0.18.4",
@@ -52,6 +53,7 @@
     "@types/react-dom": "^18.2.17",
     "@types/uuid": "^9.0.7",
     "eslint-config-sobird": "^0.2.14",
+    "husky": "^9.1.7",
     "raw-loader": "^4.0.2",
     "sass": "^1.69.5",
     "typescript": "^5.6.3",
