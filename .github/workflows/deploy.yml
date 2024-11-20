@@ -2,12 +2,12 @@
 #
 # To get started with Next.js see: https://nextjs.org/docs/getting-started
 #
-name: Build and Deploy SSR
+name: Deploy Mix
 
 on:
   # Runs on pushes targeting the default branch
-  push:
-    branches: ["master"]
+  # push:
+  #   branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,39 +30,64 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "22"
+          registry-url: https://registry.npmjs.org/
           # cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Restore cache node_modules
         id: cache-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
+          restore-keys: ${{ runner.os }}-yarn-
       - name: Install dependencies
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: yarn
       - name: Build ☕️
         run: yarn build
+
       - name: Copy Files
-        run: |
-          cp pm2.config.js .next
-          cp -r .next/static .next/standalone/.next 
-      - name: Deploy node_modules 🚀
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        run: cp pm2.config.js .next/standalone
+
+      - name: Deploy Standalone 🚀
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
+          source: ".next/standalone/**"
           target: ${{ secrets.TARGET }}
-          source: "node_modules/**"
+          strip_components: 2
+
+      - name: Deploy Static 🚀
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          source: ".next/static/**"
+          target: ${{ secrets.TARGET }}
           strip_components: 0
+
+      # - name: Deploy node_modules 🚀
+      #   if: steps.cache-dependencies.outputs.cache-hit != 'true'
+      #   uses: appleboy/scp-action@v0.1.4
+      #   with:
+      #     host: ${{ secrets.HOST }}
+      #     username: ${{ secrets.USERNAME }}
+      #     key: ${{ secrets.KEY }}
+      #     port: ${{ secrets.PORT }}
+      #     target: ${{ secrets.TARGET }}
+      #     source: "node_modules/**"
+      #     strip_components: 0
+
       - name: Deploy public 🚀
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -73,17 +98,8 @@ jobs:
           target: ${{ secrets.TARGET }}
           source: "public/**"
           strip_components: 0
-      - name: Deploy SSR 🚀
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          source: ".next/standalone/**,.next/package.json,.next/pm2.config.js"
-          target: ${{ secrets.TARGET }}
-          strip_components: 1
-      - name: Reload SSR
+      
+      - name: Reload Server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
