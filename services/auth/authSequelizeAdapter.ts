@@ -41,7 +41,7 @@ const AuthAdapter: Adapter = {
     }) as any;
   },
   async updateUser(record) {
-    await User.update(record, { where: { id: record.id } });
+    await User.update(record as unknown as User, { where: { id: record.id } });
     return User.findByPk(record.id, {
       raw: true,
     }) as any;
