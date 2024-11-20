@@ -13,7 +13,7 @@
 import { AbilityTuple, MongoAbility } from '@casl/ability';
 import log4js from 'log4js';
 import {
-  Sequelize, Model, CreationOptional, ModelStatic, InferAttributes, ModelOptions, DataTypes,
+  Sequelize, Model, CreationOptional, ModelStatic, InferAttributes,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
@@ -130,15 +130,13 @@ export const sequelize = new Sequelize({
 //   console.log('attributes', attributes);
 // });
 
-type Initattributes<MS extends ModelStatic<Model>, M extends InstanceType<MS>> = Omit<Parameters<typeof Model.init<MS, M>>[0], 'updatedAt' | 'createdAt'>;
-
 /**
  * 模型基类
  *
  * sobird<i@sobird.me> at 2023/12/05 21:08:43 created.
  */
-export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
-  // declare id: CreationOptional<string>;
+export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Model<Omit<T, ''>, Omit<P, ''>> {
+  declare id: CreationOptional<number>;
 
   declare createdAt: CreationOptional<Date>;
 
@@ -149,7 +147,7 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  declare static associate: (models: Models) => void;
+  public static associate: (models: Models) => void;
 
   static accessibleBy = accessibleBy;
 
@@ -195,22 +193,5 @@ export class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P>
     return {
       pn, ps, count: 0, rows: [],
     };
-  }
-
-  public static define<MS extends ModelStatic<BaseModel>, M extends InstanceType<MS>>(
-    this: MS,
-    attributes: Initattributes<MS, M>,
-    options: ModelOptions<M>,
-  ): MS {
-    return super.init({
-      ...attributes,
-
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
-    }, {
-      sequelize,
-      deletedAt: true,
-      ...options,
-    }) as unknown as MS;
   }
 }

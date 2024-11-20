@@ -16,7 +16,7 @@ import {
   type InferAttributes, InferCreationAttributes, CreationOptional,
 } from 'sequelize';
 
-import { BaseModel } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Account model */
 export type AccountAttributes = InferAttributes<Account>;
@@ -24,14 +24,14 @@ export type AccountAttributes = InferAttributes<Account>;
 export type AccountCreationAttributes = InferCreationAttributes<Account>;
 
 class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
-  public userId: number;
+  declare userId: number;
 
   declare type: 'oauth' | 'oidc' | 'email';
 
   /**
    * Provider's id for this account. Eg.: 'google'
    */
-  provider: string;
+  declare provider: string;
 
   /**
    * This value depends on the type of the provider being used to create the account.
@@ -40,33 +40,33 @@ class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
    * email: The user's email address.
    * credentials: id returned from the authorize() callback
    */
-  providerAccountId: string;
+  declare providerAccountId: string;
 
-  refresh_token?: string;
+  declare refresh_token?: string;
 
-  access_token?: string | undefined;
+  declare access_token?: string | undefined;
 
   /**
    * Calculated value based on [OAuth2TokenEndpointResponse.expires_in]([object Object]).
    * It is the absolute timestamp (in seconds) when the [OAuth2TokenEndpointResponse.access_token]([object Object]) expires.
    * This value can be used for implementing token rotation together with [OAuth2TokenEndpointResponse.refresh_token]([object Object]).
    */
-  expires_at?: number;
+  declare expires_at?: number;
 
-  token_type?: string;
+  declare token_type?: string;
 
-  scope?: string;
+  declare scope?: string;
 
-  id_token?: string;
+  declare id_token?: string;
 
-  session_state: CreationOptional<string>;
+  declare session_state: CreationOptional<string>;
 
   static associate({ User }) {
     this.belongsTo(User, { onDelete: 'cascade' });
   }
 }
 
-Account.define(
+Account.init(
   {
     type: {
       type: DataTypes.STRING,
@@ -117,6 +117,7 @@ Account.define(
     },
   },
   {
+    sequelize,
     modelName: 'Account',
   },
 );

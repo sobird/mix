@@ -5,24 +5,24 @@
  */
 
 import {
-  Model,
   DataTypes,
-  type Optional,
+  type InferAttributes,
+  type InferCreationAttributes,
 } from 'sequelize';
-import { sequelize } from '@/lib/sequelize';
+
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Group model */
-export interface GroupAttributes {
-  id?: number;
-  parentId: number,
-  name: string;
-  description: string;
-}
+export type GroupAttributes = InferAttributes<Group>;
 /** Some attributes are optional in `Group.build` and `Group.create` calls */
-export type GroupCreationAttributes = Optional<GroupAttributes, 'id'>;
+export type GroupCreationAttributes = InferCreationAttributes<Group>;
 
-class Group extends Model<GroupAttributes, GroupCreationAttributes> {
-  declare id: number;
+class Group extends BaseModel<GroupAttributes, GroupCreationAttributes> {
+  declare name: string;
+
+  declare description: string;
+
+  declare parentId: number;
 }
 
 Group.init(

@@ -1,5 +1,5 @@
 /**
- * models
+ * Models Index
  *
  * import { models } from '@auth/sequelize-adapter';
  *

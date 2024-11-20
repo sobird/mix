@@ -4,29 +4,45 @@
  * sobird<i@sobird.me> at 2023/12/05 10:56:40 created.
  */
 
-import { Model, DataTypes, type Optional } from 'sequelize';
+import {
+  Model, DataTypes,
+  type InferAttributes,
+  type InferCreationAttributes,
+} from 'sequelize';
+
 import { sequelize } from '@/lib/sequelize';
 
 /** These are all the attributes in the Menu model */
-export interface MenuAttributes {
-  name: string;
-  icon: string;
-  href: string;
-  description: string;
-  parentId: number;
-  sort: number;
-}
+export type MenuAttributes = InferAttributes<Menu>;
 /** Some attributes are optional in `Menu.build` and `Menu.create` calls */
-export type MenuCreationAttributes = Optional<MenuAttributes, 'description'>;
+export type MenuCreationAttributes = InferCreationAttributes<Menu>;
 
 class Menu extends Model<MenuAttributes, MenuCreationAttributes> {
-  declare id: number;
+  declare userId: number;
 
-  public userId: number;
+  declare name: string;
+
+  declare icon: string;
+
+  declare href: string;
+
+  declare description: string;
+
+  declare parentId: number;
+
+  declare sort: number;
+
+  static associate({ User }) {
+    this.belongsTo(User, { onDelete: 'cascade' });
+  }
 }
 
 Menu.init(
   {
+    userId: {
+      type: DataTypes.INTEGER,
+      comment: 'user id',
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,

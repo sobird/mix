@@ -9,7 +9,7 @@ import {
   type InferAttributes, InferCreationAttributes,
 } from 'sequelize';
 
-import { BaseModel } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the DictionaryItem model */
 export type DictionaryItemAttributes = InferAttributes<DictionaryItem>;
@@ -18,18 +18,18 @@ export type DictionaryItemAttributes = InferAttributes<DictionaryItem>;
 export type DictionaryItemCreationAttributes = InferCreationAttributes<DictionaryItem>;
 
 class DictionaryItem extends BaseModel<DictionaryItemAttributes, DictionaryItemCreationAttributes> {
-  label: string;
+  declare label: string;
 
-  value: string;
+  declare value: string;
 
-  sort: number;
+  declare sort: number;
 
-  status: string;
+  declare status: string;
 
-  typeId: number;
+  declare typeId: number;
 }
 
-DictionaryItem.define(
+DictionaryItem.init(
   {
     label: {
       type: DataTypes.STRING(120),
@@ -56,6 +56,7 @@ DictionaryItem.define(
     },
   },
   {
+    sequelize,
     modelName: 'DictionaryItem',
   },
 );
