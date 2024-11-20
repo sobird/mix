@@ -4,13 +4,15 @@
  * sobird<i@sobird.me> at 2023/10/29 18:20:51 created.
  */
 
-import React, { useState } from 'react';
 import {
   Button, Form, Input, ButtonProps, InputProps,
 } from 'antd';
-import type { NamePath } from 'antd/lib/form/interface';
-import useInterval from '@/hooks/useInterval';
+import React, { useState } from 'react';
+
 import { sendCaptchaEmailAction } from '@/actions/user';
+import useInterval from '@/hooks/useInterval';
+
+import type { NamePath } from 'antd/lib/form/interface';
 
 export type FieldCaptchaProps = {
   value?: InputProps['value'];

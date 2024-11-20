@@ -41,7 +41,7 @@ export async function sendVerificationRequest(params) {
 }
 
 /** 发送验证码 */
-export async function sendCaptcha(identifier: string, code: number) {
+export async function sendCaptcha(identifier: string, code: string) {
   sendMail({
     to: identifier,
     subject: '[MIX] 验证码',
