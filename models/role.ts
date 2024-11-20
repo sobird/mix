@@ -6,18 +6,20 @@
 
 import {
   DataTypes,
-  type InferAttributes, InferCreationAttributes, CreationOptional,
-  Association,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManyAddAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
-  BelongsToManyRemoveAssociationsMixin,
-  BelongsToManyHasAssociationMixin,
-  BelongsToManyHasAssociationsMixin,
-  BelongsToManyCreateAssociationMixin,
-  BelongsToManyCountAssociationsMixin,
+  type InferAttributes,
+  type InferCreationAttributes,
+  type CreationOptional,
+  type Association,
+  type BelongsToManyGetAssociationsMixin,
+  type BelongsToManySetAssociationsMixin,
+  type BelongsToManyAddAssociationMixin,
+  type BelongsToManyAddAssociationsMixin,
+  type BelongsToManyRemoveAssociationMixin,
+  type BelongsToManyRemoveAssociationsMixin,
+  type BelongsToManyHasAssociationMixin,
+  type BelongsToManyHasAssociationsMixin,
+  type BelongsToManyCreateAssociationMixin,
+  type BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
@@ -31,8 +33,6 @@ export type RoleAttributes = InferAttributes<Role>;
 export type RoleCreationAttributes = InferCreationAttributes<Role>;
 
 class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
-  declare id: CreationOptional<number>;
-
   declare parentId?: CreationOptional<number>;
 
   declare name: string;

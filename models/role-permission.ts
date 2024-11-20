@@ -4,23 +4,23 @@
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
-import { Model, DataTypes, type Optional } from 'sequelize';
+import {
+  Model, DataTypes,
+  type InferAttributes,
+  type InferCreationAttributes,
+} from 'sequelize';
+
 import { sequelize } from '@/lib/sequelize';
-import Role from './role';
+
 import Permission from './permission';
+import Role from './role';
 
 /** These are all the attributes in the RolePermission model */
-export interface RolePermissionAttributes {
-  id?: number;
-  PermissionId: number;
-  RoleId: number;
-}
+export type RolePermissionAttributes = InferAttributes<RolePermission>;
 /** Some attributes are optional in `RolePermission.build` and `RolePermission.create` calls */
-export type RolePermissionCreationAttributes = Optional<RolePermissionAttributes, 'id'>;
+export type RolePermissionCreationAttributes = InferCreationAttributes<RolePermission>;
 
 class RolePermission extends Model<RolePermissionAttributes, RolePermissionCreationAttributes> {
-  declare id: number;
-
   declare roleId: number;
 
   declare permissionId: number;
@@ -28,17 +28,17 @@ class RolePermission extends Model<RolePermissionAttributes, RolePermissionCreat
 
 RolePermission.init(
   {
-    PermissionId: {
+    permissionId: {
       type: DataTypes.INTEGER,
       references: {
-        model: Permission, // 'Movies' 也可以使用
+        model: Permission,
         key: 'id',
       },
     },
-    RoleId: {
+    roleId: {
       type: DataTypes.INTEGER,
       references: {
-        model: Role, // 'Actors' 也可以使用
+        model: Role,
         key: 'id',
       },
     },

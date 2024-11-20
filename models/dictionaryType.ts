@@ -8,6 +8,7 @@ import {
   DataTypes,
   type InferAttributes, InferCreationAttributes,
 } from 'sequelize';
+
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the DictionaryType model */
@@ -17,11 +18,11 @@ export type DictionaryTypeAttributes = InferAttributes<DictionaryType>;
 export type DictionaryTypeCreationAttributes = InferCreationAttributes<DictionaryType>;
 
 class DictionaryType extends BaseModel<DictionaryTypeAttributes, DictionaryTypeCreationAttributes> {
-  name: string;
+  declare name: string;
 
-  code: string;
+  declare code: string;
 
-  status: string;
+  declare status: string;
 }
 
 DictionaryType.init(
@@ -30,12 +31,12 @@ DictionaryType.init(
       type: DataTypes.STRING(120),
       unique: true,
       allowNull: false,
-      comment: '字典名称',
+      comment: 'Dictionary Name',
     },
     code: {
       type: DataTypes.STRING(120),
       allowNull: false,
-      comment: '字典类型',
+      comment: 'Dictionary Type',
     },
     status: {
       type: DataTypes.CHAR(1),

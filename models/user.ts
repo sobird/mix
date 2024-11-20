@@ -15,24 +15,25 @@ import { randomBytes, createHmac } from 'crypto';
 
 import {
   DataTypes, Op,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
-  Association,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManyAddAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
-  BelongsToManyRemoveAssociationsMixin,
-  BelongsToManyHasAssociationMixin,
-  BelongsToManyHasAssociationsMixin,
-  BelongsToManyCreateAssociationMixin,
-  BelongsToManyCountAssociationsMixin,
-  NonAttribute,
+  type InferAttributes,
+  type InferCreationAttributes,
+  type CreationOptional,
+  type NonAttribute,
+  type Attributes,
+  type Association,
+  type BelongsToManyGetAssociationsMixin,
+  type BelongsToManySetAssociationsMixin,
+  type BelongsToManyAddAssociationMixin,
+  type BelongsToManyAddAssociationsMixin,
+  type BelongsToManyRemoveAssociationMixin,
+  type BelongsToManyRemoveAssociationsMixin,
+  type BelongsToManyHasAssociationMixin,
+  type BelongsToManyHasAssociationsMixin,
+  type BelongsToManyCreateAssociationMixin,
+  type BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 
-import { BaseModel } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type Role from './role';
 
@@ -41,6 +42,7 @@ export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
 export type UserAttributes = InferAttributes<User>;
+export type UU = Attributes<User>;
 // Some attributes are optional in `User.build` and `User.create` calls
 export type UserCreationAttributes = InferCreationAttributes<User>;
 // 用户登录属性
@@ -49,8 +51,6 @@ export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
 class User extends BaseModel<UserAttributes, UserCreationAttributes> {
-  declare id: CreationOptional<number>;
-
   declare username: CreationOptional<string>;
 
   declare name: CreationOptional<string | null>;
@@ -90,19 +90,19 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
   /** Remove all previous associations and set the new ones */
-  declare setRoles: BelongsToManySetAssociationsMixin<Role, Role['id']>;
+  declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
 
-  declare addRole: BelongsToManyAddAssociationMixin<Role, Role['id']>;
+  declare addRole: BelongsToManyAddAssociationMixin<Role, number>;
 
-  declare addRoles: BelongsToManyAddAssociationsMixin<Role, Role['id']>;
+  declare addRoles: BelongsToManyAddAssociationsMixin<Role, number>;
 
-  declare removeRole: BelongsToManyRemoveAssociationMixin<Role, Role['id']>;
+  declare removeRole: BelongsToManyRemoveAssociationMixin<Role, number>;
 
-  declare removeRoles: BelongsToManyRemoveAssociationsMixin<Role, Role['id']>;
+  declare removeRoles: BelongsToManyRemoveAssociationsMixin<Role, number>;
 
-  declare hasRole: BelongsToManyHasAssociationMixin<Role, Role['id']>;
+  declare hasRole: BelongsToManyHasAssociationMixin<Role, number>;
 
-  declare hasRoles: BelongsToManyHasAssociationsMixin<Role, Role['id']>;
+  declare hasRoles: BelongsToManyHasAssociationsMixin<Role, number>;
 
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
 
@@ -125,7 +125,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   };
 
   /** 用户注册 */
-  public static async signUp(attributes: UserSignupAttributes, fields?: (keyof UserAttributes)[]) {
+  public static async signUp(attributes: UserSignupAttributes, fields?: (keyof Attributes<User>)[]) {
     const [user, created] = await this.findOrCreate({
       defaults: {
         ...attributes,
@@ -185,13 +185,8 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   }
 }
 
-User.define(
+User.init(
   {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
     username: {
       type: DataTypes.STRING(32),
       unique: true,
@@ -264,6 +259,7 @@ User.define(
     // updatedAt: DataTypes.DATE,
   },
   {
+    sequelize,
     modelName: 'User',
   },
 );

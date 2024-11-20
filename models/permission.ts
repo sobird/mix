@@ -6,35 +6,40 @@
 
 import {
   DataTypes,
-  type Optional,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManyAddAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
-  BelongsToManyRemoveAssociationsMixin,
-  BelongsToManyHasAssociationMixin,
-  BelongsToManyHasAssociationsMixin,
-  BelongsToManyCreateAssociationMixin,
-  BelongsToManyCountAssociationsMixin,
+  type InferAttributes,
+  type InferCreationAttributes,
+  type Association,
+  type BelongsToManyGetAssociationsMixin,
+  type BelongsToManySetAssociationsMixin,
+  type BelongsToManyAddAssociationMixin,
+  type BelongsToManyAddAssociationsMixin,
+  type BelongsToManyRemoveAssociationMixin,
+  type BelongsToManyRemoveAssociationsMixin,
+  type BelongsToManyHasAssociationMixin,
+  type BelongsToManyHasAssociationsMixin,
+  type BelongsToManyCreateAssociationMixin,
+  type BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
+
 import { sequelize, BaseModel } from '@/lib/sequelize';
-import type Role from './user';
+
+import type Role from './role';
 
 /** These are all the attributes in the Permission model */
-export interface PermissionAttributes {
-  id?: number;
-  name: string;
-  description: string;
-  operator: string;
-  target: string;
-  rules: object;
-}
+export type PermissionAttributes = InferAttributes<Permission>;
 /** Some attributes are optional in `Permission.build` and `Permission.create` calls */
-export type PermissionCreationAttributes = Optional<PermissionAttributes, 'id'>;
+export type PermissionCreationAttributes = InferCreationAttributes<Permission>;
 
 class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttributes> {
-  declare id: number;
+  declare name: string;
+
+  declare description: string;
+
+  declare operator: string;
+
+  declare target: string;
+
+  declare rules: object;
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
@@ -60,6 +65,10 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
   static associate({ Role, RolePermission }) {
     this.belongsToMany(Role, { through: RolePermission });
   }
+
+  declare static associations: {
+    Roles: Association<Permission, Role>;
+  };
 }
 
 Permission.init(

@@ -4,23 +4,23 @@
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
-import { Model, DataTypes, type Optional } from 'sequelize';
+import {
+  Model, DataTypes,
+  type InferAttributes,
+  type InferCreationAttributes,
+} from 'sequelize';
+
 import { sequelize } from '@/lib/sequelize';
-import User from './user';
+
 import Role from './role';
+import User from './user';
 
 /** These are all the attributes in the UserRole model */
-export interface UserRoleAttributes {
-  id?: number;
-  UserId: number;
-  RoleId: number;
-}
+export type UserRoleAttributes = InferAttributes<UserRole>;
 /** Some attributes are optional in `UserRole.build` and `UserRole.create` calls */
-export type UserRoleCreationAttributes = Optional<UserRoleAttributes, 'id'>;
+export type UserRoleCreationAttributes = InferCreationAttributes<UserRole>;
 
 class UserRole extends Model<UserRoleAttributes, UserRoleCreationAttributes> {
-  declare id: number;
-
   public userId!: number;
 
   public roleId!: number;
@@ -28,17 +28,17 @@ class UserRole extends Model<UserRoleAttributes, UserRoleCreationAttributes> {
 
 UserRole.init(
   {
-    UserId: {
+    userId: {
       type: DataTypes.INTEGER,
       references: {
-        model: User, // 'Movies' 也可以使用
+        model: User,
         key: 'id',
       },
     },
-    RoleId: {
+    roleId: {
       type: DataTypes.INTEGER,
       references: {
-        model: Role, // 'Actors' 也可以使用
+        model: Role,
         key: 'id',
       },
     },

@@ -7,10 +7,15 @@
  */
 
 import {
-  DataTypes, type InferAttributes, InferCreationAttributes,
+  DataTypes,
+  type InferAttributes,
+  type InferCreationAttributes,
+  type Association,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
+
+import type User from './user';
 
 /** These are all the attributes in the Session model */
 export type SessionAttributes = InferAttributes<Session>;
@@ -44,6 +49,10 @@ class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
   static associate({ User }) {
     this.belongsTo(User, { onDelete: 'cascade' });
   }
+
+  declare static associations: {
+    Roles: Association<Session, User>;
+  };
 }
 
 Session.init(

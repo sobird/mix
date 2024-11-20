@@ -12,7 +12,8 @@
 
 import {
   DataTypes,
-  type InferAttributes, InferCreationAttributes,
+  type InferAttributes,
+  type InferCreationAttributes,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
@@ -27,17 +28,17 @@ class VerificationToken extends BaseModel<VerificationTokenAttributes, Verificat
   /**
    * A hashed token, using the AuthConfig.secret value.
    */
-  token: string;
+  declare token: string;
 
   /**
    * The user's email address.
    */
-  identifier: string;
+  declare identifier: string;
 
   /**
    * The absolute date when the token expires.
    */
-  expires: Date;
+  declare expires: Date;
 }
 
 VerificationToken.init(
