@@ -42,7 +42,7 @@ export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
 export type UserAttributes = InferAttributes<User>;
-export type UU = Attributes<User>;
+
 // Some attributes are optional in `User.build` and `User.create` calls
 export type UserCreationAttributes = InferCreationAttributes<User>;
 // 用户登录属性
@@ -51,6 +51,12 @@ export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
 class User extends BaseModel<UserAttributes, UserCreationAttributes> {
+  declare id: CreationOptional<number>;
+
+  declare createdAt: CreationOptional<Date>;
+
+  declare updatedAt: CreationOptional<Date>;
+
   declare username: CreationOptional<string>;
 
   declare name: CreationOptional<string | null>;
@@ -187,6 +193,13 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
 User.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     username: {
       type: DataTypes.STRING(32),
       unique: true,
@@ -255,8 +268,14 @@ User.init(
       type: DataTypes.INTEGER,
     },
 
-    // createdAt: DataTypes.DATE,
-    // updatedAt: DataTypes.DATE,
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
   },
   {
     sequelize,
@@ -271,5 +290,8 @@ User.beforeCreate((model) => {
   }
   // model.ip = fn("INET_ATON", model.ip); // INET_NTOA
 });
+
+// const u = await User.findOne();
+// u?.dataValues.;
 
 export default User;

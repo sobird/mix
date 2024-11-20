@@ -9,13 +9,14 @@
 import {
   Input, Button, Form, ConfigProvider,
 } from 'antd';
+
+import { ActionStatus } from '@/actions';
 import { signUpAction } from '@/actions/user';
+import FieldCaptcha from '@/components/field-captcha';
+import useServerAction from '@/hooks/useServerAction';
 import {
   usernameRule, passwordRule, emailRule, verificationCodeRule,
 } from '@/zod/user';
-import FieldCaptcha from '@/components/field-captcha';
-import useServerAction from '@/hooks/useServerAction';
-import { ActionStatus } from '@/actions';
 
 export const SignupForm = () => {
   const initialState: ServerActionState = {
