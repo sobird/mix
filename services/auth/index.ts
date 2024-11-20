@@ -26,7 +26,7 @@ import GithubProvider from 'next-auth/providers/github';
 import User from '@/models/user';
 
 import AuthAdapter from './authSequelizeAdapter';
-import { sendVerificationRequest } from '../../lib/mailer';
+import { sendVerificationRequest } from '../mailer';
 
 // const cookiesOptions: Partial<CookiesOptions> = {
 //   sessionToken: {

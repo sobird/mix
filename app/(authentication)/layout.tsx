@@ -1,7 +1,9 @@
-import React, { PropsWithChildren } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import React, { PropsWithChildren } from 'react';
+
 import mix from '@/assets/mix.svg';
+
 import styles from './layout.module.scss';
 
 const AuthLayout: React.FC<PropsWithChildren> = ({ children }) => {

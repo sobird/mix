@@ -4,8 +4,8 @@
  * sobird<i@sobird.me> at 2023/09/24 0:45:20 created.
  */
 
-import React, { PropsWithChildren } from 'react';
 import { Badge } from 'antd';
+import React, { PropsWithChildren } from 'react';
 
 interface TitleWithBadgeProps {
   badge: any;

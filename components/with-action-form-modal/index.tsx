@@ -7,8 +7,10 @@
  */
 
 import React from 'react';
-import ActionFormModal, { ActionFormModalProps } from './action-form-modal';
+
 import { ActionFormProps } from '@/components/with-action-form/action-form';
+
+import ActionFormModal, { ActionFormModalProps } from './action-form-modal';
 
 const withActionFormModal = (
   ActionForm: React.FC<ActionFormProps>,
