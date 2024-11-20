@@ -13,7 +13,7 @@
 import { AbilityTuple, MongoAbility } from '@casl/ability';
 import log4js from 'log4js';
 import {
-  Sequelize, Model, CreationOptional, ModelStatic, InferAttributes,
+  Sequelize, Model, type ModelStatic, type Attributes,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
@@ -88,7 +88,10 @@ export const sequelize = new Sequelize({
   //   Model.init(attributes, { timestamps: false });
   //   sequelize.define(name, attributes, { timestamps: false });
   // so defining the timestamps for each model will be not necessary
+  // timezone: '+08:00',
   define: {
+    paranoid: true,
+
     underscored: true,
     // 强制表名称等于模型名称
     // freezeTableName: true,
@@ -135,12 +138,12 @@ export const sequelize = new Sequelize({
  *
  * sobird<i@sobird.me> at 2023/12/05 21:08:43 created.
  */
-export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Model<Omit<T, ''>, Omit<P, ''>> {
-  declare id: CreationOptional<number>;
+export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
+  // declare id: CreationOptional<number>;
 
-  declare createdAt: CreationOptional<Date>;
+  // declare createdAt: CreationOptional<Date>;
 
-  declare updatedAt: CreationOptional<Date>;
+  // declare updatedAt: CreationOptional<Date>;
 
   /**
    * Helper method for defining associations.
@@ -164,7 +167,7 @@ export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Mo
       ps: number;
       pn: number;
       count: number;
-      rows: InferAttributes<M>[]
+      rows: Attributes<M>[]
     }> {
     const ps = Number(query.ps) || 20;
     const pn = Number(query.pn) || 1;

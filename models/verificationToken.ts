@@ -52,6 +52,7 @@ VerificationToken.init(
     identifier: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       comment: 'User id',
     },
     expires: {

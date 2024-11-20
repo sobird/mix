@@ -46,7 +46,7 @@ const HomePage = async () => {
   console.log('ability', ability.can('read', '/test'));
 
   const users = await UserModel.findAll({ include: [UserModel.associations.Roles] });
-  console.log('users', users[0].createdAt);
+  console.log('users', users[0]);
 
   return (
     <main
