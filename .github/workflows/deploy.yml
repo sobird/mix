@@ -57,7 +57,7 @@ jobs:
         run: yarn build
 
       - name: Copy Files
-        run: cp pm2.config.js .next/standalone
+        run: cp pm2.config.cjs .next/standalone
 
       - name: Deploy Standalone 🚀
         uses: appleboy/scp-action@v0.1.4
@@ -113,4 +113,4 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd ${{ secrets.TARGET }}
-            PORT=8085 AUTHMAIL=${{ secrets.AUTHMAIL }} AUTHCODE=${{ secrets.AUTHCODE }} pm2 reload pm2.config.js
+            PORT=8085 AUTHMAIL=${{ secrets.AUTHMAIL }} AUTHCODE=${{ secrets.AUTHCODE }} pm2 reload pm2.config.cjs
