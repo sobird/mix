@@ -13,7 +13,7 @@ import { defineAbilityFor } from '@/lib/ability';
 import {
   UserModel, SessionModel, AccountModel, sequelize,
 } from '@/models';
-import { getServerAuthToken } from '@/services/auth/auth';
+import { getServerAuthToken } from '@/services/auth';
 
 const HomePage = async () => {
   const token = await getServerAuthToken();

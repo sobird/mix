@@ -11,6 +11,8 @@
  */
 
 /* eslint-disable no-param-reassign */
+import { randomUUID } from 'node:crypto';
+
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import { cookies } from 'next/headers';
 import {
@@ -20,7 +22,6 @@ import { encode, getToken } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import GithubProvider from 'next-auth/providers/github';
-import { v4 as uuidv4 } from 'uuid';
 
 import User from '@/models/user';
 
@@ -56,7 +57,7 @@ const sessionOptions: AuthOptions['session'] = {
   strategy: 'jwt', // default: database
   maxAge: 30 * 24 * 60 * 60, // 30 days
   updateAge: 24 * 60 * 60, // 24 hours
-  generateSessionToken: uuidv4,
+  generateSessionToken: randomUUID,
 };
 
 const jwt = {
