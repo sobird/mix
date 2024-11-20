@@ -64,6 +64,7 @@ VerificationToken.init(
   {
     sequelize,
     modelName: 'VerificationToken',
+    paranoid: false,
   },
 );
 

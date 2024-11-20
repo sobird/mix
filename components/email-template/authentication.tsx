@@ -4,7 +4,6 @@
  * sobird<i@sobird.me> at 2023/12/02 20:52:40 created.
  */
 
-import { FC } from 'react';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mix from '!raw-loader!@/assets/mix.svg';
 
@@ -16,7 +15,7 @@ interface AuthenticationProps {
   url: string;
 }
 
-const Authentication: FC<AuthenticationProps> = ({ url }) => {
+const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
   const brandColor = '#346df1';
 
   const color = {
