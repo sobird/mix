@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
   output: 'standalone',
   // experimental: {
   //   // typedRoutes: true,
   //   esmExternals: false,
   // },
-  serverExternalPackages: ['sequelize'],
+  serverExternalPackages: ['sequelize', 'log4js'],
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
@@ -21,6 +23,10 @@ const nextConfig = {
 
   compiler: {
     styledComponents: true,
+  },
+
+  sassOptions: {
+    silenceDeprecations: ['legacy-js-api'],
   },
 };
 
