@@ -1,4 +1,3 @@
-import React from 'react';
 import { createUserAction } from '@/actions/user';
 import UserForm from '@/app/dashboard/user/components/user-form';
 

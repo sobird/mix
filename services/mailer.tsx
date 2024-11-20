@@ -1,3 +1,10 @@
+/*
+ * Mailer Service
+ *
+ * sobird<i@sobird.me> at 2023/11/28 22:05:23 created.
+ */
+
+import { SendVerificationRequestParams } from '@auth/core/providers';
 import { createTransport, type SendMailOptions } from 'nodemailer';
 
 import Authentication from '@/components/email-template/authentication';
@@ -27,7 +34,7 @@ export const sendMail = async (mailOptions: SendMailOptions) => {
 };
 
 /** 发送邮箱登录连接 */
-export async function sendVerificationRequest(params) {
+export async function sendVerificationRequest(params: SendVerificationRequestParams) {
   const {
     identifier, url,
   } = params;

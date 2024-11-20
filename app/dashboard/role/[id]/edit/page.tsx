@@ -4,8 +4,6 @@
  * sobird<i@sobird.me> at 2023/12/08 22:40:59 created.
  */
 
-import React from 'react';
-
 import { updateRoleAction } from '@/actions/role';
 import { RoleModel } from '@/models';
 

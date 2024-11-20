@@ -3,9 +3,9 @@
  *
  * sobird<i@sobird.me> at 2023/11/29 22:38:08 created.
  */
+import { Result, Button } from 'antd';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Result, Button } from 'antd';
 
 export const metadata: Metadata = {
   title: '注册成功',

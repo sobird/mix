@@ -5,10 +5,10 @@ import { redirect } from 'next/navigation';
 import { WhereOptions, Op } from 'sequelize';
 
 import CaptchaEmailBody from '@/components/email-template/captcha';
-import { transporter } from '@/lib/mailer';
 import { generate, verify } from '@/lib/otp';
 import reactToHtml from '@/lib/reactToHtml';
 import { UserModel } from '@/models';
+import { transporter } from '@/services/mailer';
 import {
   signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod,
 } from '@/zod/user';

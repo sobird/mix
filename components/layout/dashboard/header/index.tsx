@@ -6,12 +6,14 @@
 
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import React from 'react';
 import { Dropdown } from 'antd';
-import Search from '../search';
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
+
 import Logo from '@/assets/mix.svg';
+
+import Search from '../search';
 import styles from './index.module.scss';
 
 const items = [
