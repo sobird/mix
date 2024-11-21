@@ -10,6 +10,7 @@ import {
   DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
+  type CreationOptional,
   type Association,
 } from 'sequelize';
 
@@ -23,6 +24,8 @@ export type SessionAttributes = InferAttributes<Session>;
 export type SessionCreationAttributes = InferCreationAttributes<Session>;
 
 class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
+  declare id: CreationOptional<number>;
+
   /**
    * The absolute date when the session expires.
    *
@@ -57,20 +60,26 @@ class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
 
 Session.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     expires: {
       type: DataTypes.DATE,
       allowNull: false,
-      comment: 'session expires',
+      comment: 'Session Expires',
     },
     sessionToken: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: 'sessionToken',
-      comment: 'session token',
+      comment: 'Session Token',
     },
     userId: {
       type: DataTypes.INTEGER,
-      comment: 'user id',
+      comment: 'User Id',
     },
   },
   {
