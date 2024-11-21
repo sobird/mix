@@ -1,6 +1,8 @@
 /**
  * Next-Auth Custom Adapter
  *
+ * @see https://github.com/nextauthjs/next-auth/tree/main/packages/adapter-sequelize
+ *
  * sobird<i@sobird.me> at 2023/11/29 10:18:40 created.
  */
 
@@ -9,22 +11,21 @@ import Session from '@/models/session';
 import User from '@/models/user';
 import VerificationToken from '@/models/verificationToken';
 
-import type { Adapter } from '@auth/core/adapters';
+import type { Adapter, AdapterSession, AdapterUser } from '@auth/core/adapters';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
-    return User.create(record as unknown as User, { raw: true }) as any;
+    return User.create(record as unknown as User, { raw: true }) as unknown as AdapterUser;
   },
   async getUser(id) {
-    return User.findByPk(id, {
-      raw: true,
-    }) as any;
+    const user = await User.findByPk(id);
+
+    return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
   },
   async getUserByEmail(email) {
-    return User.findOne({
-      where: { email },
-      raw: true,
-    }) as any;
+    const user = await User.findOne({ where: { email } });
+
+    return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
   },
   async getUserByAccount({ providerAccountId, provider }) {
     const account = await Account.findOne({
@@ -36,32 +37,30 @@ const AuthAdapter: Adapter = {
       return null;
     }
 
-    return User.findByPk(account.userId, {
-      raw: true,
-    }) as any;
+    const user = await User.findByPk(account.userId);
+
+    return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
   },
   async updateUser(record) {
     await User.update(record as unknown as User, { where: { id: record.id } });
     return User.findByPk(record.id, {
       raw: true,
-    }) as any;
+    }) as unknown as AdapterUser;
   },
   async deleteUser(userId) {
-    await User.findByPk(userId);
+    const user = await User.findByPk(userId);
     await User.destroy({ where: { id: userId } });
+
+    return user as unknown as AdapterUser;
   },
-  async linkAccount(account: any) {
-    await Account.create(account);
+  async linkAccount(account) {
+    await Account.create(account as unknown as Account);
   },
   async unlinkAccount({ providerAccountId, provider }) {
-    await Account.destroy({
-      where: { provider, providerAccountId },
-    });
+    await Account.destroy({ where: { provider, providerAccountId } });
   },
   async createSession(record: any) {
-    return Session.create(record, {
-      raw: true,
-    }) as any;
+    return Session.create(record) as unknown as AdapterSession;
   },
   async getSessionAndUser(sessionToken) {
     const session = await Session.findOne({
@@ -81,27 +80,21 @@ const AuthAdapter: Adapter = {
     }
 
     return {
-      session: session?.get({ plain: true }) as any,
-      user: {
-        ...user.get(),
-        image: 'image',
-      } as any,
+      session: session.get({ plain: true }) as unknown as AdapterSession,
+      user: { ...user.get({ plain: true }), image: 'image' } as unknown as AdapterUser,
     };
   },
   async updateSession({ sessionToken, expires }) {
-    await Session.update(
-      { sessionToken, expires },
-      { where: { sessionToken } },
-    );
+    await Session.update({ sessionToken, expires }, { where: { sessionToken } });
 
-    return Session.findOne({ where: { sessionToken }, raw: true }) as any;
+    return Session.findOne({ where: { sessionToken }, raw: true }) as unknown as AdapterSession;
   },
   async deleteSession(sessionToken) {
     const session = await Session.findOne({ where: { sessionToken }, raw: true });
     if (session) {
       await Session.destroy({ where: { sessionToken } });
+      return session.get({ plain: true }) as unknown as AdapterSession;
     }
-    return session as any;
   },
 
   /**
@@ -111,8 +104,8 @@ const AuthAdapter: Adapter = {
    * @param attributes
    * @returns
    */
-  async createVerificationToken(attributes) {
-    return VerificationToken.create(attributes, { raw: true });
+  async createVerificationToken(verificationToken) {
+    return VerificationToken.create(verificationToken);
   },
   async useVerificationToken({ identifier, token }) {
     const verificationToken = await VerificationToken.findOne({
