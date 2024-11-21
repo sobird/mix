@@ -45,9 +45,9 @@ VerificationToken.init(
   {
     token: {
       type: DataTypes.STRING,
-      unique: true,
+      primaryKey: true,
       allowNull: false,
-      comment: 'VerificationToken token',
+      comment: 'Verification Token',
     },
     identifier: {
       type: DataTypes.STRING,
@@ -58,7 +58,7 @@ VerificationToken.init(
     expires: {
       type: DataTypes.DATE,
       allowNull: false,
-      comment: 'VerificationToken expires',
+      comment: 'Verification Token Expires',
     },
   },
   {

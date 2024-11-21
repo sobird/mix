@@ -117,12 +117,11 @@ const AuthAdapter: Adapter = {
   async useVerificationToken({ identifier, token }) {
     const verificationToken = await VerificationToken.findOne({
       where: { identifier, token },
-      raw: true,
     });
 
     await VerificationToken.destroy({ where: { identifier } });
 
-    return verificationToken;
+    return verificationToken?.get({ plain: true }) ?? null;
   },
 };
 
