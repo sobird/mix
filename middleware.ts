@@ -26,7 +26,7 @@ import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
 export default withAuth(
   async (request: NextRequestWithAuth, fetchEvent: NextFetchEvent) => {
     const { nextauth } = request;
-    // console.log('nextauth', nextauth);
+    console.log('nextauth', nextauth, fetchEvent);
 
     // return NextResponse.json({
     //   message: 'ok',
@@ -44,6 +44,7 @@ export default withAuth(
     callbacks: {
       async authorized({ req, token }) {
         const { cookies } = req;
+        console.log('callbacks token', token);
         // 从数据库获取session信息
         // const session = await getSession({
         //   req: {

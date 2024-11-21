@@ -15,13 +15,13 @@ import { randomUUID } from 'node:crypto';
 
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import { cookies } from 'next/headers';
-import {
-  getServerSession, type AuthOptions,
-} from 'next-auth';
+import NextAuth, { getServerSession, type AuthOptions } from 'next-auth';
 import { encode, getToken } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import GithubProvider from 'next-auth/providers/github';
+import GoogleProvider from 'next-auth/providers/google';
+import { getCsrfToken } from 'next-auth/react';
 
 import User from '@/models/user';
 
@@ -116,6 +116,10 @@ export const authOptions: AuthOptions = {
       clientId: 'sobird',
       clientSecret: 'sobird',
     }),
+    GoogleProvider({
+      clientId: 'sobird',
+      clientSecret: 'sobird',
+    }),
     /**
      * The Email authentication provider can only be used if a database is configured.
      * This is required to store the verification token. Please see the email provider for more details.
@@ -172,13 +176,11 @@ export const authOptions: AuthOptions = {
       };
     },
 
-    async jwt({
-      token, user, account,
-    }) {
+    async jwt({ token, user, account }) {
       console.log('jwt-callback', token, user, account);
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        // token.role = user.role;
       }
       // Persist the OAuth access_token to the token right after signin
       if (account) {
@@ -197,10 +199,12 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    signIn: '/signin',
+    // signIn: '/signin',
     verifyRequest: '/signin/verify',
   },
 };
+
+export const handler = NextAuth(authOptions);
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
@@ -216,5 +220,15 @@ export async function getServerAuthToken() {
     req: {
       cookies: await cookies(),
     } as any,
+  });
+}
+
+export async function getCsrfAuthToken() {
+  return getCsrfToken({
+    req: {
+      headers: {
+        cookie: (await cookies()).toString(),
+      },
+    },
   });
 }

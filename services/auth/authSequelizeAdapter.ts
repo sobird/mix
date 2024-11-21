@@ -13,7 +13,7 @@ import type { Adapter } from '@auth/core/adapters';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
-    return User.create(record, { raw: true }) as any;
+    return User.create(record as unknown as User, { raw: true }) as any;
   },
   async getUser(id) {
     return User.findByPk(id, {
