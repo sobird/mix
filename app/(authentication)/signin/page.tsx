@@ -13,7 +13,6 @@ import Link from 'next/link';
 import Providers from '@/components/providers';
 
 import SigninForm from './form';
-import styles from './page.module.scss';
 
 export const metadata: Metadata = {
   title: '欢迎登录',
@@ -30,7 +29,7 @@ const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
     <>
       <h1>欢迎登录</h1>
       <div className='account-container'>
-        <SigninForm />
+        <SigninForm callbackUrl={callbackUrl} />
 
         <Typography>
           还没有账号？
