@@ -25,7 +25,7 @@ import { getCsrfToken } from 'next-auth/react';
 
 import User from '@/models/user';
 
-import AuthAdapter from './authSequelizeAdapter';
+import adapter from './adapter-sequelize';
 import { sendVerificationRequest } from '../mailer';
 
 // const cookiesOptions: Partial<CookiesOptions> = {
@@ -69,7 +69,7 @@ const jwt = {
 export const authOptions: AuthOptions = {
   session: sessionOptions,
   jwt,
-  adapter: AuthAdapter,
+  adapter,
   // cookies: {},
   providers: [
     /**
@@ -188,7 +188,7 @@ export const authOptions: AuthOptions = {
       }
       // 支持credentials登录验证strategy: 'database'
       if (account?.provider === 'credentials' && sessionOptions.strategy !== 'jwt') {
-        const session = await AuthAdapter.createSession!({
+        const session = await adapter.createSession!({
           sessionToken: sessionOptions.generateSessionToken!() as any,
           userId: user.id,
           expires: new Date(Date.now() + sessionOptions.maxAge! * 1000),

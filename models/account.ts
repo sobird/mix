@@ -26,7 +26,7 @@ export type AccountCreationAttributes = InferCreationAttributes<Account>;
 class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
   declare userId: number;
 
-  declare type: 'oauth' | 'oidc' | 'email';
+  declare type: 'oauth' | 'oidc' | 'email' | 'credentials';
 
   /**
    * Provider's id for this account. Eg.: 'google'
