@@ -113,8 +113,8 @@ export const authOptions: AuthOptions = {
       },
     }),
     GithubProvider({
-      clientId: 'sobird',
-      clientSecret: 'sobird',
+      clientId: 'Ov23liXTz35aUy98TeHX',
+      clientSecret: '5c0547b6d3fdc6971590d149d1baaa172a9f9aa3',
     }),
     GoogleProvider({
       clientId: 'sobird',
