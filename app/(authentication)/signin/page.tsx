@@ -25,7 +25,7 @@ interface SearchParams {
 
 const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
   const { callbackUrl } = await searchParams;
-  console.log('await getProviders() page:', await getProviders());
+
   return (
     <>
       <h1>欢迎登录</h1>

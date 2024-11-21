@@ -18,7 +18,6 @@ interface ProvidersProps {
 
 const Providers:React.FC<ProvidersProps> = async ({ callbackUrl }) => {
   const csrfToken = await getCsrfAuthToken();
-  console.log('await getProviders()', await getProviders());
   const providers = Object.entries(await getProviders() || {}).map(([, item]) => {
     return item;
   }).filter((item) => {
