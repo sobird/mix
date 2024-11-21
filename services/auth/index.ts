@@ -199,7 +199,7 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    // signIn: '/signin',
+    signIn: '/signin',
     verifyRequest: '/signin/verify',
   },
 };
