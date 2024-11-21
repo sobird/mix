@@ -224,6 +224,7 @@ export async function getServerAuthToken() {
 }
 
 export async function getCsrfAuthToken() {
+  // https://github.com/nextauthjs/next-auth/discussions/7256
   return getCsrfToken({
     req: {
       headers: {

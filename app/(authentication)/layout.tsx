@@ -14,7 +14,9 @@ const AuthLayout: React.FC<PropsWithChildren> = ({ children }) => {
           <Image className="logo" src={mix.src} width={32} height={32} alt="mix" />
         </Link>
       </div>
-      {children}
+      <div className={styles.content}>
+        {children}
+      </div>
     </div>
   );
 };
