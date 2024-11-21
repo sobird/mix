@@ -3,10 +3,16 @@
     width: 1024px;
     margin: 0 auto;
   }
-  :global .auth-form {
+  .content {
     margin: 0 auto;
-    width: 350px;
-    margin-top: 50px;
+    width: 400px;
+    margin-top: 100px;
+  }
+  :global .account-container {
+    padding: 20px 40px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1), 0 12px 20px rgba(38,38,38,.12);
+    border-radius: 8px;
   }
   h1 {
     color: #6a6a6a;
@@ -15,10 +21,7 @@
     text-align: center;
   }
   form {
-    padding: 24px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,.1), 0 12px 20px rgba(38,38,38,.12);
-    border-radius: 8px;
+    margin-bottom: 10px;
     // background-color: rgb(249 250 251);
   }
 }

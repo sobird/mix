@@ -1,46 +1,46 @@
 /**
- * Sign In Page
+ * SignIn Page
  *
  * @see https://github.com/nextauthjs/next-auth/blob/main/packages/core/src/lib/pages/signin.tsx
  *
  * sobird<i@sobird.me> at 2023/11/28 14:26:38 created.
  */
 
+import { Divider, Typography } from 'antd';
 import { Metadata } from 'next';
-import { cookies } from 'next/headers';
-import { getCsrfToken } from 'next-auth/react';
+import Link from 'next/link';
 
-import { getCsrfAuthToken } from '@/services/auth';
+import Providers from '@/components/providers';
 
 import SigninForm from './form';
 import styles from './page.module.scss';
 
 export const metadata: Metadata = {
-  title: '登录',
+  title: '欢迎登录',
 };
 
-const SigninPage = async () => {
-  const ck = await cookies();
-  console.log('ck', ck);
-  // https://github.com/nextauthjs/next-auth/discussions/7256
-  const csrfToken = await getCsrfToken({
-    req: {
-      headers: {
-        cookie: ck.toString(),
-      },
-    },
-  });
+interface SearchParams {
+  callbackUrl: string;
+}
 
-  const csrfToken2 = await getCsrfToken();
+const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
+  const { callbackUrl } = await searchParams;
 
   return (
-    <div className="auth-form">
-      <h1>登录</h1>
-      <p>{csrfToken}</p>
-      <p>{csrfToken2}</p>
-      <p>{await getCsrfAuthToken()}</p>
-      <SigninForm />
-    </div>
+    <>
+      <h1>欢迎登录</h1>
+      <div className='account-container'>
+        <SigninForm />
+
+        <Typography>
+          还没有账号？
+          <Link href="/signup">立即注册</Link>
+        </Typography>
+        <Divider plain>其他登录方式</Divider>
+
+        <Providers callbackUrl={callbackUrl} />
+      </div>
+    </>
   );
 };
 
