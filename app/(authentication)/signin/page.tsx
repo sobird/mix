@@ -9,6 +9,7 @@
 import { Divider, Typography } from 'antd';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { getProviders } from 'next-auth/react';
 
 import Providers from '@/components/providers';
 
@@ -24,7 +25,7 @@ interface SearchParams {
 
 const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
   const { callbackUrl } = await searchParams;
-
+  console.log('await getProviders() page:', await getProviders());
   return (
     <>
       <h1>欢迎登录</h1>
