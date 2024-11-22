@@ -15,6 +15,7 @@ import type { Adapter, AdapterSession, AdapterUser } from '@auth/core/adapters';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
+    console.log('createUser', record);
     return User.create(record as unknown as User, { raw: true }) as unknown as AdapterUser;
   },
   async getUser(id) {
@@ -42,6 +43,7 @@ const AuthAdapter: Adapter = {
     return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
   },
   async updateUser(record) {
+    console.log('updateUser:', record);
     await User.update(record as unknown as User, { where: { id: record.id } });
     return User.findByPk(record.id, {
       raw: true,
@@ -63,6 +65,7 @@ const AuthAdapter: Adapter = {
     return Session.create(record) as unknown as AdapterSession;
   },
   async getSessionAndUser(sessionToken) {
+    console.log('sessionToken', sessionToken);
     const session = await Session.findOne({
       where: { sessionToken },
     });
@@ -72,7 +75,7 @@ const AuthAdapter: Adapter = {
     }
 
     const user = await User.findByPk(session.userId, {
-      attributes: ['id', 'username', 'name', 'email'],
+      attributes: ['id', 'username', 'name', 'email', 'image'],
     });
 
     if (!user) {
@@ -81,7 +84,7 @@ const AuthAdapter: Adapter = {
 
     return {
       session: session.get({ plain: true }) as unknown as AdapterSession,
-      user: { ...user.get({ plain: true }), image: 'image' } as unknown as AdapterUser,
+      user: { ...user.get({ plain: true }) } as unknown as AdapterUser,
     };
   },
   async updateSession({ sessionToken, expires }) {
