@@ -9,7 +9,6 @@
 import { Divider, Typography } from 'antd';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getProviders } from 'next-auth/react';
 
 import Providers from '@/components/providers';
 
@@ -36,6 +35,7 @@ const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
           还没有账号？
           <Link href="/signup">立即注册</Link>
         </Typography>
+
         <Divider plain>其他登录方式</Divider>
 
         <Providers callbackUrl={callbackUrl} />

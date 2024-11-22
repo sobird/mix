@@ -41,7 +41,7 @@ export const SignupForm = () => {
           <Input placeholder="用户名" />
         </Form.Item>
         <Form.Item name="password" rules={[passwordRule]}>
-          <Input.Password placeholder="登录密码" />
+          <Input.Password placeholder="登录密码，最少8位字母/数字/符号组合" />
         </Form.Item>
         <Form.Item name="confirmPassword" dependencies={['password']} rules={[passwordRule]}>
           <Input.Password placeholder="密码确认" />
