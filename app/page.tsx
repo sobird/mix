@@ -29,24 +29,24 @@ const HomePage = async () => {
   // const session = await SessionModel.findAll({ raw: true });
   // console.log('session', session);
 
-  const ability = defineAbilityFor(token);
-  ability.update([
-    // {
-    //   action: 'create',
-    //   subject: 'User',
-    // },
-    {
-      action: 'read',
-      subject: '/test',
-    },
-  ]);
+  // const ability = defineAbilityFor(token);
+  // ability.update([
+  //   {
+  //     action: 'create',
+  //     subject: 'User',
+  //   },
+  //   {
+  //     action: 'read',
+  //     subject: '/test',
+  //   },
+  // ]);
 
-  console.log('ability', ability);
+  // console.log('ability', ability);
 
-  console.log('ability', ability.can('read', '/test'));
+  // console.log('ability', ability.can('read', '/test'));
 
-  const users = await UserModel.findAll({ include: [UserModel.associations.Roles] });
-  console.log('users', users);
+  // const users = await UserModel.findAll({ include: [UserModel.associations.Roles] });
+  // console.log('users', users);
 
   return (
     <main
