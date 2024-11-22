@@ -41,7 +41,7 @@
     "sqlite3": "^5.1.6",
     "umzug": "^3.8.2",
     "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",

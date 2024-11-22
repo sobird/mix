@@ -4,11 +4,11 @@
  * sobird<i@sobird.me> at 2023/12/11 23:16:58 created.
  */
 
+import { FormInstance } from 'antd/es/form';
+import { ValidatorRule } from 'rc-field-form/es/interface';
 import {
   z, ZodEffects, ZodOptional, ZodObject, ZodArray, ZodIntersection,
 } from 'zod';
-import { FormInstance } from 'antd/es/form';
-import { ValidatorRule } from 'rc-field-form/es/interface';
 
 const isZodEffects = (schema: unknown): schema is ZodEffects<any> => {
   return schema instanceof ZodEffects;
@@ -29,7 +29,7 @@ const isZodIntersection = (schema: unknown): schema is ZodIntersection<any, any>
   return schema instanceof ZodIntersection;
 };
 
-const getSchemaByPath = (schema: unknown, name: string[]) => {
+const getSchemaByPath = <T = unknown>(schema: z.ZodType<T>, name: string[]) => {
   const path = name;
 
   if (path.length < 1) {
