@@ -122,12 +122,12 @@ export const authOptions: AuthOptions = {
       },
     }),
     GithubProvider({
-      clientId: 'Ov23liXTz35aUy98TeHX',
-      clientSecret: '5c0547b6d3fdc6971590d149d1baaa172a9f9aa3',
+      clientId: process.env.AUTH_GITHUB_ID || '',
+      clientSecret: process.env.AUTH_GITHUB_SECRET || '',
     }),
     GoogleProvider({
-      clientId: 'sobird',
-      clientSecret: 'sobird',
+      clientId: process.env.AUTH_GOOGLE_ID || '',
+      clientSecret: process.env.AUTH_GOOGLE_SECRET || '',
     }),
     /**
      * The Email authentication provider can only be used if a database is configured.
