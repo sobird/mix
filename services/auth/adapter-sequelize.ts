@@ -11,28 +11,22 @@ import Session from '@/models/session';
 import User from '@/models/user';
 import VerificationToken from '@/models/verificationToken';
 
-import type { Adapter, AdapterSession, AdapterUser } from '@auth/core/adapters';
+import type { Adapter, AdapterUser } from '@auth/core/adapters';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
-    console.log('createUser', record);
-    return User.create(record as unknown as User, { raw: true }) as unknown as AdapterUser;
+    return User.create({ ...record, username: record.name });
   },
   async getUser(id) {
     const user = await User.findByPk(id);
-
-    return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
+    return user?.get({ plain: true }) ?? null;
   },
   async getUserByEmail(email) {
     const user = await User.findOne({ where: { email } });
-
-    return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
+    return user?.get({ plain: true }) ?? null;
   },
   async getUserByAccount({ providerAccountId, provider }) {
-    const account = await Account.findOne({
-      where: { provider, providerAccountId },
-      raw: true,
-    });
+    const account = await Account.findOne({ where: { provider, providerAccountId } });
 
     if (!account) {
       return null;
@@ -40,32 +34,27 @@ const AuthAdapter: Adapter = {
 
     const user = await User.findByPk(account.userId);
 
-    return user?.get({ plain: true }) as unknown as AdapterUser ?? null;
+    return user?.get({ plain: true }) ?? null;
   },
   async updateUser(record) {
-    console.log('updateUser:', record);
-    await User.update(record as unknown as User, { where: { id: record.id } });
-    return User.findByPk(record.id, {
-      raw: true,
-    }) as unknown as AdapterUser;
+    await User.update({ ...record, username: record.name }, { where: { id: record.id } });
+    return User.findByPk(record.id) as unknown as AdapterUser;
   },
   async deleteUser(userId) {
     const user = await User.findByPk(userId);
     await User.destroy({ where: { id: userId } });
-
-    return user as unknown as AdapterUser;
+    return user;
   },
   async linkAccount(account) {
-    await Account.create(account as unknown as Account);
+    await Account.create(account);
   },
   async unlinkAccount({ providerAccountId, provider }) {
     await Account.destroy({ where: { provider, providerAccountId } });
   },
   async createSession(record: any) {
-    return Session.create(record) as unknown as AdapterSession;
+    return Session.create(record);
   },
   async getSessionAndUser(sessionToken) {
-    console.log('sessionToken', sessionToken);
     const session = await Session.findOne({
       where: { sessionToken },
     });
@@ -83,20 +72,19 @@ const AuthAdapter: Adapter = {
     }
 
     return {
-      session: session.get({ plain: true }) as unknown as AdapterSession,
-      user: { ...user.get({ plain: true }) } as unknown as AdapterUser,
+      session: session.get({ plain: true }),
+      user: { ...user.get({ plain: true }) },
     };
   },
   async updateSession({ sessionToken, expires }) {
     await Session.update({ sessionToken, expires }, { where: { sessionToken } });
-
-    return Session.findOne({ where: { sessionToken }, raw: true }) as unknown as AdapterSession;
+    return Session.findOne({ where: { sessionToken } });
   },
   async deleteSession(sessionToken) {
     const session = await Session.findOne({ where: { sessionToken }, raw: true });
     if (session) {
       await Session.destroy({ where: { sessionToken } });
-      return session.get({ plain: true }) as unknown as AdapterSession;
+      return session.get({ plain: true });
     }
   },
 
@@ -104,7 +92,7 @@ const AuthAdapter: Adapter = {
    * @test
    * INSERT INTO verification_tokens(identifier,token,expires,created_at,updated_at) VALUES('sobird@126.com','a85ceed90550bdb8e899b3f789330bc4e401e30010dea8e5d514e1e5cf3f0b1c','2023-11-30 00:00:00','2023-11-29 15:42:34','2023-11-29 15:42:36');
    *
-   * @param attributes
+   * @param verificationToken
    * @returns
    */
   async createVerificationToken(verificationToken) {
@@ -114,7 +102,6 @@ const AuthAdapter: Adapter = {
     const verificationToken = await VerificationToken.findOne({
       where: { identifier, token },
     });
-
     await VerificationToken.destroy({ where: { identifier } });
 
     return verificationToken?.get({ plain: true }) ?? null;

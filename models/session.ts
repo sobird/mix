@@ -24,7 +24,7 @@ export type SessionAttributes = InferAttributes<Session>;
 export type SessionCreationAttributes = InferCreationAttributes<Session>;
 
 class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
-  declare id: CreationOptional<number>;
+  declare id: CreationOptional<string>;
 
   /**
    * The absolute date when the session expires.
@@ -47,7 +47,7 @@ class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
   /**
    * Connects the active session to a user in the database
    */
-  userId: number;
+  userId: string;
 
   static associate({ User }) {
     this.belongsTo(User, { onDelete: 'cascade' });

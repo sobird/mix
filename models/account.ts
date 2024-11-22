@@ -18,15 +18,19 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
+import type { AdapterAccountType } from '@auth/core/adapters';
+
 /** These are all the attributes in the Account model */
 export type AccountAttributes = InferAttributes<Account>;
 /** Some attributes are optional in `Account.build` and `Account.create` calls */
 export type AccountCreationAttributes = InferCreationAttributes<Account>;
 
 class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
-  declare userId: number;
+  declare id: CreationOptional<number>;
 
-  declare type: 'oauth' | 'oidc' | 'email' | 'credentials';
+  declare userId: string;
+
+  declare type: AdapterAccountType;
 
   /**
    * Provider's id for this account. Eg.: 'google'
@@ -53,7 +57,7 @@ class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
    */
   declare expires_at?: number;
 
-  declare token_type?: string;
+  declare token_type?: 'bearer' | 'dpop' | Lowercase<string>;
 
   declare scope?: string;
 
@@ -68,6 +72,12 @@ class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
 
 Account.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     type: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -75,12 +85,12 @@ Account.init(
     },
     provider: {
       type: DataTypes.STRING,
-      primaryKey: true,
+      // primaryKey: true,
       comment: 'account provider',
     },
     providerAccountId: {
       type: DataTypes.STRING,
-      primaryKey: true,
+      // primaryKey: true,
       comment: 'account providerAccountId',
     },
     refresh_token: {
