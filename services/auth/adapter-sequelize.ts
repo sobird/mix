@@ -13,6 +13,12 @@ import VerificationToken from '@/models/verificationToken';
 
 import type { Adapter, AdapterUser } from '@auth/core/adapters';
 
+// declare module '@auth/core/adapters' {
+//   interface AdapterUser {
+//     id: number
+//   }
+// }
+
 const AuthAdapter: Adapter = {
   async createUser(record) {
     return User.create({ ...record, username: record.name });
