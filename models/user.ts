@@ -59,7 +59,9 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   declare username: CreationOptional<string>;
 
-  declare name: CreationOptional<string | null>;
+  declare name: CreationOptional<string>;
+
+  declare image: CreationOptional<string>;
 
   declare nickname: CreationOptional<string>;
 
@@ -76,8 +78,6 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   declare mobile: CreationOptional<string>;
 
   declare gender: CreationOptional<string>;
-
-  declare avatar: CreationOptional<string>;
 
   public ip: CreationOptional<string>;
 
@@ -237,7 +237,7 @@ User.init(
     gender: {
       type: DataTypes.ENUM('male', 'female', 'unknown'),
     },
-    avatar: {
+    image: {
       type: DataTypes.STRING,
     },
     password: {
