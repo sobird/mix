@@ -1,6 +1,15 @@
 /**
  * Next-Auth Config
- *
+ * SignJWT
+ * {
+ *   iss: "12", // JWT Issuer: 签发人
+ *   exp: 123, // JWT Expiration Time: 过期时间
+ *   sub: "", // JWT Subject: 主题
+ *   aud: "", // JWT Audience: 受众
+ *   nbf: 123, // JWT Not Before: 生效时间
+ *   iat: 123, // JWT Issued At: 签发时间
+ *   jti: "string", // JWT ID: 编号
+ * }
  *
  * @see https://authjs.dev/getting-started/typescript#module-augmentation
  * @see https://github.com/nextauthjs/next-auth/blob/main/packages/core/src/lib/init.ts
@@ -60,7 +69,7 @@ const sessionOptions: AuthOptions['session'] = {
   generateSessionToken: randomUUID,
 };
 
-const jwt = {
+const jwtOptions = {
   async encode(params: any) {
     return params.token?.sessionToken ?? encode(params);
   },
@@ -68,7 +77,7 @@ const jwt = {
 
 export const authOptions: AuthOptions = {
   session: sessionOptions,
-  jwt,
+  jwt: jwtOptions,
   adapter,
   // cookies: {},
   providers: [
@@ -89,7 +98,7 @@ export const authOptions: AuthOptions = {
           value: 'sobird',
           placeholder: '请输入用户名',
         },
-        password: { label: '密码', type: 'password', value: 'sobird' },
+        password: { label: '密码', type: 'password', value: '' },
       },
       async authorize(credentials) {
         const { username, password } = credentials || {};
@@ -103,9 +112,9 @@ export const authOptions: AuthOptions = {
           return {
             name: user.username,
             email: user.email,
-            id: user.id as unknown as string,
-            image: 'image',
-            role: 'manage',
+            id: user.id,
+            image: user.image,
+            // role: 'manage',
           };
         } catch (e) {
           throw Error(e);
@@ -163,21 +172,13 @@ export const authOptions: AuthOptions = {
       return true;
     },
 
-    async session({
-      session, token, user, trigger,
+    async jwt({
+      token, trigger, session, user, account,
     }) {
-      console.log('session-callback', token, user, trigger);
-
-      return {
-        ...session,
-        // user: {
-        //   ...session.user,
-        // },
-      };
-    },
-
-    async jwt({ token, user, account }) {
       console.log('jwt-callback', token, user, account);
+      if (trigger === 'update') {
+        token.name = session.user.name;
+      }
       if (user) {
         token.id = user.id;
         // token.role = user.role;
@@ -186,16 +187,34 @@ export const authOptions: AuthOptions = {
       if (account) {
         token.accessToken = account.access_token;
       }
+
       // 支持credentials登录验证strategy: 'database'
       if (account?.provider === 'credentials' && sessionOptions.strategy !== 'jwt') {
-        const session = await adapter.createSession!({
+        const authSession = await adapter.createSession!({
           sessionToken: sessionOptions.generateSessionToken!() as any,
           userId: user.id,
           expires: new Date(Date.now() + sessionOptions.maxAge! * 1000),
         });
-        token.sessionToken = session.sessionToken;
+        token.sessionToken = authSession.sessionToken;
       }
+
       return token;
+    },
+
+    async session({
+      session, token, user, trigger,
+    }) {
+      console.log('session-callback', token, user, trigger);
+      if (token.accessToken) {
+        session.accessToken = token.accessToken;
+      }
+
+      return {
+        ...session,
+        // user: {
+        //   ...session.user,
+        // },
+      };
     },
   },
   pages: {
@@ -232,4 +251,17 @@ export async function getCsrfAuthToken() {
       },
     },
   });
+}
+
+declare module 'next-auth' {
+  interface Session {
+    accessToken?: string;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    accessToken?: string;
+    sessionToken?: string;
+  }
 }
