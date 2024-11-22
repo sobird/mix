@@ -17,7 +17,8 @@ const SigninForm: React.FC<SigninFormProps> = ({ callbackUrl }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const router = useRouter();
-  const [form] = Form.useForm();
+  const [credentialsForm] = Form.useForm();
+  const [emailForm] = Form.useForm();
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +60,7 @@ const SigninForm: React.FC<SigninFormProps> = ({ callbackUrl }) => {
       {contextHolder}
       <Tabs size="middle">
         <Tabs.TabPane tab="账号登录" key="credentials">
-          <Form form={form} onFinish={onCredentialsFinish}>
+          <Form form={credentialsForm} name="credentials" onFinish={onCredentialsFinish}>
             <Form.Item name="username">
               <Input name="username" placeholder="用户账号" allowClear />
             </Form.Item>
@@ -80,7 +81,7 @@ const SigninForm: React.FC<SigninFormProps> = ({ callbackUrl }) => {
           </Form>
         </Tabs.TabPane>
         <Tabs.TabPane tab="邮箱登录" key="email">
-          <Form form={form} onFinish={onEmailFinish}>
+          <Form form={emailForm} name="email" onFinish={onEmailFinish}>
             <Form.Item
               name="email"
               rules={[{
