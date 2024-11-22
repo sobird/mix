@@ -36,6 +36,7 @@ import {
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type Role from './role';
+import type { AdapterUser } from '@auth/core/adapters';
 
 /** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
@@ -50,22 +51,18 @@ export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>
 // 用户注册属性
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
-class User extends BaseModel<UserAttributes, UserCreationAttributes> {
-  declare id: CreationOptional<number>;
+class User extends BaseModel<UserAttributes, UserCreationAttributes> implements AdapterUser {
+  declare id: CreationOptional<string>;
 
-  declare createdAt: CreationOptional<Date>;
+  declare username: string | null;
 
-  declare updatedAt: CreationOptional<Date>;
+  declare name: CreationOptional<string | null>;
 
-  declare username: CreationOptional<string>;
+  declare image: string | null;
 
-  declare name: CreationOptional<string>;
+  declare nickname: string | null;
 
-  declare image: CreationOptional<string>;
-
-  declare nickname: CreationOptional<string>;
-
-  declare realname: CreationOptional<string>;
+  declare realname: string | null;
 
   declare salt: CreationOptional<string>;
 
@@ -73,7 +70,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
 
   declare email: string;
 
-  declare emailVerified: CreationOptional<Date | null>;
+  declare emailVerified: Date | null;
 
   declare mobile: CreationOptional<string>;
 
@@ -86,6 +83,10 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> {
   declare createdBy: CreationOptional<number>;
 
   declare updatedBy: CreationOptional<number>;
+
+  declare createdAt: CreationOptional<Date>;
+
+  declare updatedAt: CreationOptional<Date>;
 
   declare Roles?: NonAttribute<Role[]>;
 
@@ -210,9 +211,9 @@ User.init(
       get() {
         return this.username;
       },
-      set(value: string) {
-        this.setDataValue('username', value);
-      },
+      // set(value: string) {
+      //   this.setDataValue('username', value);
+      // },
     },
     nickname: {
       type: DataTypes.STRING(32),
