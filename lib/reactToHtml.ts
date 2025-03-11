@@ -6,7 +6,8 @@
  */
 
 import { ReactElement } from 'react';
-import { type PipeableStream } from 'react-dom/server';
+
+import type { PipeableStream } from 'react-dom/server';
 
 interface ReactDOMServerMethodReturn {
   renderToString: string;

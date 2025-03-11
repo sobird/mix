@@ -1,3 +1,5 @@
+@use "sass:color";
+@use "sass:map";
 // class统一前缀
 $prefixCls: 'mix' !default;
 $isBrand: 'true';
@@ -52,7 +54,7 @@ $yiq-text-light: $light !default; // 文字反色-亮色
 //文字链接
 $link-color: $primary !default; // 主链接色
 $link-decoration: none !default;
-$link-hover-color: lighten($link-color, 15%); // 主链接hover色
+$link-hover-color: color.adjust($link-color, $lightness: 15%); // 主链接hover色
 $link-hover-decoration: none !default;
 
 //圆角相关
@@ -80,7 +82,7 @@ $btn-primary-color: $primary !default;
 $breadcrumb-primary: $primary;
 
 $theme-colors: () !default;
-$theme-colors: map-merge((
+$theme-colors: map.merge((
   "primary":    $primary,
   "secondary":  $secondary,
   "brand":      $brand,

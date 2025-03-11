@@ -8,9 +8,10 @@ const Mail = async () => {
 
   return (
     <div className="mail">
-      {/* <Verification /> */}
+      <Verification />
+
       {/* <div dangerouslySetInnerHTML={{ __html: prerenderStaticComponent }} /> */}
-      <div dangerouslySetInnerHTML={{ __html: captchaEmailHtml }} />
+      {/* <div dangerouslySetInnerHTML={{ __html: captchaEmailHtml }} /> */}
     </div>
   );
 };

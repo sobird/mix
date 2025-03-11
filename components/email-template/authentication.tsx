@@ -5,10 +5,14 @@
  */
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import mix from '!raw-loader!@/assets/mix.svg';
+import mix from '@/assets/mix.svg';
 
-const buff = Buffer.from(mix);
-const base64data = buff.toString('base64');
+console.error('mix', mix)
+
+
+
+// const buff = Buffer.from(mix);
+// const base64data = buff.toString('base64');
 
 interface AuthenticationProps {
   /** user sign in url */
@@ -46,6 +50,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
           position: 'relative',
         }}
       >
+        <tbody>
         <tr>
           <td
             align="center"
@@ -57,12 +62,13 @@ const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`data:image/svg+xml;base64,${base64data}`} width={48} height={48} alt="mix" />
+            {/* <img src={`data:image/svg+xml;base64,${base64data}`} width={48} height={48} alt="mix" /> */}
           </td>
         </tr>
         <tr>
           <td align="center" style={{ padding: '10px 0' }}>
             <table border={0} cellSpacing="0" cellPadding="0">
+            <tbody>
               <tr>
                 <td align="center" style={{ lineHeight: 'normal' }}>
                   <a
@@ -86,6 +92,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
 
                 </td>
               </tr>
+              </tbody>
             </table>
           </td>
         </tr>
@@ -103,6 +110,7 @@ const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
             若非本人请求此电子邮件，请忽略
           </td>
         </tr>
+        </tbody>
       </table>
     </div>
   );
