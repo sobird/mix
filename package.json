@@ -9,7 +9,7 @@
     "dev": "DEBUG=app:* next dev",
     "start": "next start",
     "build": "next build",
-    "db:seed": "NODE_OPTIONS=--import=./node_modules/@sobird/ts-node/register.js node scripts/seed.ts",
+    "db:seed": "tsx scripts/seed.ts",
     "lint": "next lint",
     "test": "jest",
     "prepare": "husky"
@@ -33,7 +33,6 @@
     "next-auth": "^4.24.10",
     "nodemailer": "^6.9.7",
     "otplib": "^12.0.1",
-    "prisma": "^5.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.1.2",
@@ -46,7 +45,6 @@
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
-    "@sobird/ts-node": "^1.0.0",
     "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.14.202",
     "@types/node": "20.10.0",
@@ -58,8 +56,8 @@
     "husky": "^9.1.7",
     "raw-loader": "^4.0.2",
     "sass": "^1.81.0",
-    "typescript": "^5.6.3",
-    "zod-prisma": "^0.5.4"
+    "tsx": "^4.19.3",
+    "typescript": "^5.6.3"
   },
   "keywords": [
     "mix"
