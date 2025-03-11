@@ -28,6 +28,21 @@ const nextConfig: NextConfig = {
   sassOptions: {
     silenceDeprecations: ['legacy-js-api'],
   },
+
+  webpack(config) {
+    // 处理 SVG 文件，使用 url-loader 转换为 Base64
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: [{
+        loader: 'url-loader',
+        options: {
+          encoding: 'base64',
+        },
+      }],
+    });
+
+    return config;
+  },
 };
 
 export default nextConfig;

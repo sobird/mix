@@ -7,9 +7,6 @@
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mix from '@/assets/mix.svg';
 
-// const buff = Buffer.from(mix);
-// const base64data = buff.toString('base64');
-
 interface CaptchaEmailBodyProps {
   code: string;
 }
@@ -56,7 +53,7 @@ const CaptchaEmailBody: React.FC<CaptchaEmailBodyProps> = ({ code }) => {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {/* <img src={`data:image/svg+xml;base64,${base64data}`} width={48} height={48} alt="mix" /> */}
+            <img src={mix} width={48} height={48} alt="mix" />
           </td>
         </tr>
         <tr>

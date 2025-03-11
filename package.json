@@ -6,7 +6,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "DEBUG=app:* next dev --turbopack",
+    "dev": "DEBUG=app:* next dev",
     "start": "next start",
     "build": "next build",
     "db:seed": "tsx scripts/seed.ts",
@@ -55,10 +55,10 @@
     "@types/uuid": "^9.0.7",
     "eslint-config-sobird": "^0.2.16",
     "husky": "^9.1.7",
-    "raw-loader": "^4.0.2",
     "sass": "^1.85.1",
     "tsx": "^4.19.3",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "url-loader": "^4.1.1"
   },
   "keywords": [
     "mix"
