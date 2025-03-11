@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ant-design/cssinjs':
+        specifier: ^1.23.0
+        version: 1.23.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ant-design/icons':
         specifier: ^5.5.1
         version: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -115,7 +118,7 @@ importers:
         specifier: ^9.0.7
         version: 9.0.8
       eslint-config-sobird:
-        specifier: ^0.2.14
+        specifier: ^0.2.16
         version: 0.2.16(typescript@5.8.2)
       husky:
         specifier: ^9.1.7
@@ -124,7 +127,7 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2(webpack@5.98.0)
       sass:
-        specifier: ^1.81.0
+        specifier: ^1.85.1
         version: 1.85.1
       tsx:
         specifier: ^4.19.3
@@ -3069,10 +3072,6 @@ packages:
   minipass@5.0.0:
     resolution: {integrity: sha512-3FnjYuehv9k6ovOEbyOswadCDPX1piCfhV8ncmYtHOjuPwylVWsghTLo7rabjC3Rx5xD4HDx8Wm1xnMF7S5qFQ==}
     engines: {node: '>=8'}
-
-  minipass@7.1.2:
-    resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
-    engines: {node: '>=16 || 14 >=14.17'}
 
   minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
@@ -7199,7 +7198,7 @@ snapshots:
       foreground-child: 3.3.1
       jackspeak: 2.3.6
       minimatch: 9.0.5
-      minipass: 7.1.2
+      minipass: 5.0.0
       path-scurry: 1.11.1
 
   glob@7.2.3:
@@ -7740,8 +7739,6 @@ snapshots:
 
   minipass@5.0.0: {}
 
-  minipass@7.1.2: {}
-
   minizlib@2.1.2:
     dependencies:
       minipass: 3.3.6
@@ -7980,7 +7977,7 @@ snapshots:
   path-scurry@1.11.1:
     dependencies:
       lru-cache: 10.4.3
-      minipass: 7.1.2
+      minipass: 5.0.0
 
   path-type@4.0.0: {}
 

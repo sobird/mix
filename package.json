@@ -6,7 +6,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "DEBUG=app:* next dev",
+    "dev": "DEBUG=app:* next dev --turbopack",
     "start": "next start",
     "build": "next build",
     "db:seed": "tsx scripts/seed.ts",
@@ -15,6 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.23.0",
     "@ant-design/icons": "^5.5.1",
     "@auth/core": "^0.34.2",
     "@casl/ability": "^6.5.0",
@@ -52,10 +53,10 @@
     "@types/react": "18.2.38",
     "@types/react-dom": "^18.2.17",
     "@types/uuid": "^9.0.7",
-    "eslint-config-sobird": "^0.2.14",
+    "eslint-config-sobird": "^0.2.16",
     "husky": "^9.1.7",
     "raw-loader": "^4.0.2",
-    "sass": "^1.81.0",
+    "sass": "^1.85.1",
     "tsx": "^4.19.3",
     "typescript": "^5.6.3"
   },
