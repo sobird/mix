@@ -44,7 +44,7 @@ const Header: React.FC = () => {
     <header className={styles.container}>
       <div className={styles.brand}>
         <Link href="/dashboard" title="mix" aria-label="mix">
-          <Image src={Logo.src} width={32} height={32} alt="" />
+          <Image src={Logo} width={32} height={32} alt="" />
         </Link>
       </div>
 
