@@ -1,9 +1,32 @@
-import { sequelize } from '@/models';
+import {
+  RoleModel, PermissionModel, RolePermissionModel,
+} from '@/models';
 
 vi.mock('@/models');
 
-const installed = await sequelize.sync({ force: true });
-console.log('installed models:', installed.models);
+it('find role permission', () => {
+  // todo
+});
 
-const test = await sequelize.models.Role.findAll();
-console.log('Role', test);
+it('set role permission', async () => {
+  const role = await RoleModel.findByPk(1, { include: [PermissionModel] });
+
+  if (!role) {
+    return;
+  }
+
+  const permissions = role.Permissions;
+  console.log('permissions', permissions);
+
+  const rolePermissionModel1 = await RolePermissionModel.findAll();
+  console.log('rolePermissionModel1', rolePermissionModel1.map((item) => { return item.toJSON(); }));
+
+  // 删除角色权限
+  await role.setPermissions([]);
+
+  const rolePermissionModel2 = await RolePermissionModel.findAll();
+  console.log('rolePermissionModel2', rolePermissionModel2.map((item) => { return item.toJSON(); }));
+
+  const permissionList = await PermissionModel.findAll();
+  console.log('permissionList', permissionList);
+});
