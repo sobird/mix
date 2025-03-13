@@ -9,8 +9,11 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
+import {
+  RoleModel, PermissionModel, PermissionCreationAttributes, sequelize,
+} from '@/models';
+import RolePermission from '@/models/role-permission';
 import { defineAbilityFor } from '@/services/ability';
-import { RoleModel } from '@/models';
 import { getServerAuthToken } from '@/services/auth';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 
@@ -109,3 +112,45 @@ export async function deleteRoleAction(id: string) {
   revalidatePath('/dashboard/role');
   return role;
 }
+
+export const saveRolePermissions = async (roleId, permissions) => {
+  // 开启事务（确保原子性）
+  const transaction = await sequelize.transaction();
+
+  try {
+    // 1. 查找目标角色
+    const role = await RoleModel.findByPk(roleId, { transaction });
+    if (!role) throw new Error('角色不存在');
+
+    // 2. 删除该角色所有旧权限（避免残留）
+    await role.setPermissions([], { transaction });
+
+    // 3. 构建新权限记录
+
+    for await (const { subject, actions } of permissions) {
+      for await (const { action, fields } of actions) {
+        const [permission] = await PermissionModel.findOrCreate({
+          where: { action, subject },
+          transaction,
+        });
+
+        // 收集新权限配置
+        await RolePermission.create({
+          RoleId: roleId,
+          PermissionId: permission.id,
+          action,
+          subject,
+          rules: fields,
+          // fields: fields && fields.length > 0 ? fields : null, // null 表示允许所有字段
+        });
+      }
+    }
+
+    // 提交事务
+    await transaction.commit();
+  } catch (error) {
+    console.log('error', error.message);
+    // 回滚事务
+    await transaction.rollback();
+  }
+};

@@ -24,6 +24,8 @@ class RolePermission extends Model<RolePermissionAttributes, RolePermissionCreat
   declare roleId: number;
 
   declare permissionId: number;
+
+  declare rules: JSON;
 }
 
 RolePermission.init(
@@ -41,6 +43,10 @@ RolePermission.init(
         model: Role,
         key: 'id',
       },
+    },
+    rules: {
+      type: DataTypes.JSON,
+      defaultValue: [],
     },
   },
   {

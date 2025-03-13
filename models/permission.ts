@@ -1,6 +1,8 @@
 /**
  * Permission Model
  *
+ * @see https://casl.js.org/v6/en/guide/define-rules
+ *
  * sobird<i@sobird.me> at 2023/12/01 9:05:12 created.
  */
 
@@ -9,6 +11,7 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
   type Association,
+  type NonAttribute,
   type BelongsToManyGetAssociationsMixin,
   type BelongsToManySetAssociationsMixin,
   type BelongsToManyAddAssociationMixin,
@@ -24,6 +27,7 @@ import {
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type Role from './role';
+import type RolePermission from './role-permission';
 
 /** These are all the attributes in the Permission model */
 export type PermissionAttributes = InferAttributes<Permission>;
@@ -39,7 +43,7 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
 
   declare subject: string;
 
-  declare rules: object;
+  declare RolePermission: NonAttribute<RolePermission>;
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
@@ -76,7 +80,7 @@ Permission.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      // unique: true,
     },
     description: {
       type: DataTypes.STRING,
@@ -87,13 +91,17 @@ Permission.init(
     subject: {
       type: DataTypes.STRING,
     },
-    rules: {
-      type: DataTypes.TEXT,
-    },
   },
   {
     sequelize,
     modelName: 'Permission',
+    // indexes: [
+    //   {
+    //     unique: true,
+    //     fields: ['action', 'subject'],
+    //     name: 'unique_permission',
+    //   },
+    // ],
     comment: '用户权限表',
   },
 );
