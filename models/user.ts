@@ -66,7 +66,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
 
   declare salt: CreationOptional<string>;
 
-  public password!: CreationOptional<string>;
+  declare password: CreationOptional<string>;
 
   declare email: string;
 
@@ -76,7 +76,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
 
   declare gender: CreationOptional<string>;
 
-  public ip: CreationOptional<string>;
+  declare ip: CreationOptional<string>;
 
   declare status: CreationOptional<boolean>;
 
@@ -84,9 +84,9 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
 
   declare updatedBy: CreationOptional<number>;
 
-  declare createdAt: CreationOptional<Date>;
+  // declare createdAt: CreationOptional<Date>;
 
-  declare updatedAt: CreationOptional<Date>;
+  // declare updatedAt: CreationOptional<Date>;
 
   declare Roles?: NonAttribute<Role[]>;
 
@@ -248,7 +248,7 @@ User.init(
     salt: {
       type: DataTypes.STRING(32),
       allowNull: false,
-      defaultValue: randomBytes(16).toString('hex'),
+      defaultValue: () => { return randomBytes(16).toString('hex'); },
       comment: 'user salt',
     },
     ip: {
@@ -269,14 +269,14 @@ User.init(
       type: DataTypes.INTEGER,
     },
 
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
+    // createdAt: {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    // },
+    // updatedAt: {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    // },
   },
   {
     sequelize,

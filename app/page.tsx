@@ -18,7 +18,7 @@ import { getServerAuthToken } from '@/services/auth';
 const HomePage = async () => {
   const token = await getServerAuthToken();
   console.log('getServerAuthToken', token);
-  // await sequelize.sync({ force: true });
+
   // await UserModel.signup({
   //   username: 'sobird',
   //   password: 'sobird',
@@ -29,7 +29,8 @@ const HomePage = async () => {
   // const session = await SessionModel.findAll({ raw: true });
   // console.log('session', session);
 
-  // const ability = defineAbilityFor(token);
+  const ability = defineAbilityFor(token);
+  console.log('ability', ability);
   // ability.update([
   //   {
   //     action: 'create',
@@ -43,7 +44,7 @@ const HomePage = async () => {
 
   // console.log('ability', ability);
 
-  // console.log('ability', ability.can('read', '/test'));
+  console.log('ability', ability.can('read', 'Role'));
 
   // const users = await UserModel.findAll({ include: [UserModel.associations.Roles] });
   // console.log('users', users);

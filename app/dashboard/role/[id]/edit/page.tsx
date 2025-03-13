@@ -20,6 +20,7 @@ const Page: AppPage<Params> = async ({ params }) => {
     where: {
       id,
     },
+    include: [RoleModel.associations.Permissions],
   });
 
   return (
