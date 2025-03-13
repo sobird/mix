@@ -21,9 +21,9 @@ export type UserRoleAttributes = InferAttributes<UserRole>;
 export type UserRoleCreationAttributes = InferCreationAttributes<UserRole>;
 
 class UserRole extends Model<UserRoleAttributes, UserRoleCreationAttributes> {
-  public userId!: number;
+  declare userId: number;
 
-  public roleId!: number;
+  declare roleId: number;
 }
 
 UserRole.init(

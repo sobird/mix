@@ -1,8 +1,10 @@
 import { CreationAttributes } from 'sequelize';
 
-import User from '../user';
+import UserModel from '@/models/user';
 
 vi.mock('@/lib/sequelize');
+vi.mock('../user-role');
+vi.mock('../role');
 
 const seeds = [
   {
@@ -15,9 +17,9 @@ const seeds = [
     username: 'member',
     email: 'admin@casl.io',
   },
-] as CreationAttributes<User>[];
+] as CreationAttributes<UserModel>[];
 
-await User.sync({ force: true });
-await User.bulkCreate(seeds, { individualHooks: true, validate: true });
+await UserModel.sync({ force: true });
+await UserModel.bulkCreate(seeds, { individualHooks: true, validate: true });
 
-export default User;
+export default UserModel;
