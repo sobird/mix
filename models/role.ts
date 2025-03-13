@@ -140,4 +140,18 @@ Role.init(
   },
 );
 
+export const seeds: RoleCreationAttributes[] = [
+  { name: '拥有者', description: '系统创建者角色' },
+  { name: '管理者', description: '系统管理者角色' },
+  { name: '成员', description: '普通用户角色' },
+];
+
+Role.afterSync(async () => {
+  await Role.bulkCreate(seeds, { individualHooks: true, validate: true });
+});
+
+Role.afterBulkSync(() => {
+  console.log('Role afterBulkSync', 121212);
+});
+
 export default Role;
