@@ -17,7 +17,7 @@ import {
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
-import { accessibleBy } from '@/casl/toSequelizeQuery';
+import { accessibleBy } from '@/lib/casl';
 import type { Models } from '@/models';
 
 const logger = log4js.getLogger('sequelize');

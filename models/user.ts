@@ -88,7 +88,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
 
   // declare updatedAt: CreationOptional<Date>;
 
-  declare Roles?: NonAttribute<Role[]>;
+  declare Roles: NonAttribute<Role[]>;
 
   // associates method
   // Since TS cannot determine model association at compile time

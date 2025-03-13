@@ -35,9 +35,9 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
 
   declare description: string;
 
-  declare operator: string;
+  declare action: string;
 
-  declare target: string;
+  declare subject: string;
 
   declare rules: object;
 
@@ -81,10 +81,10 @@ Permission.init(
     description: {
       type: DataTypes.STRING,
     },
-    operator: {
+    action: {
       type: DataTypes.STRING,
     },
-    target: {
+    subject: {
       type: DataTypes.STRING,
     },
     rules: {
@@ -94,6 +94,7 @@ Permission.init(
   {
     sequelize,
     modelName: 'Permission',
+    comment: '用户权限表',
   },
 );
 
