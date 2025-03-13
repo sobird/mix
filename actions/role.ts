@@ -9,7 +9,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { defineAbilityFor } from '@/lib/ability';
+import { defineAbilityFor } from '@/services/ability';
 import { RoleModel } from '@/models';
 import { getServerAuthToken } from '@/services/auth';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';

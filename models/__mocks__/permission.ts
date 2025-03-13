@@ -6,18 +6,20 @@ vi.mock('@/lib/sequelize');
 
 const seeds = [
   {
-    id: '1',
-    username: 'admin',
-    email: 'member@casl.io',
+    name: '查看用户',
+    description: '查看用户',
+    action: 'read',
+    subject: 'User',
   },
   {
-    id: '2',
-    username: 'member',
-    email: 'admin@casl.io',
+    name: '更新用户',
+    description: '更新用户',
+    action: 'update',
+    subject: 'User',
   },
 ] as CreationAttributes<Permission>[];
 
 await Permission.sync({ force: true });
-// await Permission.bulkCreate(seeds, { individualHooks: true, validate: true });
+await Permission.bulkCreate(seeds, { individualHooks: true, validate: true });
 
 export default Permission;

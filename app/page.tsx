@@ -9,7 +9,7 @@ import {
   ProfileButton,
   RegisterButton,
 } from '@/components/buttons';
-import { defineAbilityFor } from '@/lib/ability';
+import { defineAbilityFor } from '@/services/ability';
 import {
   UserModel, SessionModel, AccountModel, sequelize,
 } from '@/models';

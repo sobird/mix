@@ -10,6 +10,7 @@ import {
   type InferCreationAttributes,
   type CreationOptional,
   type Association,
+  type NonAttribute,
   type BelongsToManyGetAssociationsMixin,
   type BelongsToManySetAssociationsMixin,
   type BelongsToManyAddAssociationMixin,
@@ -38,6 +39,9 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
   declare name: string;
 
   declare description: CreationOptional<string> | null;
+
+  // include Model
+  declare Permissions: NonAttribute<Permission[]>;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
 
