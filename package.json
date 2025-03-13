@@ -58,7 +58,8 @@
     "sass": "^1.85.1",
     "tsx": "^4.19.3",
     "typescript": "^5.6.3",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "vitest": "^3.0.8"
   },
   "keywords": [
     "mix"

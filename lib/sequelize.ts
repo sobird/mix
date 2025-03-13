@@ -13,7 +13,7 @@
 import { AbilityTuple, MongoAbility } from '@casl/ability';
 import log4js from 'log4js';
 import {
-  Sequelize, Model, type ModelStatic, type Attributes,
+  Sequelize, Model, type ModelStatic, type Attributes, type CreationOptional,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
@@ -139,11 +139,11 @@ export const sequelize = new Sequelize({
  * sobird<i@sobird.me> at 2023/12/05 21:08:43 created.
  */
 export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
-  // declare id: CreationOptional<number>;
+  declare id?: CreationOptional<number>;
 
-  // declare createdAt: CreationOptional<Date>;
+  declare createdAt?: CreationOptional<Date>;
 
-  // declare updatedAt: CreationOptional<Date>;
+  declare updatedAt?: CreationOptional<Date>;
 
   /**
    * Helper method for defining associations.

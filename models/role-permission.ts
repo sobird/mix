@@ -1,5 +1,5 @@
 /**
- * RolePermission Model
+ * RolePermission Associate(M:N) Model
  *
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
