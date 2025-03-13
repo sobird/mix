@@ -1,6 +1,6 @@
-import User from '@/models/user';
+import { UserModel } from '@/models';
 
-vi.mock('@/models/user');
+vi.mock('@/models');
 
-const rows = await User.findAll();
-console.log('rows', rows);
+const rows = await UserModel.findAll({ include: [UserModel.associations.Roles] });
+console.log('rows', rows[0].Roles[0].get());
