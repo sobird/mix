@@ -141,7 +141,6 @@ class Role extends BaseModel<RoleAttributes, InferCreationAttributes<Role>> {
         roles: [1, 2],
       },
     ],
-
   };
 }
 

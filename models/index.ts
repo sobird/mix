@@ -63,28 +63,28 @@ Object.values(models).forEach((model: any) => {
 });
 
 // 建立系统权限
-for await (const model of Object.values(models)) {
-  for await (const [action, item] of Object.entries(model.permission || {})) {
-    const [permission] = await Permission.findOrCreate({
-      where: {
-        subject: model.name,
-        action,
-      },
-      defaults: {
-        name: model.name,
-        action,
-        subject: model.name,
-        description: item.description,
-      },
-    });
+// for await (const model of Object.values(models)) {
+//   for await (const [action, item] of Object.entries(model.permission || {})) {
+//     const [permission] = await Permission.findOrCreate({
+//       where: {
+//         subject: model.name,
+//         action,
+//       },
+//       defaults: {
+//         name: model.name,
+//         action,
+//         subject: model.name,
+//         description: item.description,
+//       },
+//     });
 
-    await permission.setRoles(item.roles, {
-      through: {
-        rules: item.rules,
-      },
-    });
-  }
-}
+//     await permission.setRoles(item.roles, {
+//       through: {
+//         rules: item.rules,
+//       },
+//     });
+//   }
+// }
 
 export type Models = typeof models;
 

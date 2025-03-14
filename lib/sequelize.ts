@@ -133,6 +133,7 @@ export const sequelize = new Sequelize({
 //   console.log('attributes', attributes);
 // });
 
+// buildin permission
 export interface PermissionTemplate {
   name: string;
   suggest: string;

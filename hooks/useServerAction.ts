@@ -3,6 +3,8 @@
  *
  * useFormState 目前最多支持action两个参数<state, payload> 多余的参数会被忽略
  *
+ * 新版React使用useActionState替代此处的Hook
+ *
  * sobird<i@sobird.me> at 2023/12/23 23:27:31 created.
  */
 

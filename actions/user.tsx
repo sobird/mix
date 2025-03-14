@@ -10,7 +10,11 @@ import reactToHtml from '@/lib/reactToHtml';
 import { UserModel } from '@/models';
 import { transporter } from '@/services/mailer';
 import {
-  signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod,
+  signUpZod,
+  SignUpAttributes,
+  createUserZod,
+  UserAttributes,
+  updateUserZod,
 } from '@/zod/user';
 
 import { ActionStatus } from '.';
@@ -24,9 +28,7 @@ type UserServerActionState = ServerActionState<SignUpAttributes>;
  * @param payload
  * @returns
  */
-export async function signUpAction(
-  payload: SignUpAttributes,
-): Promise<UserServerActionState> {
+export async function signUpAction(payload: SignUpAttributes): Promise<UserServerActionState> {
   const validated = await signUpZod.safeParseAsync(payload);
   if (!validated.success) {
     return {
