@@ -5,12 +5,12 @@
  */
 
 import {
-  Model, DataTypes,
+  DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
 } from 'sequelize';
 
-import { sequelize } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import Permission from './permission';
 import Role from './role';
@@ -20,7 +20,7 @@ export type RolePermissionAttributes = InferAttributes<RolePermission>;
 /** Some attributes are optional in `RolePermission.build` and `RolePermission.create` calls */
 export type RolePermissionCreationAttributes = InferCreationAttributes<RolePermission>;
 
-class RolePermission extends Model<RolePermissionAttributes, RolePermissionCreationAttributes> {
+class RolePermission extends BaseModel<RolePermissionAttributes, RolePermissionCreationAttributes> {
   declare roleId: number;
 
   declare permissionId: number;

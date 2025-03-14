@@ -5,12 +5,12 @@
  */
 
 import {
-  Model, DataTypes,
+  DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
 } from 'sequelize';
 
-import { sequelize } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import Role from './role';
 import User from './user';
@@ -20,7 +20,7 @@ export type UserRoleAttributes = InferAttributes<UserRole>;
 /** Some attributes are optional in `UserRole.build` and `UserRole.create` calls */
 export type UserRoleCreationAttributes = InferCreationAttributes<UserRole>;
 
-class UserRole extends Model<UserRoleAttributes, UserRoleCreationAttributes> {
+class UserRole extends BaseModel<UserRoleAttributes, UserRoleCreationAttributes> {
   declare userId: number;
 
   declare roleId: number;

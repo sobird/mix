@@ -10,7 +10,7 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import { AbilityTuple, MongoAbility } from '@casl/ability';
+import { AbilityTuple, MongoAbility, RawRule } from '@casl/ability';
 import log4js from 'log4js';
 import {
   Sequelize, Model, type ModelStatic, type Attributes, type CreationOptional,
@@ -133,6 +133,14 @@ export const sequelize = new Sequelize({
 //   console.log('attributes', attributes);
 // });
 
+export interface PermissionTemplate {
+  [key: string]: {
+    description: string;
+    roles: number[];
+    rules?: Partial<RawRule>[];
+  }
+}
+
 /**
  * 模型基类
  *
@@ -151,6 +159,8 @@ export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Mo
    * The `models/index` file will call this method automatically.
    */
   public static associate: (models: Models) => void;
+
+  declare static permission: PermissionTemplate;
 
   static accessibleBy = accessibleBy;
 
