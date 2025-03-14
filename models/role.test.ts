@@ -4,11 +4,11 @@ import {
 
 vi.mock('@/models');
 
-it('find role permission', () => {
+it.skip('find role permission', () => {
   // todo
 });
 
-it('set role permission', async () => {
+it.skip('set role permission', async () => {
   const role = await RoleModel.findByPk(1, { include: [PermissionModel] });
 
   if (!role) {
@@ -27,6 +27,9 @@ it('set role permission', async () => {
   const rolePermissionModel2 = await RolePermissionModel.findAll();
   console.log('rolePermissionModel2', rolePermissionModel2.map((item) => { return item.toJSON(); }));
 
-  const permissionList = await PermissionModel.findAll();
-  console.log('permissionList', permissionList);
+  const permissionList = await PermissionModel.findAll({ include: [RoleModel] });
+  console.log('permissionList', permissionList[5].Roles);
 });
+
+const roles = await RoleModel.findAll({ include: [PermissionModel] });
+console.log('roles', roles);

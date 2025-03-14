@@ -5,19 +5,19 @@
  */
 
 import {
-  Model, DataTypes,
+  DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
 } from 'sequelize';
 
-import { sequelize } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Menu model */
 export type MenuAttributes = InferAttributes<Menu>;
 /** Some attributes are optional in `Menu.build` and `Menu.create` calls */
 export type MenuCreationAttributes = InferCreationAttributes<Menu>;
 
-class Menu extends Model<MenuAttributes, MenuCreationAttributes> {
+class Menu extends BaseModel<MenuAttributes, MenuCreationAttributes> {
   declare userId: number;
 
   declare name: string;

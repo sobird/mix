@@ -4,7 +4,6 @@
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
-import { type RawRule } from '@casl/ability';
 import {
   DataTypes,
   type InferAttributes,
@@ -24,7 +23,7 @@ import {
   type BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 
-import { sequelize, BaseModel } from '@/lib/sequelize';
+import { sequelize, BaseModel, PermissionTemplate } from '@/lib/sequelize';
 
 import type Permission from './permission';
 import type User from './user';
@@ -98,27 +97,27 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
     this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
   }
 
-  static permission = {
+  static permission: PermissionTemplate = {
     create: {
       description: '创建角色',
-      roleIds: [1, 2], // 默认分配给这些角色
+      roles: [1, 2], // 默认分配给这些角色
     },
     delete: {
       description: '删除角色',
-      roleIds: [1, 2],
+      roles: [1, 2],
     },
     update: {
       description: '更新角色',
-      roleIds: [1, 2],
+      roles: [1, 2],
     },
     read: {
       description: '查看角色',
-      roleIds: [1, 2],
+      roles: [1, 2],
       rules: [
         {
           fields: ['id', 'title', 'content'],
         },
-      ] as RawRule[],
+      ],
     },
   };
 }

@@ -8,8 +8,6 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import models from '..';
-
 vi.mock('@/models/account');
 vi.mock('@/models/dictionaryItem');
 vi.mock('@/models/dictionaryType');
@@ -26,6 +24,8 @@ vi.mock('@/models/user');
 vi.mock('@/models/verificationToken');
 
 export {
+  // eslint-disable-next-line no-restricted-exports
+  default,
   sequelize,
   AccountModel,
   UserModel,
@@ -39,5 +39,3 @@ export {
   RolePermissionModel,
   UserRoleModel,
 } from '..';
-
-export default models;
