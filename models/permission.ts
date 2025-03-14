@@ -67,7 +67,7 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
   declare countRoles: BelongsToManyCountAssociationsMixin;
 
   static associate({ Role, RolePermission }) {
-    this.belongsToMany(Role, { through: RolePermission });
+    this.belongsToMany(Role, { through: RolePermission, foreignKey: 'permissionId' });
   }
 
   declare static associations: {
@@ -106,6 +106,8 @@ Permission.init(
   },
 );
 
-// Permission.beforeFind()
+Permission.afterSync(async () => {
+  // console.log('Permission', models);
+});
 
 export default Permission;

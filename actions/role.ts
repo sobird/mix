@@ -125,8 +125,6 @@ export const saveRolePermissions = async (roleId, permissions) => {
     // 2. 删除该角色所有旧权限（避免残留）
     await role.setPermissions([], { transaction });
 
-    // 3. 构建新权限记录
-
     for await (const { subject, actions } of permissions) {
       for await (const { action, fields } of actions) {
         const [permission] = await PermissionModel.findOrCreate({
@@ -134,14 +132,10 @@ export const saveRolePermissions = async (roleId, permissions) => {
           transaction,
         });
 
-        // 收集新权限配置
-        await RolePermission.create({
-          RoleId: roleId,
-          PermissionId: permission.id,
-          action,
-          subject,
-          rules: fields,
-          // fields: fields && fields.length > 0 ? fields : null, // null 表示允许所有字段
+        await role.addPermission(permission, {
+          through: {
+            rules: fields,
+          },
         });
       }
     }
