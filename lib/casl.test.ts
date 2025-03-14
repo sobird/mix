@@ -10,11 +10,17 @@ const ability = defineAbility((can) => {
   can('read', User, { username: 'sobird' });
   can('read', User, ['username', 'nickname'], { id: '1' });
   can('update', User, ['title', 'description'], { id: '1' });
-  can('read', 'Article', { createdAt: { $lte: today } });
+  can('read', 'Article', { createdAt: { $lte: today }, id: { $in: [1, 2, 3, 4] } });
+  can('read', 'Article', { id: 123 });
+  can('read', 'Article', ['nage', 'age', 'address.street'], { name: 123, age: 32 });
 });
+
+console.log('ability.rules', ability.rulesFor('read', 'Article'));
 
 it('toSequelizeQuery', () => {
   const query = toSequelizeQuery(ability, 'read', 'Article');
+
+  console.log('query', query);
 
   const expected = {
     [Symbol('or')]: [{
