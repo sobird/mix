@@ -8,6 +8,7 @@ import {
   DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
+  type CreationAttributes,
   type CreationOptional,
   type Association,
   type NonAttribute,
@@ -23,7 +24,7 @@ import {
   type BelongsToManyCountAssociationsMixin,
 } from 'sequelize';
 
-import { sequelize, BaseModel, PermissionTemplate } from '@/lib/sequelize';
+import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type Permission from './permission';
 import type User from './user';
@@ -31,14 +32,22 @@ import type User from './user';
 /** These are all the attributes in the Role model */
 export type RoleAttributes = InferAttributes<Role>;
 /** Some attributes are optional in `Role.build` and `Role.create` calls */
-export type RoleCreationAttributes = InferCreationAttributes<Role>;
+export type RoleCreationAttributes = CreationAttributes<Role>;
 
-class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
+class Role extends BaseModel<RoleAttributes, InferCreationAttributes<Role>> {
   declare parentId?: CreationOptional<number>;
 
   declare name: string;
 
   declare description: CreationOptional<string> | null;
+
+  declare defaultable: CreationOptional<boolean>;
+
+  declare editable: CreationOptional<boolean>;
+
+  declare isDefault: CreationOptional<boolean>;
+
+  declare isBuiltin: CreationOptional<boolean>;
 
   // include Model
   declare Permissions: NonAttribute<Permission[]>;
@@ -97,28 +106,42 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
     this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
   }
 
-  static permission: PermissionTemplate = {
-    create: {
-      description: '创建角色',
-      roles: [1, 2], // 默认分配给这些角色
-    },
-    delete: {
-      description: '删除角色',
-      roles: [1, 2],
-    },
-    update: {
-      description: '更新角色',
-      roles: [1, 2],
-    },
-    read: {
-      description: '查看角色',
-      roles: [1, 2],
-      rules: [
-        {
-          fields: ['id', 'title', 'content'],
-        },
-      ],
-    },
+  static permission = {
+    name: '角色权限设置',
+    suggest: Role.name,
+    actions: [
+      {
+        name: '创建自定义角色',
+        action: 'create',
+        roles: [1, 2],
+      },
+      {
+        name: '删除角色',
+        actions: 'delete',
+        roles: [1, 2],
+      },
+      {
+        name: '更新角色',
+        action: 'update',
+        roles: [1, 2],
+      },
+      {
+        name: '查看角色',
+        action: 'read',
+        roles: [1, 2],
+        rules: [
+          {
+            fields: ['id', 'title', 'content'],
+          },
+        ],
+      },
+      {
+        name: '设置成员的默认角色',
+        action: 'set.default',
+        roles: [1, 2],
+      },
+    ],
+
   };
 }
 
@@ -128,13 +151,35 @@ Role.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      comment: '角色名称',
     },
     description: {
       type: DataTypes.STRING,
+      comment: '角色描述',
     },
     parentId: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    defaultable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      comment: '能否设置为默认值',
+    },
+    editable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      comment: '能否编辑',
+    },
+    isDefault: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: '是否为默认角色',
+    },
+    isBuiltin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: '是否为内置角色',
     },
   },
   {
@@ -165,9 +210,24 @@ Role.init(
 );
 
 const seeds: RoleCreationAttributes[] = [
-  { name: '拥有者', description: '系统创建者角色' },
-  { name: '管理者', description: '系统管理者角色' },
-  { name: '成员', description: '普通用户角色' },
+  {
+    name: '拥有者',
+    description: '系统创建者角色',
+    isBuiltin: true,
+    editable: false,
+    defaultable: false,
+  },
+  {
+    name: '管理者',
+    description: '系统管理者角色',
+    isBuiltin: true,
+  },
+  {
+    name: '成员',
+    description: '普通用户角色',
+    isBuiltin: true,
+    isDefault: true,
+  },
 ];
 
 Role.afterSync(async () => {

@@ -134,11 +134,14 @@ export const sequelize = new Sequelize({
 // });
 
 export interface PermissionTemplate {
-  [key: string]: {
-    description: string;
-    roles: number[];
-    rules?: Partial<RawRule>[];
-  }
+  name: string;
+  suggest: string;
+
+  // [key: string]: {
+  //   description: string;
+  //   roles: number[];
+  //   rules?: Partial<RawRule>[];
+  // }
 }
 
 /**

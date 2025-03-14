@@ -31,5 +31,18 @@ it.skip('set role permission', async () => {
   console.log('permissionList', permissionList[5].Roles);
 });
 
-const roles = await RoleModel.findAll({ include: [PermissionModel] });
-console.log('roles', roles);
+const role = await RoleModel.findByPk(1, { include: [PermissionModel] });
+
+// 获取角色权限列表
+const aaa = [];
+role?.Permissions.forEach((permission) => {
+  const rules = permission.RolePermission.rules || [];
+  console.log(permission, rules);
+
+  aaa.push({
+    action: permission.action,
+    subject: permission.subject,
+  });
+});
+
+console.log('aaa', aaa);
