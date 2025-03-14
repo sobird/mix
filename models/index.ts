@@ -56,8 +56,15 @@ const models = {
   RolePermission,
   UserRole,
 };
+
+// 建立表关联关系
 Object.values(models).forEach((model: any) => {
   model.associate?.(sequelize.models);
+});
+
+// 建立系统权限
+Object.values(models).forEach((model: any) => {
+  console.log('model1212', models);
 });
 
 export type Models = typeof models;

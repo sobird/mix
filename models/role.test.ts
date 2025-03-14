@@ -1,5 +1,5 @@
 import {
-  RoleModel, PermissionModel, RolePermissionModel,
+  RoleModel, PermissionModel, RolePermissionModel, sequelize,
 } from '@/models';
 
 vi.mock('@/models');

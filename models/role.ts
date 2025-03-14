@@ -4,6 +4,7 @@
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
+import { type RawRule } from '@casl/ability';
 import {
   DataTypes,
   type InferAttributes,
@@ -94,8 +95,32 @@ class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
     User, UserRole, Permission, RolePermission,
   }) {
     this.belongsToMany(User, { through: UserRole });
-    this.belongsToMany(Permission, { through: RolePermission });
+    this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
   }
+
+  static permission = {
+    create: {
+      description: '创建角色',
+      roleIds: [1, 2], // 默认分配给这些角色
+    },
+    delete: {
+      description: '删除角色',
+      roleIds: [1, 2],
+    },
+    update: {
+      description: '更新角色',
+      roleIds: [1, 2],
+    },
+    read: {
+      description: '查看角色',
+      roleIds: [1, 2],
+      rules: [
+        {
+          fields: ['id', 'title', 'content'],
+        },
+      ] as RawRule[],
+    },
+  };
 }
 
 Role.init(
@@ -140,7 +165,7 @@ Role.init(
   },
 );
 
-export const seeds: RoleCreationAttributes[] = [
+const seeds: RoleCreationAttributes[] = [
   { name: '拥有者', description: '系统创建者角色' },
   { name: '管理者', description: '系统管理者角色' },
   { name: '成员', description: '普通用户角色' },
@@ -152,6 +177,11 @@ Role.afterSync(async () => {
 
 Role.afterBulkSync(() => {
   console.log('Role afterBulkSync', 121212);
+});
+
+// Init Permission
+Role.afterBulkCreate(() => {
+  console.log('afterCreate', 1234);
 });
 
 export default Role;
