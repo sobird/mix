@@ -128,15 +128,12 @@ export const sequelize = new Sequelize({
   },
 });
 
-// sequelize.addHook('beforeDefine', (attributes) => {
-//   // todo
-//   console.log('attributes', attributes);
-// });
-
 // buildin permission
 export interface PermissionTemplate {
   name: string;
-  suggest: string;
+  subject: string;
+
+  rules: Omit<RawRule, 'subject'>[]
 
   // [key: string]: {
   //   description: string;

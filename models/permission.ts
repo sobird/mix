@@ -12,6 +12,7 @@ import {
   type InferCreationAttributes,
   type Association,
   type NonAttribute,
+  type CreationOptional,
   type BelongsToManyGetAssociationsMixin,
   type BelongsToManySetAssociationsMixin,
   type BelongsToManyAddAssociationMixin,
@@ -39,9 +40,11 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
 
   declare description: string;
 
+  declare subject: string;
+
   declare action: string;
 
-  declare subject: string;
+  declare expires: CreationOptional<Date>;
 
   declare RolePermission: NonAttribute<RolePermission>;
 
@@ -90,6 +93,10 @@ Permission.init(
     },
     subject: {
       type: DataTypes.STRING,
+    },
+    expires: {
+      type: DataTypes.DATE,
+      comment: 'Permission Expires',
     },
   },
   {

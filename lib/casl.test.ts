@@ -1,4 +1,5 @@
 import { defineAbility } from '@casl/ability';
+import { Op } from 'sequelize';
 
 import User from '@/models/user';
 
@@ -32,3 +33,5 @@ it('toSequelizeQuery', () => {
 
   expect(query).toEqual(expected);
 });
+
+console.log('Op', Object.keys(Op));
