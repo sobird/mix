@@ -1,9 +1,17 @@
 /**
  * Role Model
  *
+ * @PermissionRules
+ * Admin Can Create any Role
+ * Admin Can Read any Role
+ * Admin Can Update any Role
+ * Admin Can Delete non System Role
+ * User Cannot Manage any Role
+ *
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
+import { ForcedSubject, InferSubjects, RawRule } from '@casl/ability';
 import {
   DataTypes,
   type InferAttributes,
@@ -33,6 +41,27 @@ import type User from './user';
 export type RoleAttributes = InferAttributes<Role>;
 /** Some attributes are optional in `Role.build` and `Role.create` calls */
 export type RoleCreationAttributes = CreationAttributes<Role>;
+
+export type Subjects = InferSubjects<'Role' | 'all'>;
+export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
+
+type RoleAbilities = [
+  Actions,
+  Subjects,
+];
+
+export interface PermissionTemplate {
+  name: string;
+  subject: string;
+
+  rules: Omit<RawRule<RoleAbilities>, 'subject'>[]
+
+  // [key: string]: {
+  //   description: string;
+  //   roles: number[];
+  //   rules?: Partial<RawRule>[];
+  // }
+}
 
 class Role extends BaseModel<RoleAttributes, InferCreationAttributes<Role>> {
   declare parentId?: CreationOptional<number>;
@@ -106,41 +135,53 @@ class Role extends BaseModel<RoleAttributes, InferCreationAttributes<Role>> {
     this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
   }
 
-  static permission = {
+  // 系统级角色表权限定义
+  static permission: PermissionTemplate = {
     name: '角色权限设置',
-    suggest: Role.name,
-    actions: [
+    subject: Role.name,
+    rules: [
       {
-        name: '创建自定义角色',
         action: 'create',
-        roles: [1, 2],
-      },
-      {
-        name: '删除角色',
-        actions: 'delete',
-        roles: [1, 2],
-      },
-      {
-        name: '更新角色',
-        action: 'update',
-        roles: [1, 2],
-      },
-      {
-        name: '查看角色',
-        action: 'read',
-        roles: [1, 2],
-        rules: [
-          {
-            fields: ['id', 'title', 'content'],
-          },
-        ],
-      },
-      {
-        name: '设置成员的默认角色',
-        action: 'set.default',
-        roles: [1, 2],
+        fields: [],
+        conditions: {
+          $lte: '',
+        },
+        inverted: false,
+        reason: '',
       },
     ],
+    // actions: [
+    //   {
+    //     name: '创建自定义角色',
+    //     action: 'create',
+    //     roles: [1, 2],
+    //   },
+    //   {
+    //     name: '删除角色',
+    //     action: 'delete',
+    //     roles: [1, 2],
+    //   },
+    //   {
+    //     name: '更新角色',
+    //     action: 'update',
+    //     roles: [1, 2],
+    //   },
+    //   {
+    //     name: '查看角色',
+    //     action: 'read',
+    //     roles: [1, 2],
+    //     rules: [
+    //       {
+    //         fields: ['id', 'title', 'content'],
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     name: '设置成员的默认角色',
+    //     action: 'set.default',
+    //     roles: [1, 2],
+    //   },
+    // ],
   };
 }
 
@@ -211,14 +252,14 @@ Role.init(
 const seeds: RoleCreationAttributes[] = [
   {
     name: '拥有者',
-    description: '系统创建者角色',
+    description: '系统拥有者角色',
     isBuiltin: true,
     editable: false,
     defaultable: false,
   },
   {
-    name: '管理者',
-    description: '系统管理者角色',
+    name: '管理员',
+    description: '系统管理员角色',
     isBuiltin: true,
   },
   {
