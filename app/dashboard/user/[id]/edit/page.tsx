@@ -39,7 +39,7 @@ const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
   (initialValues as any).roles = Roles?.map((item) => { return item.id; });
 
   return (
-    <UserForm action={updateUserAction} initialValues={initialValues} mode="update" />
+    <UserForm action={updateUserAction} initialValues={initialValues} mode="edit" />
   );
 };
 

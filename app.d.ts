@@ -42,6 +42,9 @@ type ServerAction<Payload = unknown, State = ServerActionState> =
   | ((payload: Payload) => Promise<State>);
 
 type WithFormProps = {
-  mode?: 'create' | 'update' | 'detail';
+  /**
+   * 后台系统中表单常见模式定义
+   */
+  mode?: 'create' | 'edit' | 'view' | 'duplicate' | 'approval' | 'draft';
   data?: any;
 };

@@ -1,6 +1,13 @@
 /**
  * Permission Model
  *
+ * 权限编辑页面
+ * 该权限可操作如下资源：
+ *
+ * 系统权限不允许被任何角色/用户修改
+ *
+ * 由casl中定义的subject和action来定义一个权限项，其中fields,conditions为对此资源的收紧规则
+ *
  * @see https://casl.js.org/v6/en/guide/define-rules
  *
  * sobird<i@sobird.me> at 2023/12/01 9:05:12 created.
@@ -45,6 +52,8 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
   declare action: string;
 
   declare expires: CreationOptional<Date>;
+
+  declare isBuiltin: CreationOptional<boolean>;
 
   declare RolePermission: NonAttribute<RolePermission>;
 
@@ -97,6 +106,10 @@ Permission.init(
     expires: {
       type: DataTypes.DATE,
       comment: 'Permission Expires',
+    },
+    isBuiltin: {
+      type: DataTypes.BOOLEAN,
+      comment: 'Built in system permissions',
     },
   },
   {
