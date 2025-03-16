@@ -8,7 +8,6 @@ import {
   type CheckboxOptionType,
   type CheckboxGroupProps,
 } from 'antd/lib/checkbox';
-import React, { useState } from 'react';
 
 import { useMergedState } from '@/hooks';
 
@@ -20,9 +19,9 @@ interface InputCheckboxGroupProps extends CheckboxGroupProps {
 }
 
 const InputCheckboxGroup: React.FC<InputCheckboxGroupProps> = ({
-  title, onChange, value, defaultValue, options = [], ...checkboxGroupProps
+  title, onChange, value, defaultValue, options = [], disabled, ...checkboxGroupProps
 }) => {
-  const [checkedList, setCheckedList] = useMergedState<string[]>(defaultValue, {
+  const [checkedList, setCheckedList] = useMergedState<string[]>(defaultValue || [], {
     value,
     onChange,
   });
@@ -44,6 +43,7 @@ const InputCheckboxGroup: React.FC<InputCheckboxGroupProps> = ({
         indeterminate={indeterminate}
         onChange={onCheckAllChange}
         checked={checkAll}
+        disabled={disabled}
         style={{ marginBottom: 10 }}
       >
         {title}
@@ -52,6 +52,7 @@ const InputCheckboxGroup: React.FC<InputCheckboxGroupProps> = ({
         options={options}
         value={checkedList}
         onChange={onCheckboxGroupChange}
+        disabled={disabled}
         style={{ display: 'flex' }}
         {...checkboxGroupProps}
       />
