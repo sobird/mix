@@ -12,8 +12,8 @@ const ability = defineAbility((can) => {
   can('read', User, ['username', 'nickname'], { id: '1' });
   can('update', User, ['title', 'description'], { id: '1' });
   can('read', 'Article', { createdAt: { $lte: today }, id: { $in: [1, 2, 3, 4] } });
-  can('read', 'Article', { id: 123 });
-  can('read', 'Article', ['nage', 'age', 'address.street'], { name: 123, age: 32 });
+  can('read', 'Article', { id: '$user.id' });
+  can('read', 'Article', ['nage', 'age', 'address.street'], { name: 123, age: 32, $or: [{ ddd: 1 }, { aaa: 2 }] });
 });
 
 console.log('ability.rules', ability.rulesFor('read', 'Article'));
