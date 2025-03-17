@@ -33,6 +33,22 @@ describe('useMergedState', () => {
     expect(result.current[0]).toBe('updated');
   });
 
+  it('受控模式下不应更新内部状态', () => {
+    const { result } = renderHook(
+      ({ value }) => { return useMergedState(undefined, { value: [...value] }); },
+      { initialProps: { value: ['initial'] } },
+    );
+
+    // 初始状态
+    expect(result.current[0]).toEqual(['initial']);
+
+    // 触发内部更新
+    act(() => {
+      result.current[1](['new value']);
+    });
+    expect(result.current[0]).toEqual(['initial']);
+  });
+
   it('非受控模式下应更新内部状态', () => {
     const { result } = renderHook(() => { return useMergedState('default'); });
 
