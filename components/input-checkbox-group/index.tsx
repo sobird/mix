@@ -22,67 +22,43 @@ interface InputCheckboxGroupProps extends CheckboxGroupProps {
 const InputCheckboxGroup: React.FC<InputCheckboxGroupProps> = ({
   title, onChange, value, defaultValue, options = [], disabled, ...checkboxGroupProps
 }) => {
-  const [enabledOptions, disabledOptions] = useMemo(() => {
-    return options.reduce(
-      (acc, option) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        option.disabled ? acc[1].push(option) : acc[0].push(option);
-        return acc;
-      },
-      [[], []] as [CheckboxOptionType[], CheckboxOptionType[]],
-    );
+  const [checkedList, setCheckedList] = useMergedState<string[]>(defaultValue || [], {
+    value,
+    onChange,
+  });
+
+  const enabledOptions = useMemo(() => {
+    return options.filter((option) => { return !option.disabled; });
   }, [options]);
 
-  const [enabledValues, setEnabledValues] = useMergedState<string[]>(
-    () => {
-      const initial = defaultValue || [];
-      return initial.filter((val) => { return enabledOptions.some((opt) => { return opt.value === val; }); });
-    },
-    {
-      value: value?.filter((val) => { return enabledOptions.some((opt) => { return opt.value === val; }); }),
-      onChange: (vals) => {
-        // 合并禁用项的原始值
-        const disabledOriginalValues = (value || defaultValue || [])
-          .filter((val) => { return disabledOptions.some((opt) => { return opt.value === val; }); });
-        onChange?.([...vals, ...disabledOriginalValues]);
-      },
-    },
-  );
+  const enabledValues = checkedList.filter((val) => { return enabledOptions.some((opt) => { return opt.value === val; }); });
+  const disabledValues = checkedList.filter((val) => { return !enabledOptions.some((opt) => { return opt.value === val; }); });
 
-  const allEnabledSelected = enabledOptions.length > 0
-    && enabledOptions.every((opt) => { return enabledValues.includes(opt.value); });
-  const indeterminate = !allEnabledSelected && enabledValues.length > 0;
+  const checkAll = enabledOptions.length === enabledValues.length;
+  const indeterminate = enabledValues.length > 0 && enabledValues.length < enabledOptions.length;
 
   const onCheckboxGroupChange = (list: string[]) => {
-    // 过滤掉禁用项的值变更
-    const filtered = list.filter((val) => { return enabledOptions.some((opt) => { return opt.value === val; }); });
-    console.log('onCheckboxGroupChange', filtered);
-    setEnabledValues(filtered);
+    setCheckedList(list);
   };
 
   const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
-    const newValues = e.target.checked
-      ? enabledOptions.map((opt) => { return opt.value; })
-      : [];
-    setEnabledValues(newValues);
+    setCheckedList(e.target.checked ? [...disabledValues, ...enabledOptions.map((item) => { return item.value; })] : [...disabledValues]);
   };
-
-  console.log('enabledValues', enabledValues, disabledOptions);
 
   return (
     <div>
       <Checkbox
         indeterminate={indeterminate}
         onChange={onCheckAllChange}
-        checked={allEnabledSelected}
-        disabled={disabled || enabledOptions.length === 0}
+        checked={checkAll}
+        disabled={disabled}
         style={{ marginBottom: 10 }}
       >
         {title}
       </Checkbox>
       <CheckboxGroup
         options={options}
-        value={[...enabledValues, ...disabledOptions.map((opt) => { return opt.value; })]}
+        value={checkedList}
         onChange={onCheckboxGroupChange}
         disabled={disabled}
         style={{ display: 'flex' }}

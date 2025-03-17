@@ -199,7 +199,7 @@ describe('InputCheckboxGroup', () => {
     // 点击全选复选框
     fireEvent.click(screen.getByLabelText('忽略禁用测试'));
     // 期望结果：只选中非禁用项（apple 和 orange）
-    expect(onChange).toHaveBeenCalledWith(['apple', 'orange']);
+    expect(onChange).toHaveBeenCalledWith(['apple', 'orange'], []);
 
     // 验证 DOM 状态
     expect(screen.getByLabelText('Apple')).toBeChecked();
@@ -253,8 +253,7 @@ describe('InputCheckboxGroup', () => {
     );
 
     // 尝试点击已禁用的选中项
-    fireEvent.click(screen.getByLabelText('禁用项交互测试'));
-    // fireEvent.click(screen.getByLabelText('Apple'));
+    fireEvent.click(screen.getByLabelText('Apple'));
 
     // 期望值保持不变（禁用项不可操作）
     expect(onChange).not.toHaveBeenCalled();

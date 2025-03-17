@@ -8,7 +8,7 @@ export default function Page() {
   ];
   return (
     <div>
-      <InputCheckboxGroup title='角色权限管理' options={mockOptions} />
+      <InputCheckboxGroup title='角色权限管理' options={mockOptions} defaultValue={['apple']} />
     </div>
   );
 }
