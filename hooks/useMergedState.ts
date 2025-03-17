@@ -6,15 +6,11 @@ type Updater<T> = T | ((prevState: T) => T);
 type SetState<T> = (value: Updater<T>) => void;
 
 function useMergedState<T>(
-  // 默认值（可以是值或函数）
   defaultStateValue?: T | (() => T),
-  // 配置选项
   options?: {
     // 外部传入的受控值
     value?: T;
-    // 值变化时的回调
     onChange?: (value: T, prevValue: T) => void;
-    // 后处理函数
     postState?: (value: T) => T;
   },
 ): [T, SetState<T>] {
@@ -75,14 +71,6 @@ function useMergedState<T>(
     [isControlled, mergedValue, triggerChange],
   );
 
-  // 处理外部 value 变化
-  useEffect(() => {
-    if (isControlled) {
-      setInnerValue(value!);
-    }
-  }, [isControlled, value]);
-
-  // 应用后处理
   const postMergedValue = postState ? postState(mergedValue) : mergedValue;
 
   return [postMergedValue, setState];
