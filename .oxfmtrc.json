@@ -8,9 +8,10 @@
   "jsxSingleQuote": true,
   "trailingComma": "es5",
   "bracketSpacing": true,
-  "jsxBracketSameLine": false,
   "arrowParens": "avoid",
   "proseWrap": "preserve",
   "htmlWhitespaceSensitivity": "ignore",
-  "vueIndentScriptAndStyle": false
+  "vueIndentScriptAndStyle": false,
+  "sortPackageJson": true,
+  "ignorePatterns": ["CLAUDE.md", "coverage/", "dist/", "node_modules/", ".next/", "bun.lock"],
 }
