@@ -34,6 +34,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
+import type { Models } from './index';
 import type { Role } from './Role';
 import type { RolePermission } from './RolePermission';
 
@@ -64,7 +65,7 @@ export class Permission extends BaseModel<Permission> {
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
   declare countRoles: BelongsToManyCountAssociationsMixin;
 
-  static associate({ Role, RolePermission }) {
+  static associate({ Role, RolePermission }: Models) {
     this.belongsToMany(Role, { through: RolePermission, foreignKey: 'permissionId' });
   }
 

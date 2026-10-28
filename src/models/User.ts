@@ -46,6 +46,7 @@ import {
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type { Account } from './Account';
+import type { Models } from './index';
 import type { Menu } from './Menu';
 import type { Role } from './Role';
 import type { Session } from './Session';
@@ -146,7 +147,7 @@ export class User extends BaseModel<User> {
    *
    * The `models/index` file will call this method automatically.
    */
-  static associate({ Role, UserRole, Account, Session, Menu }) {
+  static associate({ Role, UserRole, Account, Session, Menu }: Models) {
     this.belongsToMany(Role, { through: UserRole });
     this.hasMany(Account, { foreignKey: 'userId' });
     this.hasMany(Session, { foreignKey: 'userId' });

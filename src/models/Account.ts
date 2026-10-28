@@ -26,6 +26,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
+import type { Models } from './index';
 import type { User } from './User';
 
 /** These are all the attributes in the Account model */
@@ -68,7 +69,7 @@ export class Account extends BaseModel<Account> {
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
   declare createUser: BelongsToCreateAssociationMixin<User>;
 
-  static associate({ User }) {
+  static associate({ User }: Models) {
     this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
   }
 

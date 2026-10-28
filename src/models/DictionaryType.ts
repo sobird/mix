@@ -25,6 +25,7 @@ import {
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type { DictionaryItem } from './DictionaryItem';
+import type { Models } from './index';
 
 /** These are all the attributes in the DictionaryType model */
 export type DictionaryTypeAttributes = Attributes<DictionaryType>;
@@ -50,7 +51,7 @@ export class DictionaryType extends BaseModel<DictionaryType> {
   declare createItem: HasManyCreateAssociationMixin<DictionaryItem>;
   declare countItems: HasManyCountAssociationsMixin;
 
-  static associate({ DictionaryItem }) {
+  static associate({ DictionaryItem }: Models) {
     this.hasMany(DictionaryItem, { foreignKey: 'typeId' });
   }
 

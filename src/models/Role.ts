@@ -46,6 +46,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
+import type { Models } from './index';
 import type { Permission } from './Permission';
 import type { User } from './User';
 
@@ -132,7 +133,7 @@ export class Role extends BaseModel<Role> {
     children: Association<Role, Role>;
   };
 
-  static associate({ User, UserRole, Permission, RolePermission }) {
+  static associate({ User, UserRole, Permission, RolePermission }: Models) {
     this.belongsToMany(User, { through: UserRole });
     this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
     this.belongsTo(Role, { as: 'parent', foreignKey: 'parentId' });

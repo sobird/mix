@@ -27,6 +27,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
+import type { Models } from './index';
 import type { User } from './User';
 
 /** These are all the attributes in the Menu model */
@@ -68,7 +69,7 @@ export class Menu extends BaseModel<Menu> {
   declare createChild: HasManyCreateAssociationMixin<Menu>;
   declare countChildren: HasManyCountAssociationsMixin;
 
-  static associate({ User }) {
+  static associate({ User }: Models) {
     this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
     this.belongsTo(Menu, { as: 'parent', foreignKey: 'parentId' });
     this.hasMany(Menu, { as: 'children', foreignKey: 'parentId' });

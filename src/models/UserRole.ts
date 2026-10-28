@@ -17,6 +17,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
+import type { Models } from './index';
 import { Role } from './Role';
 import { User } from './User';
 
@@ -41,7 +42,7 @@ export class UserRole extends BaseModel<UserRole> {
   declare setRole: BelongsToSetAssociationMixin<Role, Role['id']>;
   declare createRole: BelongsToCreateAssociationMixin<Role>;
 
-  static associate({ User: UserModel, Role: RoleModel }) {
+  static associate({ User: UserModel, Role: RoleModel }: Models) {
     this.belongsTo(UserModel, { foreignKey: 'userId' });
     this.belongsTo(RoleModel, { foreignKey: 'roleId' });
   }
