@@ -20,7 +20,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { User } from './user';
+import type { User } from './User';
 
 /** These are all the attributes in the Session model */
 export type SessionAttributes = InferAttributes<Session>;

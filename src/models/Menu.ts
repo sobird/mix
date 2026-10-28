@@ -27,7 +27,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { User } from './user';
+import type { User } from './User';
 
 /** These are all the attributes in the Menu model */
 export type MenuAttributes = InferAttributes<Menu>;

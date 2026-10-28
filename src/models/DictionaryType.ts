@@ -24,7 +24,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { DictionaryItem } from './dictionaryItem';
+import type { DictionaryItem } from './DictionaryItem';
 
 /** These are all the attributes in the DictionaryType model */
 export type DictionaryTypeAttributes = InferAttributes<DictionaryType>;

@@ -32,7 +32,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { getCsrfToken } from 'next-auth/react';
 import { cookies } from 'next/headers';
 
-import { User } from '@/models/user';
+import { User } from '@/models/User';
 
 import { sendVerificationRequest } from '../mailer';
 import adapter from './adapter-sequelize';

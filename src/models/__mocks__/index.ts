@@ -8,20 +8,20 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-vi.mock('@/models/account');
-vi.mock('@/models/dictionaryItem');
-vi.mock('@/models/dictionaryType');
-vi.mock('@/models/group');
-vi.mock('@/models/log');
-vi.mock('@/models/menu');
-vi.mock('@/models/organization');
-vi.mock('@/models/permission');
-vi.mock('@/models/role-permission');
-vi.mock('@/models/role');
-vi.mock('@/models/session');
-vi.mock('@/models/user-role');
-vi.mock('@/models/user');
-vi.mock('@/models/verificationToken');
+vi.mock('@/models/Account');
+vi.mock('@/models/DictionaryItem');
+vi.mock('@/models/DictionaryType');
+vi.mock('@/models/Group');
+vi.mock('@/models/Log');
+vi.mock('@/models/Menu');
+vi.mock('@/models/Organization');
+vi.mock('@/models/Permission');
+vi.mock('@/models/RolePermission');
+vi.mock('@/models/Role');
+vi.mock('@/models/Session');
+vi.mock('@/models/UserRole');
+vi.mock('@/models/User');
+vi.mock('@/models/VerificationToken');
 
 export {
   sequelize,

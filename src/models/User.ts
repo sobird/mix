@@ -46,10 +46,10 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { Account } from './account';
-import type { Menu } from './menu';
-import type { Role } from './role';
-import type { Session } from './session';
+import type { Account } from './Account';
+import type { Menu } from './Menu';
+import type { Role } from './Role';
+import type { Session } from './Session';
 
 /** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];

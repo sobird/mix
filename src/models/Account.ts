@@ -26,7 +26,7 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { User } from './user';
+import type { User } from './User';
 
 /** These are all the attributes in the Account model */
 export type AccountAttributes = InferAttributes<Account>;

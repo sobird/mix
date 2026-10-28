@@ -47,8 +47,8 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { Permission } from './permission';
-import type { User } from './user';
+import type { Permission } from './Permission';
+import type { User } from './User';
 
 /** These are all the attributes in the Role model */
 export type RoleAttributes = InferAttributes<Role>;

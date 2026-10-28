@@ -1,10 +1,10 @@
 import { CreationAttributes } from 'sequelize';
 
-import { UserRole } from '@/models/user-role';
+import { UserRole } from '@/models/UserRole';
 
 vi.mock('@/lib/sequelize');
-vi.mock('@/models/role');
-vi.mock('@/models/user');
+vi.mock('@/models/Role');
+vi.mock('@/models/User');
 
 const seed = [
   {

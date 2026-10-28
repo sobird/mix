@@ -1,7 +1,7 @@
 import { defineAbility } from '@casl/ability';
 import { Op } from 'sequelize';
 
-import { User } from '@/models/user';
+import { User } from '@/models/User';
 
 import { toSequelizeQuery } from './casl';
 

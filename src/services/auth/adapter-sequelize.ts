@@ -8,12 +8,12 @@
 
 import type { Adapter, AdapterSession, AdapterUser } from '@auth/core/adapters';
 
-import { Account } from '@/models/account';
-import type { AccountCreationAttributes } from '@/models/account';
-import { Session } from '@/models/session';
-import { User } from '@/models/user';
-import type { UserCreationAttributes } from '@/models/user';
-import { VerificationToken } from '@/models/verificationToken';
+import { Account } from '@/models/Account';
+import type { AccountCreationAttributes } from '@/models/Account';
+import { Session } from '@/models/Session';
+import { User } from '@/models/User';
+import type { UserCreationAttributes } from '@/models/User';
+import { VerificationToken } from '@/models/VerificationToken';
 
 // declare module '@auth/core/adapters' {
 //   interface AdapterUser {

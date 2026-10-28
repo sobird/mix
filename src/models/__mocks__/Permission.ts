@@ -1,6 +1,6 @@
 import { CreationAttributes } from 'sequelize';
 
-import { Permission } from '@/models/permission';
+import { Permission } from '@/models/Permission';
 
 vi.mock('@/lib/sequelize');
 

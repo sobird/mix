@@ -1,6 +1,6 @@
 import { CreationAttributes } from 'sequelize';
 
-import { Role } from '../role';
+import { Role } from '../Role';
 
 vi.mock('@/lib/sequelize');
 
