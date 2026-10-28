@@ -11,8 +11,7 @@ import { createFormRule } from '.';
 export const RoleFormZod = z.object({
   id: z.number().optional(),
   name: z.string({
-    invalid_type_error: '角色名称长度为3-12个字符',
-    required_error: '角色名称不能为空',
+    error: (issue) => { return issue.input === undefined ? '角色名称不能为空' : '角色名称长度为3-12个字符'; },
   }).min(3, '角色名称长度不能少于3个字符').max(24, '角色名称长度不能大于24个字符'),
   description: z.string().nullish(),
   parentId: z.number().int().optional(),

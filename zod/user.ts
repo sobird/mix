@@ -10,7 +10,7 @@ const usernameZod = z
     id: z.number().optional(),
     username: z
       .string({
-        required_error: '请输入用户名',
+        error: '请输入用户名',
       })
       .regex(/^[a-zA-Z][a-zA-Z0-9_]{1,20}$/, '长度在2~20位之间，包含字母、数字、下划线'),
   })
@@ -32,7 +32,7 @@ const emailZod = z
     id: z.number().optional(),
     email: z
       .string({
-        required_error: '请输入邮箱',
+        error: '请输入邮箱',
       })
       .email('邮箱格式不正确'),
   })
@@ -53,7 +53,7 @@ const passwordZod = z
   .object({
     password: z
       .string({
-        required_error: '请输入密码',
+        error: '请输入密码',
       })
       .superRefine((password, ctx) => {
         const analysis = analyzePassword(password);
@@ -77,7 +77,7 @@ const passwordZod = z
         }
       }),
     confirmPassword: z.string({
-      required_error: '请输入确认密码',
+      error: '请输入确认密码',
     }),
   })
   .refine(
@@ -94,7 +94,7 @@ const verificationCodeZod = z.object({
   email: z.string(),
   verificationCode: z
     .string({
-      required_error: '请输入验证码',
+      error: '请输入验证码',
     })
     .regex(/^\d{6}$/, '验证码为6位数字'),
 }).refine(
@@ -141,7 +141,7 @@ const ohtersZod = z.object({
   gender: z.enum(['male', 'female', 'unknown']).optional().or(z.literal('')),
   roles: z.array(z.number()).optional(),
   status: z.boolean({
-    required_error: '状态未选择',
+    error: '状态未选择',
   }),
 });
 

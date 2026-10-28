@@ -6,13 +6,18 @@
 
 import { FormInstance } from 'antd/es/form';
 import { ValidatorRule } from 'rc-field-form/es/interface';
-import {
-  z, ZodEffects, ZodOptional, ZodObject, ZodArray, ZodIntersection,
-} from 'zod';
+import { z, ZodArray, ZodIntersection, ZodObject, ZodOptional } from 'zod';
 
-const isZodEffects = (schema: unknown): schema is ZodEffects<any> => {
-  return schema instanceof ZodEffects;
+/**
+ * zod 4 起 refine/superRefine 直接挂在原 schema 上，不再有 ZodEffects 包装。
+ * 根级存在 check 时说明需要整体校验表单，而不是单个字段。
+ */
+const hasChecks = (schema: z.ZodType): boolean => {
+  const internals = (schema as z.ZodType & { _zod?: { def?: { checks?: unknown[] } } })['_zod'];
+
+  return Boolean(internals?.def?.checks?.length);
 };
+
 const isZodOptional = (schema: unknown): schema is ZodOptional<any> => {
   return schema instanceof ZodOptional;
 };
@@ -73,13 +78,15 @@ export const createFormRule = function createFormRule<T = unknown>(schema: z.Zod
       validator: async ({ field }: { field: string }, value) => {
         let path = '';
         let fieldValue = value;
+        let currentSchema: z.ZodType = schema;
 
-        if (isZodEffects(schema)) {
+        if (hasChecks(schema)) {
           path = field;
           fieldValue = getFieldsValue?.() || value;
+        } else {
+          currentSchema = getSchemaByPath(schema, field.split('.'));
         }
 
-        const currentSchema = getSchemaByPath(schema, field.split('.'));
         const validatedFields = await currentSchema.safeParseAsync(fieldValue);
 
         if (validatedFields.success) {

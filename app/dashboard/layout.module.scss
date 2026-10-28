@@ -73,8 +73,8 @@
   // .main {
   //   margin-left: 64px;
   // }
-  :global .hamburger {
-    .iconfont {
+  :global(.hamburger) {
+    :global(.iconfont) {
       transform: rotateZ(-90deg);
     }
   }

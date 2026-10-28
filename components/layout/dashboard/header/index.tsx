@@ -11,7 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-import Logo from '@/assets/mix.svg';
+import Logo from '@/assets/mix-data';
 
 import Search from '../search';
 import styles from './index.module.scss';

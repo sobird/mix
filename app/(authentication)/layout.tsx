@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { PropsWithChildren } from 'react';
 
-import mix from '@/assets/mix.svg';
+import mix from '@/assets/mix-data';
 
 import styles from './layout.module.scss';
 

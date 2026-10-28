@@ -12,7 +12,7 @@ import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 
-import mix from '@/assets/mix.svg';
+import mix from '@/assets/mix-data';
 import StyledComponentsRegistry from '@/lib/antd';
 import StoreProvider from '@/store/provider';
 import '@/styles/presets.scss';
@@ -24,7 +24,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Mix',
   // description: '',
-  icons: mix.src,
+  icons: mix,
 };
 
 export default async function RootLayout({ children }: {

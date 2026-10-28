@@ -16,7 +16,7 @@
   overflow-x: hidden;
 
   // :global test
-  :global .plyr, :global .plyr__video-wrapper {
+  :global(.plyr), :global(.plyr__video-wrapper) {
     height: 100%;
   }
 
@@ -58,28 +58,28 @@
     }
 
     // reset antd style
-    :global .mix-menu {
+    :global(.mix-menu) {
       background-color: transparent;
       border-inline-end: none !important;
-  
-      &.mix-menu-inline-collapsed {
+
+      &:global(.mix-menu-inline-collapsed) {
         width: 64px;
       }
-  
-      .mix-menu-item {
+
+      :global(.mix-menu-item) {
         width: 100%;
         // margin: 0;
         // background-color: #;
-  
-        .iconfont {
+
+        :global(.iconfont) {
           font-size: 1.1em;
         }
-        &:has(+ .mix-menu-item-selected) {
+        &:has(+ :global(.mix-menu-item-selected)) {
           border-bottom-right-radius: 10px;
         }
       }
-  
-      .mix-menu-item-selected {
+
+      :global(.mix-menu-item-selected) {
         background-color: #fff;
         color: #000;
         font-weight: 500;

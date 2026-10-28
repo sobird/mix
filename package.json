@@ -11,10 +11,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "next build --webpack",
+    "build": "next build",
     "coverage": "vitest run --coverage",
     "db:seed": "tsx scripts/seed.ts",
-    "dev": "DEBUG=app:* next dev --webpack",
+    "dev": "DEBUG=app:* next dev",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "lint": "oxlint",
@@ -73,7 +73,6 @@
     "sass": "^1.106.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "url-loader": "^4.1.1",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },

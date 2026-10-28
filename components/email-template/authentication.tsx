@@ -4,8 +4,7 @@
  * sobird<i@sobird.me> at 2023/12/02 20:52:40 created.
  */
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import mix from '@/assets/mix.svg';
+import mix from '@/assets/mix-data';
 
 
 interface AuthenticationProps {
