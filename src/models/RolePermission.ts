@@ -29,10 +29,14 @@ export class RolePermission extends BaseModel<RolePermission> {
   declare roleId: number;
   declare permissionId: number;
   declare rules: JSON;
+
+  // Role, alias 'Role'
   declare Role: NonAttribute<Role>;
   declare getRole: BelongsToGetAssociationMixin<Role>;
   declare setRole: BelongsToSetAssociationMixin<Role, Role['id']>;
   declare createRole: BelongsToCreateAssociationMixin<Role>;
+
+  // Permission, alias 'Permission'
   declare Permission: NonAttribute<Permission>;
   declare getPermission: BelongsToGetAssociationMixin<Permission>;
   declare setPermission: BelongsToSetAssociationMixin<Permission, Permission['id']>;

@@ -28,10 +28,14 @@ export type UserRoleCreationAttributes = CreationAttributes<UserRole>;
 export class UserRole extends BaseModel<UserRole> {
   declare userId: number;
   declare roleId: number;
+
+  // User, alias 'User'
   declare User: NonAttribute<User>;
   declare getUser: BelongsToGetAssociationMixin<User>;
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
   declare createUser: BelongsToCreateAssociationMixin<User>;
+
+  // Role, alias 'Role'
   declare Role: NonAttribute<Role>;
   declare getRole: BelongsToGetAssociationMixin<Role>;
   declare setRole: BelongsToSetAssociationMixin<Role, Role['id']>;

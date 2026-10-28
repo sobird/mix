@@ -42,15 +42,21 @@ export class Menu extends BaseModel<Menu> {
   declare description: string;
   declare parentId: number;
   declare sort: number;
+
+  // User, alias 'User'
   declare User: NonAttribute<User>;
   declare getUser: BelongsToGetAssociationMixin<User>;
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
   declare createUser: BelongsToCreateAssociationMixin<User>;
+
+  // Menu, alias 'parent'
   declare parent: NonAttribute<Menu | null>;
-  declare children: NonAttribute<Menu[]>;
   declare getParent: BelongsToGetAssociationMixin<Menu>;
   declare setParent: BelongsToSetAssociationMixin<Menu, Menu['id']>;
   declare createParent: BelongsToCreateAssociationMixin<Menu>;
+
+  // Menu, alias 'children'
+  declare children: NonAttribute<Menu[]>;
   declare getChildren: HasManyGetAssociationsMixin<Menu>;
   declare setChildren: HasManySetAssociationsMixin<Menu, Menu['id']>;
   declare addChild: HasManyAddAssociationMixin<Menu, Menu['id']>;

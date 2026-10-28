@@ -50,9 +50,10 @@ export class Permission extends BaseModel<Permission> {
   declare expires: CreationOptional<Date>;
   declare isBuiltin: CreationOptional<boolean>;
   declare RolePermission: NonAttribute<RolePermission>;
+
+  // Role, alias 'Roles'
   declare Roles: NonAttribute<Role[]>;
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
-  /** Remove all previous associations and set the new ones */
   declare setRoles: BelongsToManySetAssociationsMixin<Role, Role['id']>;
   declare addRole: BelongsToManyAddAssociationMixin<Role, Role['id']>;
   declare addRoles: BelongsToManyAddAssociationsMixin<Role, Role['id']>;

@@ -31,6 +31,8 @@ export class DictionaryItem extends BaseModel<DictionaryItem> {
   declare sort: number;
   declare status: string;
   declare typeId: number;
+
+  // DictionaryType, alias 'DictionaryType'
   declare DictionaryType: NonAttribute<DictionaryType>;
   declare getDictionaryType: BelongsToGetAssociationMixin<DictionaryType>;
   declare setDictionaryType: BelongsToSetAssociationMixin<DictionaryType, DictionaryType['id']>;

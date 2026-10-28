@@ -61,6 +61,8 @@ export class Account extends BaseModel<Account> {
   declare scope?: string;
   declare id_token?: string;
   declare session_state: CreationOptional<string>;
+
+  // User, alias 'User'
   declare User: NonAttribute<User>;
   declare getUser: BelongsToGetAssociationMixin<User>;
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;

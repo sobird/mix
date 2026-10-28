@@ -36,11 +36,15 @@ export class Group extends BaseModel<Group> {
   declare name: string;
   declare description: string;
   declare parentId: number;
+
+  // Group, alias 'parent'
   declare parent: NonAttribute<Group | null>;
-  declare children: NonAttribute<Group[]>;
   declare getParent: BelongsToGetAssociationMixin<Group>;
   declare setParent: BelongsToSetAssociationMixin<Group, Group['id']>;
   declare createParent: BelongsToCreateAssociationMixin<Group>;
+
+  // Group, alias 'children'
+  declare children: NonAttribute<Group[]>;
   declare getChildren: HasManyGetAssociationsMixin<Group>;
   declare setChildren: HasManySetAssociationsMixin<Group, Group['id']>;
   declare addChild: HasManyAddAssociationMixin<Group, Group['id']>;

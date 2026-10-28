@@ -80,10 +80,9 @@ export class Role extends BaseModel<Role> {
   declare editable: CreationOptional<boolean>;
   declare isDefault: CreationOptional<boolean>;
   declare isBuiltin: CreationOptional<boolean>;
-  // include Model
-  declare Permissions: NonAttribute<Permission[]>;
+  // User, alias 'Users'
+  declare Users: NonAttribute<User[]>;
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
-  /** Remove all previous associations and set the new ones */
   declare setUsers: BelongsToManySetAssociationsMixin<User, User['id']>;
   declare addUser: BelongsToManyAddAssociationMixin<User, User['id']>;
   declare addUsers: BelongsToManyAddAssociationsMixin<User, User['id']>;
@@ -93,8 +92,10 @@ export class Role extends BaseModel<Role> {
   declare hasUsers: BelongsToManyHasAssociationsMixin<User, User['id']>;
   declare createUser: BelongsToManyCreateAssociationMixin<User>;
   declare countUsers: BelongsToManyCountAssociationsMixin;
+
+  // Permission, alias 'Permissions'
+  declare Permissions: NonAttribute<Permission[]>;
   declare getPermissions: BelongsToManyGetAssociationsMixin<Permission>;
-  /** Remove all previous associations and set the new ones */
   declare setPermissions: BelongsToManySetAssociationsMixin<Permission, Permission['id']>;
   declare addPermission: BelongsToManyAddAssociationMixin<Permission, Permission['id']>;
   declare addPermissions: BelongsToManyAddAssociationsMixin<Permission, Permission['id']>;
@@ -104,11 +105,15 @@ export class Role extends BaseModel<Role> {
   declare hasPermissions: BelongsToManyHasAssociationsMixin<Permission, Permission['id']>;
   declare createPermission: BelongsToManyCreateAssociationMixin<Permission>;
   declare countPermissions: BelongsToManyCountAssociationsMixin;
+
+  // Role, alias 'parent'
   declare parent: NonAttribute<Role | null>;
-  declare children: NonAttribute<Role[]>;
   declare getParent: BelongsToGetAssociationMixin<Role>;
   declare setParent: BelongsToSetAssociationMixin<Role, Role['id']>;
   declare createParent: BelongsToCreateAssociationMixin<Role>;
+
+  // Role, alias 'children'
+  declare children: NonAttribute<Role[]>;
   declare getChildren: HasManyGetAssociationsMixin<Role>;
   declare setChildren: HasManySetAssociationsMixin<Role, Role['id']>;
   declare addChild: HasManyAddAssociationMixin<Role, Role['id']>;

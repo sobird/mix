@@ -36,6 +36,8 @@ export class DictionaryType extends BaseModel<DictionaryType> {
   declare name: string;
   declare code: string;
   declare status: string;
+
+  // DictionaryItem, alias 'Items'
   declare Items: NonAttribute<DictionaryItem[]>;
   declare getItems: HasManyGetAssociationsMixin<DictionaryItem>;
   declare setItems: HasManySetAssociationsMixin<DictionaryItem, DictionaryItem['id']>;

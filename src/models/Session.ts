@@ -49,6 +49,8 @@ export class Session extends BaseModel<Session> {
    * Connects the active session to a user in the database
    */
   declare userId: number;
+
+  // User, alias 'User'
   declare User: NonAttribute<User>;
   declare getUser: BelongsToGetAssociationMixin<User>;
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;

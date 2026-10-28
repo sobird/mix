@@ -82,13 +82,14 @@ export class User extends BaseModel<User> {
   declare updatedBy: CreationOptional<number>;
   // declare createdAt: CreationOptional<Date>;
   // declare updatedAt: CreationOptional<Date>;
-  declare Roles: NonAttribute<Role[]>;
   // associates method
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
+
+  // Role, alias 'Roles'
+  declare Roles: NonAttribute<Role[]>;
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
-  /** Remove all previous associations and set the new ones */
   declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
   declare addRole: BelongsToManyAddAssociationMixin<Role, number>;
   declare addRoles: BelongsToManyAddAssociationsMixin<Role, number>;
@@ -98,6 +99,8 @@ export class User extends BaseModel<User> {
   declare hasRoles: BelongsToManyHasAssociationsMixin<Role, number>;
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
   declare countRoles: BelongsToManyCountAssociationsMixin;
+
+  // Account, alias 'Accounts'
   declare Accounts: NonAttribute<Account[]>;
   declare getAccounts: HasManyGetAssociationsMixin<Account>;
   declare setAccounts: HasManySetAssociationsMixin<Account, Account['id']>;
@@ -109,6 +112,8 @@ export class User extends BaseModel<User> {
   declare hasAccounts: HasManyHasAssociationsMixin<Account, Account['id']>;
   declare createAccount: HasManyCreateAssociationMixin<Account>;
   declare countAccounts: HasManyCountAssociationsMixin;
+
+  // Session, alias 'Sessions'
   declare Sessions: NonAttribute<Session[]>;
   declare getSessions: HasManyGetAssociationsMixin<Session>;
   declare setSessions: HasManySetAssociationsMixin<Session, Session['id']>;
@@ -120,6 +125,8 @@ export class User extends BaseModel<User> {
   declare hasSessions: HasManyHasAssociationsMixin<Session, Session['id']>;
   declare createSession: HasManyCreateAssociationMixin<Session>;
   declare countSessions: HasManyCountAssociationsMixin;
+
+  // Menu, alias 'Menus'
   declare Menus: NonAttribute<Menu[]>;
   declare getMenus: HasManyGetAssociationsMixin<Menu>;
   declare setMenus: HasManySetAssociationsMixin<Menu, Menu['id']>;
