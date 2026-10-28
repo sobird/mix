@@ -63,7 +63,7 @@ import { sendVerificationRequest } from '../mailer';
 // };
 
 const sessionOptions: AuthOptions['session'] = {
-  strategy: 'jwt', // default: database
+  strategy: 'database', // default: database
   maxAge: 30 * 24 * 60 * 60, // 30 days
   updateAge: 24 * 60 * 60, // 24 hours
   generateSessionToken: randomUUID,
@@ -124,6 +124,9 @@ export const authOptions: AuthOptions = {
     GithubProvider({
       clientId: process.env.AUTH_GITHUB_ID || '',
       clientSecret: process.env.AUTH_GITHUB_SECRET || '',
+      httpOptions: {
+        timeout: 30000,
+      },
     }),
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID || '',
