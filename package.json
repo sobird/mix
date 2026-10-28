@@ -81,7 +81,7 @@
       "oxlint --fix",
       "oxfmt"
     ],
-    "*.{json,jsonc,css,scss,md}": [
+    "*.{json,jsonc,css,scss,md,yml,yaml}": [
       "oxfmt"
     ]
   },
