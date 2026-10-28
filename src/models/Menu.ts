@@ -8,6 +8,7 @@ import {
   DataTypes,
   type Attributes,
   type CreationAttributes,
+  type CreationOptional,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -36,6 +37,7 @@ export type MenuAttributes = Attributes<Menu>;
 export type MenuCreationAttributes = CreationAttributes<Menu>;
 
 export class Menu extends BaseModel<Menu> {
+  declare id: CreationOptional<number>;
   declare userId: number;
   declare name: string;
   declare icon: string;
@@ -71,7 +73,7 @@ export class Menu extends BaseModel<Menu> {
 
   static associate({ User }: Models) {
     this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-    this.belongsTo(Menu, { as: 'parent', foreignKey: 'parentId' });
+    this.belongsTo(Menu, { as: 'parent', foreignKey: 'parentId', onDelete: 'SET NULL' });
     this.hasMany(Menu, { as: 'children', foreignKey: 'parentId' });
   }
 
@@ -84,6 +86,12 @@ export class Menu extends BaseModel<Menu> {
 
 Menu.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     userId: {
       type: DataTypes.INTEGER,
       comment: 'user id',
@@ -112,5 +120,9 @@ Menu.init(
   {
     sequelize,
     modelName: 'Menu',
+    indexes: [
+      { name: 'menus_user_id', fields: ['userId'] },
+      { name: 'menus_parent_id', fields: ['parentId'] },
+    ],
   },
 );

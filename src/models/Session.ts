@@ -87,11 +87,13 @@ Session.init(
     },
     userId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       comment: 'User Id',
     },
   },
   {
     sequelize,
     modelName: 'Session',
+    indexes: [{ name: 'sessions_user_id', fields: ['userId'] }],
   },
 );

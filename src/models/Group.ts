@@ -8,6 +8,7 @@ import {
   DataTypes,
   type Attributes,
   type CreationAttributes,
+  type CreationOptional,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -33,6 +34,7 @@ export type GroupAttributes = Attributes<Group>;
 export type GroupCreationAttributes = CreationAttributes<Group>;
 
 export class Group extends BaseModel<Group> {
+  declare id: CreationOptional<number>;
   declare name: string;
   declare description: string;
   declare parentId: number;
@@ -57,7 +59,7 @@ export class Group extends BaseModel<Group> {
   declare countChildren: HasManyCountAssociationsMixin;
 
   static associate() {
-    this.belongsTo(Group, { as: 'parent', foreignKey: 'parentId' });
+    this.belongsTo(Group, { as: 'parent', foreignKey: 'parentId', onDelete: 'SET NULL' });
     this.hasMany(Group, { as: 'children', foreignKey: 'parentId' });
   }
 
@@ -69,6 +71,12 @@ export class Group extends BaseModel<Group> {
 
 Group.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -84,5 +92,6 @@ Group.init(
   {
     sequelize,
     modelName: 'Group',
+    indexes: [{ name: 'groups_parent_id', fields: ['parentId'] }],
   },
 );

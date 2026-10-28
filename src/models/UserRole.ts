@@ -73,5 +73,7 @@ UserRole.init(
   {
     sequelize,
     modelName: 'UserRole',
+    paranoid: false,
+    indexes: [{ name: 'user_roles_role_id', fields: ['roleId'] }],
   },
 );

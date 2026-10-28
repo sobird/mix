@@ -8,6 +8,7 @@ import {
   DataTypes,
   type Attributes,
   type CreationAttributes,
+  type CreationOptional,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -27,6 +28,7 @@ export type DictionaryItemAttributes = Attributes<DictionaryItem>;
 export type DictionaryItemCreationAttributes = CreationAttributes<DictionaryItem>;
 
 export class DictionaryItem extends BaseModel<DictionaryItem> {
+  declare id: CreationOptional<number>;
   declare label: string;
   declare value: string;
   declare sort: number;
@@ -50,6 +52,12 @@ export class DictionaryItem extends BaseModel<DictionaryItem> {
 
 DictionaryItem.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     label: {
       type: DataTypes.STRING(120),
       allowNull: false,
@@ -77,5 +85,6 @@ DictionaryItem.init(
   {
     sequelize,
     modelName: 'DictionaryItem',
+    indexes: [{ name: 'dictionary_items_type_id', fields: ['typeId'] }],
   },
 );

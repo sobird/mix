@@ -50,6 +50,7 @@ const AuthAdapter: Adapter = {
   async updateUser(record) {
     await User.update({ ...record, username: record.name } as unknown as UserCreationAttributes, {
       where: { id: record.id as unknown as number },
+      individualHooks: true,
     });
     return User.findByPk(record.id) as unknown as AdapterUser;
   },

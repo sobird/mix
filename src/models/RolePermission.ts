@@ -78,5 +78,7 @@ RolePermission.init(
   {
     sequelize,
     modelName: 'RolePermission',
+    paranoid: false,
+    indexes: [{ name: 'role_permissions_role_id', fields: ['roleId'] }],
   },
 );

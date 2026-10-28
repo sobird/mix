@@ -131,15 +131,13 @@ Account.init(
     },
     userId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       comment: 'user id',
     },
   },
   {
     sequelize,
     modelName: 'Account',
+    indexes: [{ name: 'accounts_user_id', fields: ['userId'] }],
   },
 );
-
-// Account.beforeCreate((model) => {
-
-// });

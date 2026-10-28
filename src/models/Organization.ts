@@ -4,7 +4,7 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
-import { DataTypes, type Attributes, type CreationAttributes } from 'sequelize';
+import { DataTypes, type Attributes, type CreationAttributes, type CreationOptional } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
@@ -14,6 +14,7 @@ export type OrganizationAttributes = Attributes<Organization>;
 export type OrganizationCreationAttributes = CreationAttributes<Organization>;
 
 export class Organization extends BaseModel<Organization> {
+  declare id: CreationOptional<number>;
   declare name: string;
   declare description: string;
   // public userId: number;
@@ -21,6 +22,12 @@ export class Organization extends BaseModel<Organization> {
 
 Organization.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,

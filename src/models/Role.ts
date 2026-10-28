@@ -74,6 +74,7 @@ export interface PermissionTemplate {
 }
 
 export class Role extends BaseModel<Role> {
+  declare id: CreationOptional<number>;
   declare parentId?: CreationOptional<number>;
   declare name: string;
   declare description: CreationOptional<string> | null;
@@ -134,9 +135,13 @@ export class Role extends BaseModel<Role> {
   };
 
   static associate({ User, UserRole, Permission, RolePermission }: Models) {
-    this.belongsToMany(User, { through: UserRole });
-    this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
-    this.belongsTo(Role, { as: 'parent', foreignKey: 'parentId' });
+    this.belongsToMany(User, { through: UserRole, foreignKey: 'roleId', otherKey: 'userId' });
+    this.belongsToMany(Permission, {
+      through: RolePermission,
+      foreignKey: 'roleId',
+      otherKey: 'permissionId',
+    });
+    this.belongsTo(Role, { as: 'parent', foreignKey: 'parentId', onDelete: 'SET NULL' });
     this.hasMany(Role, { as: 'children', foreignKey: 'parentId' });
   }
 
@@ -155,43 +160,17 @@ export class Role extends BaseModel<Role> {
         reason: '',
       },
     ],
-    // actions: [
-    //   {
-    //     name: '创建自定义角色',
-    //     action: 'create',
-    //     roles: [1, 2],
-    //   },
-    //   {
-    //     name: '删除角色',
-    //     action: 'delete',
-    //     roles: [1, 2],
-    //   },
-    //   {
-    //     name: '更新角色',
-    //     action: 'update',
-    //     roles: [1, 2],
-    //   },
-    //   {
-    //     name: '查看角色',
-    //     action: 'read',
-    //     roles: [1, 2],
-    //     rules: [
-    //       {
-    //         fields: ['id', 'title', 'content'],
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     name: '设置成员的默认角色',
-    //     action: 'set.default',
-    //     roles: [1, 2],
-    //   },
-    // ],
   };
 }
 
 Role.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -204,7 +183,7 @@ Role.init(
     },
     parentId: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
+      comment: '父级角色ID，null 表示根角色',
     },
     defaultable: {
       type: DataTypes.BOOLEAN,
@@ -228,20 +207,9 @@ Role.init(
     },
   },
   {
-    // defaultScope: {
-    //   where: {
-    //     parentId: 1,
-    //   },
-    // },
-    scopes: {
-      parent: {
-        where: {
-          parentId: 1,
-        },
-      },
-    },
     sequelize,
     modelName: 'Role',
+    indexes: [{ name: 'roles_parent_id', fields: ['parentId'] }],
   },
 );
 
@@ -267,7 +235,5 @@ const seeds: CreationAttributes<Role>[] = [
 ];
 
 Role.afterSync(async () => {
-  await Role.bulkCreate(seeds, { individualHooks: true, validate: true });
+  await Role.bulkCreate(seeds, { individualHooks: true, validate: true, ignoreDuplicates: true });
 });
-
-// Init Permission

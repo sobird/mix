@@ -157,8 +157,6 @@ export abstract class BaseModel<M extends BaseModel<M> = any> extends Model<
   InferAttributes<M>,
   InferCreationAttributes<M>
 > {
-  declare id?: CreationOptional<number>;
-
   declare createdAt?: CreationOptional<Date>;
 
   declare updatedAt?: CreationOptional<Date>;

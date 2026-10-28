@@ -81,8 +81,6 @@ export class User extends BaseModel<User> {
   declare status: CreationOptional<boolean>;
   declare createdBy: CreationOptional<number>;
   declare updatedBy: CreationOptional<number>;
-  // declare createdAt: CreationOptional<Date>;
-  // declare updatedAt: CreationOptional<Date>;
   // associates method
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
@@ -148,7 +146,7 @@ export class User extends BaseModel<User> {
    * The `models/index` file will call this method automatically.
    */
   static associate({ Role, UserRole, Account, Session, Menu }: Models) {
-    this.belongsToMany(Role, { through: UserRole });
+    this.belongsToMany(Role, { through: UserRole, foreignKey: 'userId', otherKey: 'roleId' });
     this.hasMany(Account, { foreignKey: 'userId' });
     this.hasMany(Session, { foreignKey: 'userId' });
     this.hasMany(Menu, { foreignKey: 'userId' });
@@ -193,7 +191,11 @@ export class User extends BaseModel<User> {
     }
 
     if (user.verifyPassword(password)) {
-      return user.get({ plain: true });
+      const plain = user.get({ plain: true });
+      return Object.fromEntries(Object.entries(plain).filter(([key]) => !UserExcludeAttributes.includes(key))) as Omit<
+        UserAttributes,
+        'salt' | 'password' | 'emailVerified'
+      >;
     }
     throw Error('密码不正确');
   }
@@ -237,9 +239,6 @@ User.init(
       get() {
         return this.username;
       },
-      // set(value: string) {
-      //   this.setDataValue('username', value);
-      // },
     },
     nickname: {
       type: DataTypes.STRING(32),
@@ -309,6 +308,7 @@ User.init(
   {
     sequelize,
     modelName: 'User',
+    indexes: [{ name: 'users_email', fields: ['email'] }],
   },
 );
 
@@ -320,5 +320,9 @@ User.beforeCreate((model) => {
   // model.ip = fn("INET_ATON", model.ip); // INET_NTOA
 });
 
-// const u = await User.findOne();
-// u?.dataValues.;
+User.beforeUpdate((model) => {
+  if (model.changed('password')) {
+    // eslint-disable-next-line no-param-reassign
+    model.password = User.hashPassword(model.password, model.salt);
+  }
+});

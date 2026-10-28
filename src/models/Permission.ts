@@ -44,6 +44,7 @@ export type PermissionAttributes = Attributes<Permission>;
 export type PermissionCreationAttributes = CreationAttributes<Permission>;
 
 export class Permission extends BaseModel<Permission> {
+  declare id: CreationOptional<number>;
   declare name: string;
   declare description: string;
   declare subject: string;
@@ -66,7 +67,11 @@ export class Permission extends BaseModel<Permission> {
   declare countRoles: BelongsToManyCountAssociationsMixin;
 
   static associate({ Role, RolePermission }: Models) {
-    this.belongsToMany(Role, { through: RolePermission, foreignKey: 'permissionId' });
+    this.belongsToMany(Role, {
+      through: RolePermission,
+      foreignKey: 'permissionId',
+      otherKey: 'roleId',
+    });
   }
 
   declare static associations: {
@@ -76,6 +81,12 @@ export class Permission extends BaseModel<Permission> {
 
 Permission.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,

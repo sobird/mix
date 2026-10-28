@@ -4,7 +4,7 @@
  * sobird<i@sobird.me> at 2023/12/03 22:01:07 created.
  */
 
-import { DataTypes, type Attributes, type CreationAttributes } from 'sequelize';
+import { DataTypes, type Attributes, type CreationAttributes, type CreationOptional } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
@@ -14,6 +14,7 @@ export type LogAttributes = Attributes<Log>;
 export type LogCreationAttributes = CreationAttributes<Log>;
 
 export class Log extends BaseModel<Log> {
+  declare id: CreationOptional<number>;
   declare type: string;
   declare content: string;
   declare operator: number;
@@ -22,6 +23,12 @@ export class Log extends BaseModel<Log> {
 
 Log.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     type: {
       type: DataTypes.STRING,
     },
@@ -39,5 +46,6 @@ Log.init(
   {
     sequelize,
     modelName: 'Log',
+    indexes: [{ name: 'logs_operator', fields: ['operator'] }],
   },
 );

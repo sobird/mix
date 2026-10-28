@@ -8,6 +8,7 @@ import {
   DataTypes,
   type Attributes,
   type CreationAttributes,
+  type CreationOptional,
   type Association,
   type NonAttribute,
   type HasManyGetAssociationsMixin,
@@ -34,6 +35,7 @@ export type DictionaryTypeAttributes = Attributes<DictionaryType>;
 export type DictionaryTypeCreationAttributes = CreationAttributes<DictionaryType>;
 
 export class DictionaryType extends BaseModel<DictionaryType> {
+  declare id: CreationOptional<number>;
   declare name: string;
   declare code: string;
   declare status: string;
@@ -62,6 +64,12 @@ export class DictionaryType extends BaseModel<DictionaryType> {
 
 DictionaryType.init(
   {
+    id: {
+      type: DataTypes.INTEGER(),
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
       type: DataTypes.STRING(120),
       unique: true,
