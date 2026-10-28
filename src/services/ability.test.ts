@@ -1,15 +1,11 @@
-import { ForbiddenError, subject } from '@casl/ability';
-
-import { UserModel } from '@/models';
-
-// const rows = await UserModel.findAll({ include: [UserModel.associations.Roles] });
+// const rows = await User.findAll({ include: [User.associations.Roles] });
 // console.log('rows', rows[0].Roles[0].get());
 
-import AbilityService, { defineAbilityFor } from './ability';
+import AbilityService from './ability';
 
 vi.mock('@/models');
 
-const ability = await AbilityService.createFor({ id: '1' });
+const ability = await AbilityService.createFor({ id: 1 });
 console.log('ability', ability);
 
 // export async function updateUserDetails(
@@ -18,9 +14,9 @@ console.log('ability', ability);
 //   /** an email of user to be updated */
 //   userToBeUpdatedId: string,
 //   /** an object of changes to be applied */
-//   changes: UserModel,
+//   changes: User,
 // ) {
-//   const user = await UserModel.findByPk(id, { include: [UserModel.associations.Roles] });
+//   const user = await User.findByPk(id, { include: [User.associations.Roles] });
 //   const roles = user?.Roles!;
 
 //   console.log('roles', roles[0].id);
@@ -34,10 +30,10 @@ console.log('ability', ability);
 //   });
 //   const userToBeUpdated = userToBeUpdatedId === id
 //     ? user
-//     : await UserModel.findByPk(userToBeUpdatedId);
+//     : await User.findByPk(userToBeUpdatedId);
 
 //   ForbiddenError.from(ability).throwUnlessCan('update', subject('User', userToBeUpdated));
-//   await UserModel.update(changes, {
+//   await User.update(changes, {
 //     where: {
 //       id: userToBeUpdated.id,
 //     },
@@ -47,5 +43,5 @@ console.log('ability', ability);
 // await updateUserDetails(1, 1, { username: 'sobird' });
 // // await updateUserDetails(2, 1, { username: 'sobird' });
 
-// const users = await UserModel.findAll();
+// const users = await User.findAll();
 // console.log('users', users);

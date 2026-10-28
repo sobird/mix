@@ -12,24 +12,25 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { FC } from 'react';
 
 import { deleteRoleAction } from '@/actions/role';
-import { RoleModel, RoleAttributes } from '@/models';
+import { Role, RoleAttributes } from '@/models';
 
-type RoleTableData = Awaited<ReturnType<typeof RoleModel.findManyByPage<RoleModel>>>;
+type RoleTableData = Awaited<ReturnType<typeof Role.findManyByPage<Role>>>;
 
 interface RoleTableProps {
-  data: RoleTableData
+  data: RoleTableData;
 }
 
-const RoleTable:FC<RoleTableProps> = ({ data }) => {
+const RoleTable: FC<RoleTableProps> = ({ data }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   return (
-    <div style={{
-      backgroundColor: 'rgb(249 250 251)',
-      padding: '0.5rem',
-    }}
+    <div
+      style={{
+        backgroundColor: 'rgb(249 250 251)',
+        padding: '0.5rem',
+      }}
     >
       <Table<RoleAttributes>
         pagination={{
@@ -60,8 +61,8 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
         <Table.Column<RoleAttributes>
           title="创建时间"
           dataIndex="createdAt"
-          render={(value, record) => {
-            // console.log('record', record);
+          render={(value, _record) => {
+            // console.log('record', _record);
             return value?.toString();
           }}
         />
@@ -75,7 +76,7 @@ const RoleTable:FC<RoleTableProps> = ({ data }) => {
 
                 <Button
                   type="link"
-                    // htmlType="submit"
+                  // htmlType="submit"
                   onClick={() => {
                     Modal.confirm({
                       title: '系统提示',

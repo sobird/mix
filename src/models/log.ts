@@ -4,11 +4,7 @@
  * sobird<i@sobird.me> at 2023/12/03 22:01:07 created.
  */
 
-import {
-  DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
-} from 'sequelize';
+import { DataTypes, type InferAttributes, type InferCreationAttributes } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
@@ -17,18 +13,14 @@ export type LogAttributes = InferAttributes<Log>;
 /** Some attributes are optional in `Log.build` and `Log.create` calls */
 export type LogCreationAttributes = InferCreationAttributes<Log>;
 
-class Log extends BaseModel<LogAttributes, LogCreationAttributes> {
-  // declare id: never;
+export class Log extends BaseModel<LogAttributes, LogCreationAttributes> {
+  declare type: string;
 
-  type: string;
+  declare content: string;
 
-  content: string;
+  declare operator: number;
 
-  operator: string;
-
-  agent: string;
-
-  // test: number;
+  declare agent: string;
 }
 
 Log.init(
@@ -52,5 +44,3 @@ Log.init(
     modelName: 'Log',
   },
 );
-
-export default Log;

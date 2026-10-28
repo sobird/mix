@@ -1,11 +1,14 @@
-import { RoleModel } from '@/models';
+import { Role } from '@/models';
 
 import InternalUserForm from './form';
 
 const UserForm: React.FC<React.ComponentProps<typeof InternalUserForm>> = async (props) => {
-  const roleOptions = await RoleModel.findAll({
+  const roleOptions = await Role.findAll({
     raw: true,
-    attributes: [['id', 'value'], ['name', 'label']],
+    attributes: [
+      ['id', 'value'],
+      ['name', 'label'],
+    ],
   });
   return (
     <InternalUserForm

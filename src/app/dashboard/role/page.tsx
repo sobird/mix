@@ -11,7 +11,7 @@ import React from 'react';
 
 import { createRoleAction } from '@/actions/role';
 import withActionFormModal from '@/components/with-action-form-modal';
-import { RoleModel } from '@/models';
+import { Role } from '@/models';
 
 import RoleForm from './components/role-form';
 import RoleTable from './table';
@@ -28,11 +28,13 @@ interface SearchParams extends PaginationSearchParams {
 
 const RolePage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
   const { pn, ps } = await searchParams;
-  const rolesWithPage = await RoleModel.findManyByPage({ pn, ps });
+  const rolesWithPage = await Role.findManyByPage({ pn, ps });
 
   return (
     <div>
-      <Link href="/dashboard/role/create"><Button type="primary">创建角色</Button></Link>
+      <Link href="/dashboard/role/create">
+        <Button type="primary">创建角色</Button>
+      </Link>
       <RoleFormModal action={createRoleAction}>创建角色</RoleFormModal>
       <RoleTable data={rolesWithPage} />
     </div>

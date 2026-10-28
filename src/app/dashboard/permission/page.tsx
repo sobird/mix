@@ -1,4 +1,4 @@
-import Role from '@/models/role';
+import { Role } from '@/models/role';
 
 import { PermissionForm } from './form';
 import PermissionEditor from './form2';

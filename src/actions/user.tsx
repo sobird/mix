@@ -7,15 +7,9 @@ import { WhereOptions, Op } from 'sequelize';
 import CaptchaEmailBody from '@/components/email-template/captcha';
 import { generate, verify } from '@/lib/otp';
 import reactToHtml from '@/lib/reactToHtml';
-import { UserModel } from '@/models';
+import { User } from '@/models';
 import { transporter } from '@/services/mailer';
-import {
-  signUpZod,
-  SignUpAttributes,
-  createUserZod,
-  UserAttributes,
-  updateUserZod,
-} from '@/zod/user';
+import { signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod } from '@/zod/user';
 
 import { ActionStatus } from '.';
 
@@ -38,7 +32,7 @@ export async function signUpAction(payload: SignUpAttributes): Promise<UserServe
     };
   }
 
-  const [, created] = await UserModel.signUp(payload, ['username', 'password', 'email', 'emailVerified', 'salt']);
+  const [, created] = await User.signUp(payload, ['username', 'password', 'email', 'emailVerified', 'salt']);
   // 已存在
   if (!created) {
     return {
@@ -50,9 +44,7 @@ export async function signUpAction(payload: SignUpAttributes): Promise<UserServe
   redirect('/signup/success');
 }
 
-export async function createUserAction(
-  payload: UserAttributes,
-): Promise<UserServerActionState> {
+export async function createUserAction(payload: UserAttributes): Promise<UserServerActionState> {
   const validated = await createUserZod.safeParseAsync(payload);
   if (!validated.success) {
     return {
@@ -62,16 +54,13 @@ export async function createUserAction(
     };
   }
   const { data } = validated;
-  const [user, created] = await UserModel.findOrCreate({
+  const [user, created] = await User.findOrCreate({
     defaults: {
       ...data,
       emailVerified: new Date(),
     },
     where: {
-      [Op.or]: [
-        { username: data.username },
-        { email: data.email },
-      ],
+      [Op.or]: [{ username: data.username }, { email: data.email }],
     },
   });
   // 已存在
@@ -88,9 +77,7 @@ export async function createUserAction(
 }
 
 // 更新用户信息
-export async function updateUserAction(
-  payload: UserAttributes,
-): Promise<UserServerActionState> {
+export async function updateUserAction(payload: UserAttributes): Promise<UserServerActionState> {
   const validated = await updateUserZod.safeParseAsync(payload);
 
   if (!validated.success) {
@@ -103,7 +90,7 @@ export async function updateUserAction(
 
   try {
     const { data } = validated;
-    const user = await UserModel.findOne({
+    const user = await User.findOne({
       where: {
         id: payload.id,
       },
@@ -125,7 +112,7 @@ export async function updateUserAction(
 }
 
 export async function deleteUserAction(id: string) {
-  const user = await UserModel.destroy({
+  const user = await User.destroy({
     where: {
       id,
     },
@@ -150,11 +137,11 @@ export async function existsAction(InternalWhere: WhereOptions, id?: number) {
       },
     };
   }
-  const result = await UserModel.findOne({ where });
+  const result = await User.findOne({ where });
   return result !== null;
 }
 
-export async function verifyVerificationCode(payload: { verificationCode: string, email: string }) {
+export async function verifyVerificationCode(payload: { verificationCode: string; email: string }) {
   return verify(payload.verificationCode, payload.email);
 }
 

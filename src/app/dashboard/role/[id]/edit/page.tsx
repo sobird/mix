@@ -5,7 +5,7 @@
  */
 
 import { updateRoleAction } from '@/actions/role';
-import { RoleModel } from '@/models';
+import { Role } from '@/models';
 
 import RoleForm from '../../components/role-form';
 
@@ -16,16 +16,14 @@ interface Params {
 const Page: AppPage<Params> = async ({ params }) => {
   const { id } = await params;
 
-  const role = await RoleModel.findOne({
+  const role = await Role.findOne({
     where: {
       id,
     },
-    include: [RoleModel.associations.Permissions],
+    include: [Role.associations.Permissions],
   });
 
-  return (
-    <RoleForm action={updateRoleAction} initialValues={role?.get()} />
-  );
+  return <RoleForm action={updateRoleAction} initialValues={role?.get()} />;
 };
 
 export default Page;

@@ -1,6 +1,6 @@
 import { CreationAttributes } from 'sequelize';
 
-import Role from '../role';
+import { Role } from '../role';
 
 vi.mock('@/lib/sequelize');
 
@@ -18,4 +18,4 @@ const seeds = [
 await Role.sync({ force: true });
 await Role.bulkCreate(seeds, { individualHooks: true, validate: true });
 
-export default Role;
+export { Role };

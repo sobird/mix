@@ -24,18 +24,20 @@ vi.mock('@/models/user');
 vi.mock('@/models/verificationToken');
 
 export {
-  // eslint-disable-next-line no-restricted-exports
-  default,
   sequelize,
-  AccountModel,
-  UserModel,
-  SessionModel,
-  VerificationTokenModel,
-  RoleModel,
-  PermissionModel,
-  MenuModel,
-  GroupModel,
-
-  RolePermissionModel,
-  UserRoleModel,
+  models,
+  Account,
+  DictionaryItem,
+  DictionaryType,
+  Group,
+  Log,
+  Menu,
+  Organization,
+  Permission,
+  Role,
+  RolePermission,
+  Session,
+  User,
+  UserRole,
+  VerificationToken,
 } from '..';

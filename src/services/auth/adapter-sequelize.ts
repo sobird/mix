@@ -6,12 +6,14 @@
  * sobird<i@sobird.me> at 2023/11/29 10:18:40 created.
  */
 
-import Account from '@/models/account';
-import Session from '@/models/session';
-import User from '@/models/user';
-import VerificationToken from '@/models/verificationToken';
+import type { Adapter, AdapterSession, AdapterUser } from '@auth/core/adapters';
 
-import type { Adapter, AdapterUser } from '@auth/core/adapters';
+import { Account } from '@/models/account';
+import type { AccountCreationAttributes } from '@/models/account';
+import { Session } from '@/models/session';
+import { User } from '@/models/user';
+import type { UserCreationAttributes } from '@/models/user';
+import { VerificationToken } from '@/models/verificationToken';
 
 // declare module '@auth/core/adapters' {
 //   interface AdapterUser {
@@ -21,15 +23,18 @@ import type { Adapter, AdapterUser } from '@auth/core/adapters';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
-    return User.create({ ...record, username: record.name });
+    return User.create({
+      ...record,
+      username: record.name,
+    } as unknown as UserCreationAttributes) as unknown as AdapterUser;
   },
   async getUser(id) {
     const user = await User.findByPk(id);
-    return user?.get({ plain: true }) ?? null;
+    return (user?.get({ plain: true }) ?? null) as unknown as AdapterUser | null;
   },
   async getUserByEmail(email) {
     const user = await User.findOne({ where: { email } });
-    return user?.get({ plain: true }) ?? null;
+    return (user?.get({ plain: true }) ?? null) as unknown as AdapterUser | null;
   },
   async getUserByAccount({ providerAccountId, provider }) {
     const account = await Account.findOne({ where: { provider, providerAccountId } });
@@ -40,25 +45,27 @@ const AuthAdapter: Adapter = {
 
     const user = await User.findByPk(account.userId);
 
-    return user?.get({ plain: true }) ?? null;
+    return (user?.get({ plain: true }) ?? null) as unknown as AdapterUser | null;
   },
   async updateUser(record) {
-    await User.update({ ...record, username: record.name }, { where: { id: record.id } });
+    await User.update({ ...record, username: record.name } as unknown as UserCreationAttributes, {
+      where: { id: record.id as unknown as number },
+    });
     return User.findByPk(record.id) as unknown as AdapterUser;
   },
   async deleteUser(userId) {
     const user = await User.findByPk(userId);
     await User.destroy({ where: { id: userId } });
-    return user;
+    return user as unknown as AdapterUser | null;
   },
   async linkAccount(account) {
-    await Account.create(account);
+    await Account.create(account as unknown as AccountCreationAttributes);
   },
   async unlinkAccount({ providerAccountId, provider }) {
     await Account.destroy({ where: { provider, providerAccountId } });
   },
   async createSession(record: any) {
-    return Session.create(record);
+    return Session.create(record) as unknown as Promise<AdapterSession>;
   },
   async getSessionAndUser(sessionToken) {
     const session = await Session.findOne({
@@ -80,17 +87,17 @@ const AuthAdapter: Adapter = {
     return {
       session: session.get({ plain: true }),
       user: { ...user.get({ plain: true }) },
-    };
+    } as unknown as { session: AdapterSession; user: AdapterUser };
   },
   async updateSession({ sessionToken, expires }) {
     await Session.update({ sessionToken, expires }, { where: { sessionToken } });
-    return Session.findOne({ where: { sessionToken } });
+    return (await Session.findOne({ where: { sessionToken } })) as unknown as AdapterSession | null;
   },
   async deleteSession(sessionToken) {
     const session = await Session.findOne({ where: { sessionToken }, raw: true });
     if (session) {
       await Session.destroy({ where: { sessionToken } });
-      return session.get({ plain: true });
+      return session as unknown as AdapterSession;
     }
   },
 

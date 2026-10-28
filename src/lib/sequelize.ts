@@ -12,9 +12,7 @@
 
 import { AbilityTuple, MongoAbility, RawRule } from '@casl/ability';
 import log4js from 'log4js';
-import {
-  Sequelize, Model, type ModelStatic, type Attributes, type CreationOptional,
-} from 'sequelize';
+import { Sequelize, Model, type ModelStatic, type Attributes, type CreationOptional } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
 import { accessibleBy } from '@/lib/casl';
@@ -133,7 +131,7 @@ export interface PermissionTemplate {
   name: string;
   subject: string;
 
-  rules: Omit<RawRule, 'subject'>[]
+  rules: Omit<RawRule, 'subject'>[];
 
   // [key: string]: {
   //   description: string;
@@ -159,7 +157,7 @@ export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Mo
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  public static associate: (models: Models) => void;
+  public static associate?: (models: Models) => void;
 
   declare static permission: PermissionTemplate;
 
@@ -175,11 +173,11 @@ export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Mo
     this: ModelStatic<M>,
     query: PaginationSearchParams,
   ): Promise<{
-      ps: number;
-      pn: number;
-      count: number;
-      rows: Attributes<M>[]
-    }> {
+    ps: number;
+    pn: number;
+    count: number;
+    rows: Attributes<M>[];
+  }> {
     const ps = Number(query.ps) || 20;
     const pn = Number(query.pn) || 1;
     const offset = (pn - 1) * ps;
@@ -198,14 +196,22 @@ export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Mo
         order: [['createdAt', 'DESC']],
       });
       return {
-        pn, ps, count, rows: rows.map((el) => { return el.toJSON(); }),
+        pn,
+        ps,
+        count,
+        rows: rows.map((el) => {
+          return el.toJSON();
+        }),
       };
-    } catch (err) {
+    } catch {
       // console.log('err', err);
     }
 
     return {
-      pn, ps, count: 0, rows: [],
+      pn,
+      ps,
+      count: 0,
+      rows: [],
     };
   }
 }

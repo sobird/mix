@@ -8,16 +8,33 @@ import {
   DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
+  type Association,
+  type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
+  type HasManyGetAssociationsMixin,
+  type HasManySetAssociationsMixin,
+  type HasManyAddAssociationMixin,
+  type HasManyAddAssociationsMixin,
+  type HasManyRemoveAssociationMixin,
+  type HasManyRemoveAssociationsMixin,
+  type HasManyHasAssociationMixin,
+  type HasManyHasAssociationsMixin,
+  type HasManyCreateAssociationMixin,
+  type HasManyCountAssociationsMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
+
+import type { User } from './user';
 
 /** These are all the attributes in the Menu model */
 export type MenuAttributes = InferAttributes<Menu>;
 /** Some attributes are optional in `Menu.build` and `Menu.create` calls */
 export type MenuCreationAttributes = InferCreationAttributes<Menu>;
 
-class Menu extends BaseModel<MenuAttributes, MenuCreationAttributes> {
+export class Menu extends BaseModel<MenuAttributes, MenuCreationAttributes> {
   declare userId: number;
 
   declare name: string;
@@ -32,9 +49,55 @@ class Menu extends BaseModel<MenuAttributes, MenuCreationAttributes> {
 
   declare sort: number;
 
+  declare User: NonAttribute<User>;
+
+  declare getUser: BelongsToGetAssociationMixin<User>;
+
+  declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
+
+  declare createUser: BelongsToCreateAssociationMixin<User>;
+
+  declare parent: NonAttribute<Menu | null>;
+
+  declare children: NonAttribute<Menu[]>;
+
+  declare getParent: BelongsToGetAssociationMixin<Menu>;
+
+  declare setParent: BelongsToSetAssociationMixin<Menu, Menu['id']>;
+
+  declare createParent: BelongsToCreateAssociationMixin<Menu>;
+
+  declare getChildren: HasManyGetAssociationsMixin<Menu>;
+
+  declare setChildren: HasManySetAssociationsMixin<Menu, Menu['id']>;
+
+  declare addChild: HasManyAddAssociationMixin<Menu, Menu['id']>;
+
+  declare addChildren: HasManyAddAssociationsMixin<Menu, Menu['id']>;
+
+  declare removeChild: HasManyRemoveAssociationMixin<Menu, Menu['id']>;
+
+  declare removeChildren: HasManyRemoveAssociationsMixin<Menu, Menu['id']>;
+
+  declare hasChild: HasManyHasAssociationMixin<Menu, Menu['id']>;
+
+  declare hasChildren: HasManyHasAssociationsMixin<Menu, Menu['id']>;
+
+  declare createChild: HasManyCreateAssociationMixin<Menu>;
+
+  declare countChildren: HasManyCountAssociationsMixin;
+
   static associate({ User }) {
-    this.belongsTo(User, { onDelete: 'cascade' });
+    this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+    this.belongsTo(Menu, { as: 'parent', foreignKey: 'parentId' });
+    this.hasMany(Menu, { as: 'children', foreignKey: 'parentId' });
   }
+
+  declare static associations: {
+    User: Association<Menu, User>;
+    parent: Association<Menu, Menu>;
+    children: Association<Menu, Menu>;
+  };
 }
 
 Menu.init(
@@ -48,7 +111,7 @@ Menu.init(
       allowNull: false,
     },
     href: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     icon: {
@@ -69,5 +132,3 @@ Menu.init(
     modelName: 'Menu',
   },
 );
-
-export default Menu;

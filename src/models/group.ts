@@ -8,6 +8,21 @@ import {
   DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
+  type Association,
+  type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
+  type HasManyGetAssociationsMixin,
+  type HasManySetAssociationsMixin,
+  type HasManyAddAssociationMixin,
+  type HasManyAddAssociationsMixin,
+  type HasManyRemoveAssociationMixin,
+  type HasManyRemoveAssociationsMixin,
+  type HasManyHasAssociationMixin,
+  type HasManyHasAssociationsMixin,
+  type HasManyCreateAssociationMixin,
+  type HasManyCountAssociationsMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
@@ -17,12 +32,52 @@ export type GroupAttributes = InferAttributes<Group>;
 /** Some attributes are optional in `Group.build` and `Group.create` calls */
 export type GroupCreationAttributes = InferCreationAttributes<Group>;
 
-class Group extends BaseModel<GroupAttributes, GroupCreationAttributes> {
+export class Group extends BaseModel<GroupAttributes, GroupCreationAttributes> {
   declare name: string;
 
   declare description: string;
 
   declare parentId: number;
+
+  declare parent: NonAttribute<Group | null>;
+
+  declare children: NonAttribute<Group[]>;
+
+  declare getParent: BelongsToGetAssociationMixin<Group>;
+
+  declare setParent: BelongsToSetAssociationMixin<Group, Group['id']>;
+
+  declare createParent: BelongsToCreateAssociationMixin<Group>;
+
+  declare getChildren: HasManyGetAssociationsMixin<Group>;
+
+  declare setChildren: HasManySetAssociationsMixin<Group, Group['id']>;
+
+  declare addChild: HasManyAddAssociationMixin<Group, Group['id']>;
+
+  declare addChildren: HasManyAddAssociationsMixin<Group, Group['id']>;
+
+  declare removeChild: HasManyRemoveAssociationMixin<Group, Group['id']>;
+
+  declare removeChildren: HasManyRemoveAssociationsMixin<Group, Group['id']>;
+
+  declare hasChild: HasManyHasAssociationMixin<Group, Group['id']>;
+
+  declare hasChildren: HasManyHasAssociationsMixin<Group, Group['id']>;
+
+  declare createChild: HasManyCreateAssociationMixin<Group>;
+
+  declare countChildren: HasManyCountAssociationsMixin;
+
+  static associate() {
+    this.belongsTo(Group, { as: 'parent', foreignKey: 'parentId' });
+    this.hasMany(Group, { as: 'children', foreignKey: 'parentId' });
+  }
+
+  declare static associations: {
+    parent: Association<Group, Group>;
+    children: Association<Group, Group>;
+  };
 }
 
 Group.init(
@@ -44,5 +99,3 @@ Group.init(
     modelName: 'Group',
   },
 );
-
-export default Group;

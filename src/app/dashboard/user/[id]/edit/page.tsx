@@ -9,7 +9,7 @@ import React from 'react';
 
 import { updateUserAction } from '@/actions/user';
 import UserForm from '@/app/dashboard/user/components/user-form';
-import { UserModel, RoleModel } from '@/models';
+import { User, Role } from '@/models';
 
 interface UserEditPageParams {
   id: string;
@@ -18,17 +18,19 @@ interface UserEditPageParams {
 const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
   const { id } = await params;
 
-  const user = await UserModel.findOne({
+  const user = await User.findOne({
     where: {
       id,
     },
     attributes: {
       exclude: ['password'],
     },
-    include: [{
-      model: RoleModel,
-      attributes: ['id'],
-    }],
+    include: [
+      {
+        model: Role,
+        attributes: ['id'],
+      },
+    ],
   });
 
   if (!user) {
@@ -36,11 +38,11 @@ const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
   }
 
   const { Roles, ...initialValues } = user.toJSON();
-  (initialValues as any).roles = Roles?.map((item) => { return item.id; });
+  (initialValues as any).roles = Roles?.map((item) => {
+    return item.id;
+  });
 
-  return (
-    <UserForm action={updateUserAction} initialValues={initialValues} mode="edit" />
-  );
+  return <UserForm action={updateUserAction} initialValues={initialValues} mode="edit" />;
 };
 
 export default UserEditPage;

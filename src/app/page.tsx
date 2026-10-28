@@ -1,18 +1,5 @@
-import { subject } from '@casl/ability';
-import { cookies, headers } from 'next/headers';
-import { getToken } from 'next-auth/jwt';
-import { getCsrfToken } from 'next-auth/react';
-
-import {
-  LoginButton,
-  LogoutButton,
-  ProfileButton,
-  RegisterButton,
-} from '@/components/buttons';
+import { LoginButton, LogoutButton, ProfileButton, RegisterButton } from '@/components/buttons';
 import { defineAbilityFor } from '@/services/ability';
-import {
-  UserModel, SessionModel, AccountModel, sequelize,
-} from '@/models';
 import { getServerAuthToken } from '@/services/auth';
 
 const HomePage = async () => {

@@ -14,7 +14,8 @@
 import { randomBytes, createHmac } from 'crypto';
 
 import {
-  DataTypes, Op,
+  DataTypes,
+  Op,
   type InferAttributes,
   type InferCreationAttributes,
   type CreationOptional,
@@ -31,12 +32,24 @@ import {
   type BelongsToManyHasAssociationsMixin,
   type BelongsToManyCreateAssociationMixin,
   type BelongsToManyCountAssociationsMixin,
+  type HasManyGetAssociationsMixin,
+  type HasManySetAssociationsMixin,
+  type HasManyAddAssociationMixin,
+  type HasManyAddAssociationsMixin,
+  type HasManyRemoveAssociationMixin,
+  type HasManyRemoveAssociationsMixin,
+  type HasManyHasAssociationMixin,
+  type HasManyHasAssociationsMixin,
+  type HasManyCreateAssociationMixin,
+  type HasManyCountAssociationsMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type Role from './role';
-import type { AdapterUser } from '@auth/core/adapters';
+import type { Account } from './account';
+import type { Menu } from './menu';
+import type { Role } from './role';
+import type { Session } from './session';
 
 /** 隐私属性字段排除 */
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
@@ -51,8 +64,8 @@ export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>
 // 用户注册属性
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
-class User extends BaseModel<UserAttributes, UserCreationAttributes> implements AdapterUser {
-  declare id: CreationOptional<string>;
+export class User extends BaseModel<UserAttributes, UserCreationAttributes> {
+  declare id: CreationOptional<number>;
 
   declare username: string | null;
 
@@ -115,6 +128,72 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
 
   declare countRoles: BelongsToManyCountAssociationsMixin;
 
+  declare Accounts: NonAttribute<Account[]>;
+
+  declare getAccounts: HasManyGetAssociationsMixin<Account>;
+
+  declare setAccounts: HasManySetAssociationsMixin<Account, Account['id']>;
+
+  declare addAccount: HasManyAddAssociationMixin<Account, Account['id']>;
+
+  declare addAccounts: HasManyAddAssociationsMixin<Account, Account['id']>;
+
+  declare removeAccount: HasManyRemoveAssociationMixin<Account, Account['id']>;
+
+  declare removeAccounts: HasManyRemoveAssociationsMixin<Account, Account['id']>;
+
+  declare hasAccount: HasManyHasAssociationMixin<Account, Account['id']>;
+
+  declare hasAccounts: HasManyHasAssociationsMixin<Account, Account['id']>;
+
+  declare createAccount: HasManyCreateAssociationMixin<Account>;
+
+  declare countAccounts: HasManyCountAssociationsMixin;
+
+  declare Sessions: NonAttribute<Session[]>;
+
+  declare getSessions: HasManyGetAssociationsMixin<Session>;
+
+  declare setSessions: HasManySetAssociationsMixin<Session, Session['id']>;
+
+  declare addSession: HasManyAddAssociationMixin<Session, Session['id']>;
+
+  declare addSessions: HasManyAddAssociationsMixin<Session, Session['id']>;
+
+  declare removeSession: HasManyRemoveAssociationMixin<Session, Session['id']>;
+
+  declare removeSessions: HasManyRemoveAssociationsMixin<Session, Session['id']>;
+
+  declare hasSession: HasManyHasAssociationMixin<Session, Session['id']>;
+
+  declare hasSessions: HasManyHasAssociationsMixin<Session, Session['id']>;
+
+  declare createSession: HasManyCreateAssociationMixin<Session>;
+
+  declare countSessions: HasManyCountAssociationsMixin;
+
+  declare Menus: NonAttribute<Menu[]>;
+
+  declare getMenus: HasManyGetAssociationsMixin<Menu>;
+
+  declare setMenus: HasManySetAssociationsMixin<Menu, Menu['id']>;
+
+  declare addMenu: HasManyAddAssociationMixin<Menu, Menu['id']>;
+
+  declare addMenus: HasManyAddAssociationsMixin<Menu, Menu['id']>;
+
+  declare removeMenu: HasManyRemoveAssociationMixin<Menu, Menu['id']>;
+
+  declare removeMenus: HasManyRemoveAssociationsMixin<Menu, Menu['id']>;
+
+  declare hasMenu: HasManyHasAssociationMixin<Menu, Menu['id']>;
+
+  declare hasMenus: HasManyHasAssociationsMixin<Menu, Menu['id']>;
+
+  declare createMenu: HasManyCreateAssociationMixin<Menu>;
+
+  declare countMenus: HasManyCountAssociationsMixin;
+
   /**
    * associate
    *
@@ -123,12 +202,18 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
    *
    * The `models/index` file will call this method automatically.
    */
-  static associate({ Role, UserRole }) {
+  static associate({ Role, UserRole, Account, Session, Menu }) {
     this.belongsToMany(Role, { through: UserRole });
+    this.hasMany(Account, { foreignKey: 'userId' });
+    this.hasMany(Session, { foreignKey: 'userId' });
+    this.hasMany(Menu, { foreignKey: 'userId' });
   }
 
   declare static associations: {
     Roles: Association<User, Role>;
+    Accounts: Association<User, Account>;
+    Sessions: Association<User, Session>;
+    Menus: Association<User, Menu>;
   };
 
   /** 用户注册 */
@@ -140,10 +225,7 @@ class User extends BaseModel<UserAttributes, UserCreationAttributes> implements 
       },
       fields,
       where: {
-        [Op.or]: [
-          { username: attributes.username },
-          { email: attributes.email },
-        ],
+        [Op.or]: [{ username: attributes.username }, { email: attributes.email }],
       },
       raw: true,
     });
@@ -248,7 +330,9 @@ User.init(
     salt: {
       type: DataTypes.STRING(32),
       allowNull: false,
-      defaultValue: () => { return randomBytes(16).toString('hex'); },
+      defaultValue: () => {
+        return randomBytes(16).toString('hex');
+      },
       comment: 'user salt',
     },
     ip: {
@@ -294,5 +378,3 @@ User.beforeCreate((model) => {
 
 // const u = await User.findOne();
 // u?.dataValues.;
-
-export default User;

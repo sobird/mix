@@ -1,5 +1,6 @@
-// import User from '../user';
-import UserRoleModel from '@/models/user-role';
+import { CreationAttributes } from 'sequelize';
+
+import { UserRole } from '@/models/user-role';
 
 vi.mock('@/lib/sequelize');
 vi.mock('@/models/role');
@@ -14,11 +15,9 @@ const seed = [
     userId: 2,
     roleId: 2,
   },
-] as UserRoleModel[];
+] as CreationAttributes<UserRole>[];
 
-console.log('UserRoleModel', UserRoleModel);
+await UserRole.sync({ force: true });
+await UserRole.bulkCreate(seed, { individualHooks: true, validate: true });
 
-await UserRoleModel.sync({ force: true });
-await UserRoleModel.bulkCreate(seed, { individualHooks: true, validate: true });
-
-export default UserRoleModel;
+export { UserRole };

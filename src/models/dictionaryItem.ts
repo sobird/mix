@@ -6,10 +6,18 @@
 
 import {
   DataTypes,
-  type InferAttributes, InferCreationAttributes,
+  type InferAttributes,
+  InferCreationAttributes,
+  type Association,
+  type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
+
+import type { DictionaryType } from './dictionaryType';
 
 /** These are all the attributes in the DictionaryItem model */
 export type DictionaryItemAttributes = InferAttributes<DictionaryItem>;
@@ -17,7 +25,7 @@ export type DictionaryItemAttributes = InferAttributes<DictionaryItem>;
 /** Some attributes are optional in `DictionaryItem.build` and `DictionaryItem.create` calls */
 export type DictionaryItemCreationAttributes = InferCreationAttributes<DictionaryItem>;
 
-class DictionaryItem extends BaseModel<DictionaryItemAttributes, DictionaryItemCreationAttributes> {
+export class DictionaryItem extends BaseModel<DictionaryItemAttributes, DictionaryItemCreationAttributes> {
   declare label: string;
 
   declare value: string;
@@ -27,6 +35,22 @@ class DictionaryItem extends BaseModel<DictionaryItemAttributes, DictionaryItemC
   declare status: string;
 
   declare typeId: number;
+
+  declare DictionaryType: NonAttribute<DictionaryType>;
+
+  declare getDictionaryType: BelongsToGetAssociationMixin<DictionaryType>;
+
+  declare setDictionaryType: BelongsToSetAssociationMixin<DictionaryType, DictionaryType['id']>;
+
+  declare createDictionaryType: BelongsToCreateAssociationMixin<DictionaryType>;
+
+  static associate({ DictionaryType }) {
+    this.belongsTo(DictionaryType, { foreignKey: 'typeId' });
+  }
+
+  declare static associations: {
+    DictionaryType: Association<DictionaryItem, DictionaryType>;
+  };
 }
 
 DictionaryItem.init(
@@ -60,5 +84,3 @@ DictionaryItem.init(
     modelName: 'DictionaryItem',
   },
 );
-
-export default DictionaryItem;

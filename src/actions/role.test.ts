@@ -1,6 +1,4 @@
-import {
-  RoleModel, PermissionModel, RolePermissionModel,
-} from '@/models';
+import { Role, Permission, RolePermission } from '@/models';
 
 import { saveRolePermissions } from './role';
 
@@ -16,22 +14,37 @@ const permissions = [
   },
 ];
 
-const rolePermissionModel1 = await RolePermissionModel.findAll();
-console.log('rolePermissionModel1', rolePermissionModel1.map((item) => { return item.toJSON(); }));
+const rolePermission1 = await RolePermission.findAll();
+console.log(
+  'rolePermission1',
+  rolePermission1.map((item) => {
+    return item.toJSON();
+  }),
+);
 
 await saveRolePermissions(1, permissions);
 await saveRolePermissions(1, permissions);
 
-const rolePermissionModel2 = await RolePermissionModel.findAll();
-console.log('rolePermissionModel2', rolePermissionModel2.map((item) => { return item.toJSON(); }));
+const rolePermission2 = await RolePermission.findAll();
+console.log(
+  'rolePermission2',
+  rolePermission2.map((item) => {
+    return item.toJSON();
+  }),
+);
 
-const permissionList = await PermissionModel.findAll();
+const permissionList = await Permission.findAll();
 
-console.log('permissionList', permissionList.map((item) => { return item.toJSON(); }));
+console.log(
+  'permissionList',
+  permissionList.map((item) => {
+    return item.toJSON();
+  }),
+);
 
-const role = await RoleModel.findByPk(1, {
+const role = await Role.findByPk(1, {
   include: {
-    model: PermissionModel,
+    model: Permission,
     through: { attributes: ['rules'] },
   },
 });

@@ -11,24 +11,32 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
+import type { AdapterAccountType } from '@auth/core/adapters';
 import {
   DataTypes,
-  type InferAttributes, InferCreationAttributes, CreationOptional,
+  type InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  type Association,
+  type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type { AdapterAccountType } from '@auth/core/adapters';
+import type { User } from './user';
 
 /** These are all the attributes in the Account model */
 export type AccountAttributes = InferAttributes<Account>;
 /** Some attributes are optional in `Account.build` and `Account.create` calls */
 export type AccountCreationAttributes = InferCreationAttributes<Account>;
 
-class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
+export class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
   declare id: CreationOptional<number>;
 
-  declare userId: string;
+  declare userId: number;
 
   declare type: AdapterAccountType;
 
@@ -65,9 +73,21 @@ class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
 
   declare session_state: CreationOptional<string>;
 
+  declare User: NonAttribute<User>;
+
+  declare getUser: BelongsToGetAssociationMixin<User>;
+
+  declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
+
+  declare createUser: BelongsToCreateAssociationMixin<User>;
+
   static associate({ User }) {
-    this.belongsTo(User, { onDelete: 'cascade' });
+    this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
   }
+
+  declare static associations: {
+    User: Association<Account, User>;
+  };
 }
 
 Account.init(
@@ -135,5 +155,3 @@ Account.init(
 // Account.beforeCreate((model) => {
 
 // });
-
-export default Account;

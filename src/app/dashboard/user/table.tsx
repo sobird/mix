@@ -6,32 +6,31 @@
 
 'use client';
 
-import {
-  Button, Table, Modal, Switch,
-} from 'antd';
+import { Button, Table, Modal, Switch } from 'antd';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { FC } from 'react';
 
 import { deleteUserAction } from '@/actions/user';
-import { UserModel, UserAttributes } from '@/models';
+import { User, UserAttributes } from '@/models';
 
-type UserTableData = Awaited<ReturnType<typeof UserModel.findManyByPage<UserModel>>>;
+type UserTableData = Awaited<ReturnType<typeof User.findManyByPage<User>>>;
 
 interface UserTableProps {
-  data: UserTableData
+  data: UserTableData;
 }
 
-const UserTable:FC<UserTableProps> = ({ data }) => {
+const UserTable: FC<UserTableProps> = ({ data }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   return (
-    <div style={{
-      backgroundColor: 'rgb(249 250 251)',
-      padding: '0.5rem',
-    }}
+    <div
+      style={{
+        backgroundColor: 'rgb(249 250 251)',
+        padding: '0.5rem',
+      }}
     >
       <Table<UserAttributes>
         pagination={{
@@ -59,10 +58,7 @@ const UserTable:FC<UserTableProps> = ({ data }) => {
       >
         <Table.Column title="用户名" dataIndex="username" />
         <Table.Column title="邮箱" dataIndex="email" />
-        <Table.Column
-          title="创建时间"
-          dataIndex="createdAt"
-        />
+        <Table.Column title="创建时间" dataIndex="createdAt" />
         <Table.Column
           title="状态"
           dataIndex="status"
@@ -80,7 +76,7 @@ const UserTable:FC<UserTableProps> = ({ data }) => {
 
                 <Button
                   type="link"
-                    // htmlType="submit"
+                  // htmlType="submit"
                   onClick={() => {
                     Modal.confirm({
                       title: '系统提示',

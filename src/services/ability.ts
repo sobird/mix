@@ -18,18 +18,12 @@ import {
 } from '@casl/ability';
 
 import { toSequelizeQuery } from '@/lib/casl';
-import Models, {
-  UserModel, RoleModel, PermissionModel, UserAttributes,
-} from '@/models';
-import User from '@/models/user';
+import { models, User, Role, Permission, type UserAttributes } from '@/models';
 
-export type Subjects = InferSubjects<keyof typeof Models | 'all'>;
+export type Subjects = InferSubjects<keyof typeof models | 'all'>;
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
 
-type AppAbilities = [
-  Actions,
-  Subjects | ForcedSubject<Exclude<Subjects, 'all'>>,
-];
+type AppAbilities = [Actions, Subjects | ForcedSubject<Exclude<Subjects, 'all'>>];
 
 export type AppAbility = MongoAbility<AppAbilities>;
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>;
@@ -47,7 +41,7 @@ const rolePermissions: Record<Roles, DefinePermissions> = {
     can('manage', 'all', { id: user.id });
   },
   // 未登录用户 访客
-  visitor(user, { can }) {
+  visitor(_user, { can: _can }) {
     //
   },
 };
@@ -67,32 +61,35 @@ export function defineAbilityFor(user) {
   return builder.build();
 }
 
+// oxlint-disable-next-line typescript/no-extraneous-class
 class AbilityService {
   /**
    * @param user contains details about logged in user: its id, name, email, role, etc
    */
   static async createFor(user: User) {
-    const {
-      can, cannot, rules, build,
-    } = new AbilityBuilder(createMongoAbility);
+    const { can, rules } = new AbilityBuilder(createMongoAbility);
 
     // 获取用户所有角色及其权限
-    const userWithRoles = await UserModel.findByPk(user.id, {
-      include: [{
-        model: RoleModel,
-        include: [PermissionModel],
-      }],
+    const userWithRoles = await User.findByPk(user.id, {
+      include: [
+        {
+          model: Role,
+          include: [Permission],
+        },
+      ],
     });
 
-    let permissions: PermissionModel[] = [];
+    let permissions: Permission[] = [];
     if (userWithRoles) {
-      permissions = userWithRoles.Roles
-        .flatMap((role) => { return role.Permissions; })
-        .filter((p, index, arr) => {
-          return arr.findIndex((per) => {
+      permissions = userWithRoles.Roles.flatMap((role) => {
+        return role.Permissions;
+      }).filter((p, index, arr) => {
+        return (
+          arr.findIndex((per) => {
             return per.action === p.action && per.subject === p.subject;
-          }) === index;
-        });
+          }) === index
+        );
+      });
     }
 
     permissions.forEach((permission) => {

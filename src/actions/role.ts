@@ -9,10 +9,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import {
-  RoleModel, PermissionModel, PermissionCreationAttributes, sequelize,
-} from '@/models';
-import RolePermission from '@/models/role-permission';
+import { Role, Permission, sequelize } from '@/models';
 import { defineAbilityFor } from '@/services/ability';
 import { getServerAuthToken } from '@/services/auth';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
@@ -38,7 +35,7 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
     };
   }
 
-  const [, created] = await RoleModel.findOrCreate({
+  const [, created] = await Role.findOrCreate({
     defaults: validated.data,
     where: {
       name: validated.data.name,
@@ -61,9 +58,7 @@ export async function createRoleActionWithRedirect(payload: RoleFormAttributes) 
   redirect('/dashboard/role');
 }
 
-export async function updateRoleAction(
-  payload: RoleFormAttributes,
-): Promise<RoleFormServerActionState> {
+export async function updateRoleAction(payload: RoleFormAttributes): Promise<RoleFormServerActionState> {
   const token = await getServerAuthToken();
   const ability = defineAbilityFor(token);
 
@@ -85,7 +80,7 @@ export async function updateRoleAction(
   }
 
   try {
-    await RoleModel.update(validated.data, {
+    await Role.update(validated.data, {
       where: {
         id: payload.id,
       },
@@ -104,7 +99,7 @@ export async function updateRoleAction(
 }
 
 export async function deleteRoleAction(id: string) {
-  const role = await RoleModel.destroy({
+  const role = await Role.destroy({
     where: {
       id,
     },
@@ -119,7 +114,7 @@ export const saveRolePermissions = async (roleId, permissions) => {
 
   try {
     // 1. 查找目标角色
-    const role = await RoleModel.findByPk(roleId, { transaction });
+    const role = await Role.findByPk(roleId, { transaction });
     if (!role) throw new Error('角色不存在');
 
     // 2. 删除该角色所有旧权限（避免残留）
@@ -127,7 +122,7 @@ export const saveRolePermissions = async (roleId, permissions) => {
 
     for await (const { subject, actions } of permissions) {
       for await (const { action, fields } of actions) {
-        const [permission] = await PermissionModel.findOrCreate({
+        const [permission] = await Permission.findOrCreate({
           where: { action, subject },
           transaction,
         });

@@ -12,19 +12,23 @@ import {
   type InferCreationAttributes,
   type CreationOptional,
   type Association,
+  type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type User from './user';
+import type { User } from './user';
 
 /** These are all the attributes in the Session model */
 export type SessionAttributes = InferAttributes<Session>;
 /** Some attributes are optional in `Session.build` and `Session.create` calls */
 export type SessionCreationAttributes = InferCreationAttributes<Session>;
 
-class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
-  declare id: CreationOptional<string>;
+export class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
+  declare id: CreationOptional<number>;
 
   /**
    * The absolute date when the session expires.
@@ -36,25 +40,33 @@ class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
    * If a session is accessed past its expiry date,
    * it will be removed from the database to clean up inactive sessions.
    */
-  expires: Date;
+  declare expires: Date;
 
   /**
    * A randomly generated value that is used to look up the session in the database when using "database" AuthConfig.strategy option.
    * This value is saved in a secure, HTTP-Only cookie on the client.
    */
-  sessionToken: string;
+  declare sessionToken: string;
 
   /**
    * Connects the active session to a user in the database
    */
-  userId: string;
+  declare userId: number;
+
+  declare User: NonAttribute<User>;
+
+  declare getUser: BelongsToGetAssociationMixin<User>;
+
+  declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
+
+  declare createUser: BelongsToCreateAssociationMixin<User>;
 
   static associate({ User }) {
-    this.belongsTo(User, { onDelete: 'cascade' });
+    this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
   }
 
   declare static associations: {
-    Roles: Association<Session, User>;
+    User: Association<Session, User>;
   };
 }
 
@@ -87,5 +99,3 @@ Session.init(
     modelName: 'Session',
   },
 );
-
-export default Session;

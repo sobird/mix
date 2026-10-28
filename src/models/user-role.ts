@@ -8,22 +8,53 @@ import {
   DataTypes,
   type InferAttributes,
   type InferCreationAttributes,
+  type Association,
+  type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
 } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import Role from './role';
-import User from './user';
+import { Role } from './role';
+import { User } from './user';
 
 /** These are all the attributes in the UserRole model */
 export type UserRoleAttributes = InferAttributes<UserRole>;
 /** Some attributes are optional in `UserRole.build` and `UserRole.create` calls */
 export type UserRoleCreationAttributes = InferCreationAttributes<UserRole>;
 
-class UserRole extends BaseModel<UserRoleAttributes, UserRoleCreationAttributes> {
+export class UserRole extends BaseModel<UserRoleAttributes, UserRoleCreationAttributes> {
   declare userId: number;
 
   declare roleId: number;
+
+  declare User: NonAttribute<User>;
+
+  declare getUser: BelongsToGetAssociationMixin<User>;
+
+  declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
+
+  declare createUser: BelongsToCreateAssociationMixin<User>;
+
+  declare Role: NonAttribute<Role>;
+
+  declare getRole: BelongsToGetAssociationMixin<Role>;
+
+  declare setRole: BelongsToSetAssociationMixin<Role, Role['id']>;
+
+  declare createRole: BelongsToCreateAssociationMixin<Role>;
+
+  static associate({ User: UserModel, Role: RoleModel }) {
+    this.belongsTo(UserModel, { foreignKey: 'userId' });
+    this.belongsTo(RoleModel, { foreignKey: 'roleId' });
+  }
+
+  declare static associations: {
+    User: Association<UserRole, User>;
+    Role: Association<UserRole, Role>;
+  };
 }
 
 UserRole.init(
@@ -48,5 +79,3 @@ UserRole.init(
     modelName: 'UserRole',
   },
 );
-
-export default UserRole;

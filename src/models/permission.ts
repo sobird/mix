@@ -34,15 +34,15 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type Role from './role';
-import type RolePermission from './role-permission';
+import type { Role } from './role';
+import type { RolePermission } from './role-permission';
 
 /** These are all the attributes in the Permission model */
 export type PermissionAttributes = InferAttributes<Permission>;
 /** Some attributes are optional in `Permission.build` and `Permission.create` calls */
 export type PermissionCreationAttributes = InferCreationAttributes<Permission>;
 
-class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttributes> {
+export class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttributes> {
   declare name: string;
 
   declare description: string;
@@ -56,6 +56,8 @@ class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttri
   declare isBuiltin: CreationOptional<boolean>;
 
   declare RolePermission: NonAttribute<RolePermission>;
+
+  declare Roles: NonAttribute<Role[]>;
 
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
 
@@ -125,9 +127,3 @@ Permission.init(
     comment: '用户权限表',
   },
 );
-
-Permission.afterSync(async () => {
-  // console.log('Permission', models);
-});
-
-export default Permission;

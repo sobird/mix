@@ -11,7 +11,7 @@
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
-import { ForcedSubject, InferSubjects, RawRule } from '@casl/ability';
+import { InferSubjects, RawRule } from '@casl/ability';
 import {
   DataTypes,
   type InferAttributes,
@@ -20,6 +20,19 @@ import {
   type CreationOptional,
   type Association,
   type NonAttribute,
+  type BelongsToGetAssociationMixin,
+  type BelongsToSetAssociationMixin,
+  type BelongsToCreateAssociationMixin,
+  type HasManyGetAssociationsMixin,
+  type HasManySetAssociationsMixin,
+  type HasManyAddAssociationMixin,
+  type HasManyAddAssociationsMixin,
+  type HasManyRemoveAssociationMixin,
+  type HasManyRemoveAssociationsMixin,
+  type HasManyHasAssociationMixin,
+  type HasManyHasAssociationsMixin,
+  type HasManyCreateAssociationMixin,
+  type HasManyCountAssociationsMixin,
   type BelongsToManyGetAssociationsMixin,
   type BelongsToManySetAssociationsMixin,
   type BelongsToManyAddAssociationMixin,
@@ -34,27 +47,24 @@ import {
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
-import type Permission from './permission';
-import type User from './user';
+import type { Permission } from './permission';
+import type { User } from './user';
 
 /** These are all the attributes in the Role model */
 export type RoleAttributes = InferAttributes<Role>;
 /** Some attributes are optional in `Role.build` and `Role.create` calls */
-export type RoleCreationAttributes = CreationAttributes<Role>;
+export type RoleCreationAttributes = InferCreationAttributes<Role>;
 
 export type Subjects = InferSubjects<'Role' | 'all'>;
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
 
-type RoleAbilities = [
-  Actions,
-  Subjects,
-];
+type RoleAbilities = [Actions, Subjects];
 
 export interface PermissionTemplate {
   name: string;
   subject: string;
 
-  rules: Omit<RawRule<RoleAbilities>, 'subject'>[]
+  rules: Omit<RawRule<RoleAbilities>, 'subject'>[];
 
   // [key: string]: {
   //   description: string;
@@ -63,7 +73,7 @@ export interface PermissionTemplate {
   // }
 }
 
-class Role extends BaseModel<RoleAttributes, InferCreationAttributes<Role>> {
+export class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
   declare parentId?: CreationOptional<number>;
 
   declare name: string;
@@ -123,16 +133,48 @@ class Role extends BaseModel<RoleAttributes, InferCreationAttributes<Role>> {
 
   declare countPermissions: BelongsToManyCountAssociationsMixin;
 
+  declare parent: NonAttribute<Role | null>;
+
+  declare children: NonAttribute<Role[]>;
+
+  declare getParent: BelongsToGetAssociationMixin<Role>;
+
+  declare setParent: BelongsToSetAssociationMixin<Role, Role['id']>;
+
+  declare createParent: BelongsToCreateAssociationMixin<Role>;
+
+  declare getChildren: HasManyGetAssociationsMixin<Role>;
+
+  declare setChildren: HasManySetAssociationsMixin<Role, Role['id']>;
+
+  declare addChild: HasManyAddAssociationMixin<Role, Role['id']>;
+
+  declare addChildren: HasManyAddAssociationsMixin<Role, Role['id']>;
+
+  declare removeChild: HasManyRemoveAssociationMixin<Role, Role['id']>;
+
+  declare removeChildren: HasManyRemoveAssociationsMixin<Role, Role['id']>;
+
+  declare hasChild: HasManyHasAssociationMixin<Role, Role['id']>;
+
+  declare hasChildren: HasManyHasAssociationsMixin<Role, Role['id']>;
+
+  declare createChild: HasManyCreateAssociationMixin<Role>;
+
+  declare countChildren: HasManyCountAssociationsMixin;
+
   declare static associations: {
     Users: Association<Role, User>;
     Permissions: Association<Role, Permission>;
+    parent: Association<Role, Role>;
+    children: Association<Role, Role>;
   };
 
-  static associate({
-    User, UserRole, Permission, RolePermission,
-  }) {
+  static associate({ User, UserRole, Permission, RolePermission }) {
     this.belongsToMany(User, { through: UserRole });
     this.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
+    this.belongsTo(Role, { as: 'parent', foreignKey: 'parentId' });
+    this.hasMany(Role, { as: 'children', foreignKey: 'parentId' });
   }
 
   // 系统级角色表权限定义
@@ -229,15 +271,6 @@ Role.init(
     //   },
     // },
     scopes: {
-      random(test) {
-        console.log('test', test);
-        return {
-          where: {
-            id: Math.random(),
-          },
-        };
-      },
-
       parent: {
         where: {
           parentId: 1,
@@ -249,7 +282,7 @@ Role.init(
   },
 );
 
-const seeds: RoleCreationAttributes[] = [
+const seeds: CreationAttributes<Role>[] = [
   {
     name: '拥有者',
     description: '系统拥有者角色',
@@ -274,13 +307,4 @@ Role.afterSync(async () => {
   await Role.bulkCreate(seeds, { individualHooks: true, validate: true });
 });
 
-Role.afterBulkSync(() => {
-  console.log('Role afterBulkSync', 121212);
-});
-
 // Init Permission
-Role.afterBulkCreate(() => {
-  console.log('afterCreate', 1234);
-});
-
-export default Role;

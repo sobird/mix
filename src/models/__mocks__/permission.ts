@@ -1,6 +1,6 @@
 import { CreationAttributes } from 'sequelize';
 
-import Permission from '@/models/permission';
+import { Permission } from '@/models/permission';
 
 vi.mock('@/lib/sequelize');
 
@@ -22,4 +22,4 @@ const seeds = [
 await Permission.sync({ force: true });
 await Permission.bulkCreate(seeds, { individualHooks: true, validate: true });
 
-export default Permission;
+export { Permission };

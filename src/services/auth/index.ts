@@ -23,7 +23,6 @@
 import { randomUUID } from 'node:crypto';
 
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
-import { cookies } from 'next/headers';
 import NextAuth, { getServerSession, type AuthOptions } from 'next-auth';
 import { encode, getToken } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -31,11 +30,12 @@ import EmailProvider from 'next-auth/providers/email';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import { getCsrfToken } from 'next-auth/react';
+import { cookies } from 'next/headers';
 
-import User from '@/models/user';
+import { User } from '@/models/user';
 
-import adapter from './adapter-sequelize';
 import { sendVerificationRequest } from '../mailer';
+import adapter from './adapter-sequelize';
 
 // const cookiesOptions: Partial<CookiesOptions> = {
 //   sessionToken: {
@@ -112,12 +112,12 @@ export const authOptions: AuthOptions = {
           return {
             name: user.username,
             email: user.email,
-            id: user.id,
+            id: user.id as unknown as string,
             image: user.image,
             // role: 'manage',
           };
         } catch (e) {
-          throw Error(e);
+          throw Error(e, { cause: e });
         }
       },
     }),
@@ -175,9 +175,7 @@ export const authOptions: AuthOptions = {
       return true;
     },
 
-    async jwt({
-      token, trigger, session, user, account,
-    }) {
+    async jwt({ token, trigger, session, user, account }) {
       console.log('jwt-callback', token, user, account);
       if (trigger === 'update') {
         token.name = session.user.name;
@@ -204,9 +202,7 @@ export const authOptions: AuthOptions = {
       return token;
     },
 
-    async session({
-      session, token, user, trigger,
-    }) {
+    async session({ session, token, user, trigger }) {
       console.log('session-callback', token, user, trigger);
       if (token.accessToken) {
         session.accessToken = token.accessToken;
@@ -233,7 +229,9 @@ export const handler = NextAuth(authOptions);
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export function getServerAuthSession(...args: [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']] | [NextApiRequest, NextApiResponse] | []) {
+export function getServerAuthSession(
+  ...args: [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']] | [NextApiRequest, NextApiResponse] | []
+) {
   return getServerSession(...args, authOptions);
 }
 
