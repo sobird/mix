@@ -99,15 +99,5 @@
     "strictNullChecks": true
   },
   "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "transpileOnly": true,
-    "require": ["tsconfig-paths/register"],
-    "compilerOptions": {
-      "sourceMap": false
-      // "module": "commonjs"
-    }
-  }
+  "exclude": ["node_modules", "dist"]
 }
