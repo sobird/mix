@@ -1,6 +1,6 @@
 // https://casl.js.org/v6/en/advanced/ability-to-database-query
 import { RawRule } from '@casl/ability';
-import { rulesToQuery, type AbilityQuery } from '@casl/ability/extra';
+import { rulesToCondition } from '@casl/ability/extra';
 import { Op } from 'sequelize';
 
 import { type AppAbility, type Actions, type Subjects } from '@/services/ability';
@@ -9,7 +9,7 @@ import { type AppAbility, type Actions, type Subjects } from '@/services/ability
  * Tricky way to walk recursively over deeply nested object.
  * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#Parameters
  */
-function symbolize(query: AbilityQuery<unknown>) {
+function symbolize(query: unknown) {
   return JSON.parse(JSON.stringify(query), function keyToSymbol(key, value) {
     if (key[0] === '$') {
       const symbol = Op[key.slice(1)];
@@ -26,7 +26,11 @@ function ruleToSequelize(rule: RawRule) {
 }
 
 export function toSequelizeQuery(ability: AppAbility, action: Actions, subject: Subjects) {
-  const query = rulesToQuery(ability, action, subject, ruleToSequelize);
+  const query = rulesToCondition(ability.rulesFor(action, subject), ruleToSequelize, {
+    and: (conditions) => { return { $and: conditions }; },
+    or: (conditions) => { return { $or: conditions }; },
+    empty: () => { return null; },
+  });
   return query === null ? query : symbolize(query);
 }
 

@@ -24,11 +24,11 @@ it('toSequelizeQuery', () => {
   console.log('query', query);
 
   const expected = {
-    [Symbol('or')]: [{
-      createdAt: {
-        [Symbol('lte')]: today,
-      },
-    }],
+    [Op.or]: [
+      { name: 123, age: 32, [Op.or]: [{ ddd: 1 }, { aaa: 2 }] },
+      { id: '$user.id' },
+      { createdAt: { [Op.lte]: today }, id: { [Op.in]: [1, 2, 3, 4] } },
+    ],
   };
 
   expect(query).toEqual(expected);

@@ -6,6 +6,7 @@
 
 'use strict';
 
+const { EventEmitter } = require('events');
 const debug = require('debug')('mix:kernel');
 
 module.exports = class Mix extends EventEmitter {

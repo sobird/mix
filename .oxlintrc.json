@@ -12,6 +12,9 @@
     "node": true,
     "es2024": true
   },
-  "rules": {},
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "import/no-unassigned-import": "off"
+  },
   "ignorePatterns": ["node_modules", ".next", "coverage", "public"]
 }
