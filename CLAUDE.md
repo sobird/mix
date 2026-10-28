@@ -17,7 +17,7 @@ Package manager is Bun (`bun.lock`); hooks run via `bunx`.
 ## Architecture
 
 - Next.js 16 + React 19, all app source under `src/`. Middleware lives in `src/proxy.ts` (Next 16 replacement for `middleware.ts`); path alias `@/*` → `src/*`.
-- Database is Sequelize 6 (SQLite at `./database.sqlite`, configured in `src/lib/sequelize.ts`, associations in `src/models/index.ts`). There are no migrations — schema comes from `db:seed`. The `prisma/` directory and `src/lib/prisma.ts` are deprecated legacy; do not add code there.
+- Database is Sequelize 6 (SQLite at `./database.sqlite`, configured in `src/lib/sequelize.ts`, associations in `src/models/index.ts`). There are no migrations — schema comes from `db:seed`.
 - Auth is next-auth v4 with database sessions and a custom Sequelize adapter (`src/services/auth/adapter-sequelize.ts`).
 - Authorization uses CASL 7; query conversion lives in `src/lib/casl.ts` (`rulesToCondition`, not the removed `rulesToQuery`).
 - Form validation bridges zod 4 and antd via `src/zod/`; shared UI is antd 6 with SCSS modules.

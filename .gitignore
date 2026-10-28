@@ -30,9 +30,6 @@ yarn.lock
 # local env files
 .env*.local
 
-# prisma
-prisma/migrations
-prisma/dev.db
-prisma/zod
+# database
 database.sqlite
 database.sqlite-journal
