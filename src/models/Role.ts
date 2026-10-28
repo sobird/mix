@@ -209,7 +209,7 @@ Role.init(
   {
     sequelize,
     modelName: 'Role',
-    indexes: [{ name: 'roles_parent_id', fields: ['parentId'] }],
+    indexes: [{ name: 'roles_parent_id', fields: ['parent_id'] }],
   },
 );
 
@@ -235,5 +235,10 @@ const seeds: CreationAttributes<Role>[] = [
 ];
 
 Role.afterSync(async () => {
-  await Role.bulkCreate(seeds, { individualHooks: true, validate: true, ignoreDuplicates: true });
+  // 使用 findOrCreate 保证重复 sync 时不会触发唯一约束冲突；
+  // findOrCreate 会开启事务，SQLite 单连接下必须串行执行，不能并发
+  await seeds.reduce<Promise<unknown>>(
+    (chain, seed) => chain.then(() => Role.findOrCreate({ where: { name: seed.name }, defaults: seed })),
+    Promise.resolve(),
+  );
 });

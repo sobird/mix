@@ -85,6 +85,6 @@ DictionaryItem.init(
   {
     sequelize,
     modelName: 'DictionaryItem',
-    indexes: [{ name: 'dictionary_items_type_id', fields: ['typeId'] }],
+    indexes: [{ name: 'dictionary_items_type_id', fields: ['type_id'] }],
   },
 );

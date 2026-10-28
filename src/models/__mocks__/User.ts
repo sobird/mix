@@ -1,25 +1,8 @@
-import { CreationAttributes } from 'sequelize';
+import { vi } from 'vitest';
 
-import { User } from '@/models/User';
+import { seedUsers } from '../../../tests/helpers/seeds';
 
-vi.mock('@/lib/sequelize');
-vi.mock('../UserRole');
-vi.mock('../Role');
-
-const seeds = [
-  {
-    id: 1,
-    username: 'admin',
-    email: 'member@casl.io',
-  },
-  {
-    id: 2,
-    username: 'member',
-    email: 'admin@casl.io',
-  },
-] as CreationAttributes<User>[];
-
-await User.sync({ force: true });
-await User.bulkCreate(seeds, { individualHooks: true, validate: true });
+const { User } = await vi.importActual<typeof import('../User')>('../User');
 
 export { User };
+export const seed = seedUsers;

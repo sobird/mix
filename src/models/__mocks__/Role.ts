@@ -1,21 +1,8 @@
-import { CreationAttributes } from 'sequelize';
+import { vi } from 'vitest';
 
-import { Role } from '../Role';
+import { seedRoles } from '../../../tests/helpers/seeds';
 
-vi.mock('@/lib/sequelize');
-
-const seeds = [
-  {
-    name: '超级管理员',
-    description: '超级管理员角色',
-  },
-  {
-    name: '普通用户',
-    description: '普通用户角色',
-  },
-] as CreationAttributes<Role>[];
-
-await Role.sync({ force: true });
-await Role.bulkCreate(seeds, { individualHooks: true, validate: true });
+const { Role } = await vi.importActual<typeof import('../Role')>('../Role');
 
 export { Role };
+export const seed = seedRoles;

@@ -1,31 +1,18 @@
+import { vi } from 'vitest';
+
+import { seedAll } from '../../../tests/helpers/seeds';
+
 /**
- * Models Index
+ * `vi.mock('@/models')` 的 manual mock。
  *
- * import { models } from '@auth/sequelize-adapter';
- *
- * @see https://github.com/sequelize/sequelize/blob/main/types/test/typescriptDocs/ModelInit.ts
- *
- * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
+ * 复用真实的模型实现，并在加载时灌入一整套种子数据，
+ * 让 service / action 层的测试可以直接从已知数据开始。
  */
+const actual = await vi.importActual<typeof import('../index')>('../index');
 
-vi.mock('@/models/Account');
-vi.mock('@/models/DictionaryItem');
-vi.mock('@/models/DictionaryType');
-vi.mock('@/models/Group');
-vi.mock('@/models/Log');
-vi.mock('@/models/Menu');
-vi.mock('@/models/Organization');
-vi.mock('@/models/Permission');
-vi.mock('@/models/RolePermission');
-vi.mock('@/models/Role');
-vi.mock('@/models/Session');
-vi.mock('@/models/UserRole');
-vi.mock('@/models/User');
-vi.mock('@/models/VerificationToken');
+export type { Models } from '../index';
 
-export {
-  sequelize,
-  models,
+export const {
   Account,
   DictionaryItem,
   DictionaryType,
@@ -40,4 +27,8 @@ export {
   User,
   UserRole,
   VerificationToken,
-} from '..';
+  models,
+  sequelize,
+} = actual;
+
+await seedAll();

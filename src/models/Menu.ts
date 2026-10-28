@@ -121,8 +121,8 @@ Menu.init(
     sequelize,
     modelName: 'Menu',
     indexes: [
-      { name: 'menus_user_id', fields: ['userId'] },
-      { name: 'menus_parent_id', fields: ['parentId'] },
+      { name: 'menus_user_id', fields: ['user_id'] },
+      { name: 'menus_parent_id', fields: ['parent_id'] },
     ],
   },
 );

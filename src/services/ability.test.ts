@@ -1,47 +1,22 @@
-// const rows = await User.findAll({ include: [User.associations.Roles] });
-// console.log('rows', rows[0].Roles[0].get());
+import type { User } from '@/models';
 
 import AbilityService from './ability';
 
 vi.mock('@/models');
 
-const ability = await AbilityService.createFor({ id: 1 });
-console.log('ability', ability);
+describe('AbilityService', () => {
+  it('builds abilities from the seeded roles and permissions', async () => {
+    // 种子数据中 id 为 1 的是 admin，绑定管理员角色（manage all / read User / update User）
+    const ability = await AbilityService.createFor({ id: 1 } as User);
 
-// export async function updateUserDetails(
-//   /** email of a user who initiates the request (i.e., logged in user) */
-//   id: string,
-//   /** an email of user to be updated */
-//   userToBeUpdatedId: string,
-//   /** an object of changes to be applied */
-//   changes: User,
-// ) {
-//   const user = await User.findByPk(id, { include: [User.associations.Roles] });
-//   const roles = user?.Roles!;
+    expect(ability.can('manage', 'all')).toBe(true);
+    expect(ability.can('read', 'User')).toBe(true);
+    expect(ability.can('update', 'User')).toBe(true);
+  });
 
-//   console.log('roles', roles[0].id);
+  it('returns an empty ability for an unknown user', async () => {
+    const ability = await AbilityService.createFor({ id: 9999 } as User);
 
-//   const role = roles[0].id === 1 ? 'manage' : 'member';
-
-//   // logged in user
-//   const ability = defineAbilityFor({
-//     id: user?.id,
-//     role,
-//   });
-//   const userToBeUpdated = userToBeUpdatedId === id
-//     ? user
-//     : await User.findByPk(userToBeUpdatedId);
-
-//   ForbiddenError.from(ability).throwUnlessCan('update', subject('User', userToBeUpdated));
-//   await User.update(changes, {
-//     where: {
-//       id: userToBeUpdated.id,
-//     },
-//   });
-// }
-
-// await updateUserDetails(1, 1, { username: 'sobird' });
-// // await updateUserDetails(2, 1, { username: 'sobird' });
-
-// const users = await User.findAll();
-// console.log('users', users);
+    expect(ability.can('read', 'User')).toBe(false);
+  });
+});

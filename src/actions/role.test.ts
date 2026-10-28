@@ -1,4 +1,4 @@
-import { Role, Permission, RolePermission } from '@/models';
+import { Permission, Role, RolePermission } from '@/models';
 
 import { saveRolePermissions } from './role';
 
@@ -14,42 +14,24 @@ const permissions = [
   },
 ];
 
-const rolePermission1 = await RolePermission.findAll();
-console.log(
-  'rolePermission1',
-  rolePermission1.map((item) => {
-    return item.toJSON();
-  }),
-);
+describe('saveRolePermissions', () => {
+  it('replaces a role permissions and stores the rules payload', async () => {
+    await saveRolePermissions(1, permissions);
 
-await saveRolePermissions(1, permissions);
-await saveRolePermissions(1, permissions);
+    const rows = await RolePermission.findAll({ where: { roleId: 1 } });
+    expect(rows).toHaveLength(2);
 
-const rolePermission2 = await RolePermission.findAll();
-console.log(
-  'rolePermission2',
-  rolePermission2.map((item) => {
-    return item.toJSON();
-  }),
-);
+    const role = await Role.findByPk(1, {
+      include: [{ model: Permission, through: { attributes: ['rules'] } }],
+    });
+    const read = role?.Permissions.find((permission) => permission.action === 'read');
+    expect(read?.RolePermission.rules).toEqual(['username', 'email']);
+  });
 
-const permissionList = await Permission.findAll();
+  it('is idempotent when called repeatedly', async () => {
+    await saveRolePermissions(1, permissions);
+    await saveRolePermissions(1, permissions);
 
-console.log(
-  'permissionList',
-  permissionList.map((item) => {
-    return item.toJSON();
-  }),
-);
-
-const role = await Role.findByPk(1, {
-  include: {
-    model: Permission,
-    through: { attributes: ['rules'] },
-  },
-});
-
-role?.Permissions.forEach((permission) => {
-  const rules = permission.RolePermission.rules || [];
-  console.log('rules', rules);
+    expect(await RolePermission.count({ where: { roleId: 1 } })).toBe(2);
+  });
 });

@@ -138,6 +138,6 @@ Account.init(
   {
     sequelize,
     modelName: 'Account',
-    indexes: [{ name: 'accounts_user_id', fields: ['userId'] }],
+    indexes: [{ name: 'accounts_user_id', fields: ['user_id'] }],
   },
 );

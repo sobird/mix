@@ -94,6 +94,6 @@ Session.init(
   {
     sequelize,
     modelName: 'Session',
-    indexes: [{ name: 'sessions_user_id', fields: ['userId'] }],
+    indexes: [{ name: 'sessions_user_id', fields: ['user_id'] }],
   },
 );

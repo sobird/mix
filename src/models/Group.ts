@@ -92,6 +92,6 @@ Group.init(
   {
     sequelize,
     modelName: 'Group',
-    indexes: [{ name: 'groups_parent_id', fields: ['parentId'] }],
+    indexes: [{ name: 'groups_parent_id', fields: ['parent_id'] }],
   },
 );
