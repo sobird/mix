@@ -54,7 +54,7 @@ export class DictionaryType extends BaseModel<DictionaryType> {
   declare countItems: HasManyCountAssociationsMixin;
 
   static associate({ DictionaryItem }: Models) {
-    this.hasMany(DictionaryItem, { foreignKey: 'typeId' });
+    this.hasMany(DictionaryItem, { as: 'Items', foreignKey: 'typeId' });
   }
 
   declare static associations: {

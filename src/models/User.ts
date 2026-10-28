@@ -190,6 +190,10 @@ export class User extends BaseModel<User> {
       throw Error('用户不存在');
     }
 
+    if (!user.status) {
+      throw Error('用户已被禁用');
+    }
+
     if (user.verifyPassword(password)) {
       const plain = user.get({ plain: true });
       return Object.fromEntries(Object.entries(plain).filter(([key]) => !UserExcludeAttributes.includes(key))) as Omit<

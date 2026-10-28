@@ -58,6 +58,7 @@ RolePermission.init(
   {
     permissionId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: Permission,
         key: 'id',
@@ -65,6 +66,7 @@ RolePermission.init(
     },
     roleId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: Role,
         key: 'id',
