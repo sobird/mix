@@ -93,7 +93,7 @@ class File {
   get relative() {
     return path.relative(this.base, this.path);
   }
-  set relative() {
+  set relative(_relative) {
     // nothing todo
   }
 

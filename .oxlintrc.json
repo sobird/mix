@@ -4,7 +4,7 @@
   "categories": {
     "correctness": "error",
     "perf": "error",
-    "suspicious": "error",
+    "suspicious": "error"
   },
   "env": {
     "builtin": true,
@@ -12,19 +12,6 @@
     "node": true,
     "es2024": true
   },
-  "rules": {
-    "no-console": "warn",
-    "no-param-reassign": [
-      "error",
-      {
-        "props": true,
-        "ignorePropertyModificationsFor": ["e", "ctx", "req", "request", "res", "response", "state", "accu"]
-      }
-    ],
-    "react/react-in-jsx-scope": "off",
-    "react-hooks/exhaustive-deps": "off",
-    "vitest/no-disabled-tests": "off",
-    "vitest/require-mock-type-parameters": "off"
-  },
+  "rules": {},
   "ignorePatterns": ["node_modules", ".next", "coverage", "public"]
 }
