@@ -15,8 +15,8 @@
 
 import {
   DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   type Association,
   type NonAttribute,
   type CreationOptional,
@@ -38,11 +38,11 @@ import type { Role } from './Role';
 import type { RolePermission } from './RolePermission';
 
 /** These are all the attributes in the Permission model */
-export type PermissionAttributes = InferAttributes<Permission>;
+export type PermissionAttributes = Attributes<Permission>;
 /** Some attributes are optional in `Permission.build` and `Permission.create` calls */
-export type PermissionCreationAttributes = InferCreationAttributes<Permission>;
+export type PermissionCreationAttributes = CreationAttributes<Permission>;
 
-export class Permission extends BaseModel<PermissionAttributes, PermissionCreationAttributes> {
+export class Permission extends BaseModel<Permission> {
   declare name: string;
 
   declare description: string;

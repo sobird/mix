@@ -6,8 +6,8 @@
 
 import {
   DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -21,11 +21,11 @@ import { Role } from './Role';
 import { User } from './User';
 
 /** These are all the attributes in the UserRole model */
-export type UserRoleAttributes = InferAttributes<UserRole>;
+export type UserRoleAttributes = Attributes<UserRole>;
 /** Some attributes are optional in `UserRole.build` and `UserRole.create` calls */
-export type UserRoleCreationAttributes = InferCreationAttributes<UserRole>;
+export type UserRoleCreationAttributes = CreationAttributes<UserRole>;
 
-export class UserRole extends BaseModel<UserRoleAttributes, UserRoleCreationAttributes> {
+export class UserRole extends BaseModel<UserRole> {
   declare userId: number;
 
   declare roleId: number;

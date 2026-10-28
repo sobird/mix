@@ -4,16 +4,16 @@
  * sobird<i@sobird.me> at 2023/12/03 22:01:07 created.
  */
 
-import { DataTypes, type InferAttributes, type InferCreationAttributes } from 'sequelize';
+import { DataTypes, type Attributes, type CreationAttributes } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Log model */
-export type LogAttributes = InferAttributes<Log>;
+export type LogAttributes = Attributes<Log>;
 /** Some attributes are optional in `Log.build` and `Log.create` calls */
-export type LogCreationAttributes = InferCreationAttributes<Log>;
+export type LogCreationAttributes = CreationAttributes<Log>;
 
-export class Log extends BaseModel<LogAttributes, LogCreationAttributes> {
+export class Log extends BaseModel<Log> {
   declare type: string;
 
   declare content: string;

@@ -23,37 +23,20 @@ import { User } from './User';
 import { UserRole } from './UserRole';
 import { VerificationToken } from './VerificationToken';
 
-export type { UserAttributes, UserCreationAttributes } from './User';
-export type { RoleAttributes, RoleCreationAttributes } from './Role';
-export type { PermissionAttributes, PermissionCreationAttributes } from './Permission';
-export type { AccountAttributes, AccountCreationAttributes } from './Account';
-export type { SessionAttributes, SessionCreationAttributes } from './Session';
-export type { VerificationTokenAttributes, VerificationTokenCreationAttributes } from './VerificationToken';
-export type { MenuAttributes, MenuCreationAttributes } from './Menu';
-export type { GroupAttributes, GroupCreationAttributes } from './Group';
-export type { LogAttributes, LogCreationAttributes } from './Log';
-export type { OrganizationAttributes, OrganizationCreationAttributes } from './Organization';
-export type { DictionaryItemAttributes, DictionaryItemCreationAttributes } from './DictionaryItem';
-export type { DictionaryTypeAttributes, DictionaryTypeCreationAttributes } from './DictionaryType';
-export type { RolePermissionAttributes, RolePermissionCreationAttributes } from './RolePermission';
-export type { UserRoleAttributes, UserRoleCreationAttributes } from './UserRole';
-
-export {
-  Account,
-  DictionaryItem,
-  DictionaryType,
-  Group,
-  Log,
-  Menu,
-  Organization,
-  Permission,
-  Role,
-  RolePermission,
-  Session,
-  User,
-  UserRole,
-  VerificationToken,
-};
+export * from './Account';
+export * from './DictionaryItem';
+export * from './DictionaryType';
+export * from './Group';
+export * from './Log';
+export * from './Menu';
+export * from './Organization';
+export * from './Permission';
+export * from './Role';
+export * from './RolePermission';
+export * from './Session';
+export * from './User';
+export * from './UserRole';
+export * from './VerificationToken';
 
 const models = {
   Account,
@@ -73,8 +56,8 @@ const models = {
 };
 
 // 建立表关联关系
-Object.values(models).forEach((model: any) => {
-  model.associate?.(sequelize.models);
+Object.values(models).forEach((model) => {
+  model.associate?.(models);
 });
 
 export { models, sequelize };

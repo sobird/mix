@@ -12,7 +12,15 @@
 
 import { AbilityTuple, MongoAbility, RawRule } from '@casl/ability';
 import log4js from 'log4js';
-import { Sequelize, Model, type ModelStatic, type Attributes, type CreationOptional } from 'sequelize';
+import {
+  Sequelize,
+  Model,
+  type ModelStatic,
+  type Attributes,
+  type InferAttributes,
+  type InferCreationAttributes,
+  type CreationOptional,
+} from 'sequelize';
 import sqlite3 from 'sqlite3';
 
 import { accessibleBy } from '@/lib/casl';
@@ -145,7 +153,10 @@ export interface PermissionTemplate {
  *
  * sobird<i@sobird.me> at 2023/12/05 21:08:43 created.
  */
-export abstract class BaseModel<T extends {} = any, P extends {} = T> extends Model<T, P> {
+export abstract class BaseModel<M extends BaseModel<M> = any> extends Model<
+  InferAttributes<M>,
+  InferCreationAttributes<M>
+> {
   declare id?: CreationOptional<number>;
 
   declare createdAt?: CreationOptional<Date>;

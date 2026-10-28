@@ -14,8 +14,8 @@
 import type { AdapterAccountType } from '@auth/core/adapters';
 import {
   DataTypes,
-  type InferAttributes,
-  InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   CreationOptional,
   type Association,
   type NonAttribute,
@@ -29,11 +29,11 @@ import { sequelize, BaseModel } from '@/lib/sequelize';
 import type { User } from './User';
 
 /** These are all the attributes in the Account model */
-export type AccountAttributes = InferAttributes<Account>;
+export type AccountAttributes = Attributes<Account>;
 /** Some attributes are optional in `Account.build` and `Account.create` calls */
-export type AccountCreationAttributes = InferCreationAttributes<Account>;
+export type AccountCreationAttributes = CreationAttributes<Account>;
 
-export class Account extends BaseModel<AccountAttributes, AccountCreationAttributes> {
+export class Account extends BaseModel<Account> {
   declare id: CreationOptional<number>;
 
   declare userId: number;

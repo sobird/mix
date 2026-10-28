@@ -14,8 +14,7 @@
 import { InferSubjects, RawRule } from '@casl/ability';
 import {
   DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type Attributes,
   type CreationAttributes,
   type CreationOptional,
   type Association,
@@ -51,9 +50,9 @@ import type { Permission } from './Permission';
 import type { User } from './User';
 
 /** These are all the attributes in the Role model */
-export type RoleAttributes = InferAttributes<Role>;
+export type RoleAttributes = Attributes<Role>;
 /** Some attributes are optional in `Role.build` and `Role.create` calls */
-export type RoleCreationAttributes = InferCreationAttributes<Role>;
+export type RoleCreationAttributes = CreationAttributes<Role>;
 
 export type Subjects = InferSubjects<'Role' | 'all'>;
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
@@ -73,7 +72,7 @@ export interface PermissionTemplate {
   // }
 }
 
-export class Role extends BaseModel<RoleAttributes, RoleCreationAttributes> {
+export class Role extends BaseModel<Role> {
   declare parentId?: CreationOptional<number>;
 
   declare name: string;

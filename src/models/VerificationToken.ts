@@ -10,17 +10,17 @@
  * sobird<i@sobird.me> at 2023/11/29 10:37:29 created.
  */
 
-import { DataTypes, type InferAttributes, type InferCreationAttributes } from 'sequelize';
+import { DataTypes, type Attributes, type CreationAttributes } from 'sequelize';
 
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the VerificationToken model */
-export type VerificationTokenAttributes = InferAttributes<VerificationToken>;
+export type VerificationTokenAttributes = Attributes<VerificationToken>;
 
 /** Some attributes are optional in `VerificationToken.build` and `VerificationToken.create` calls */
-export type VerificationTokenCreationAttributes = InferCreationAttributes<VerificationToken>;
+export type VerificationTokenCreationAttributes = CreationAttributes<VerificationToken>;
 
-export class VerificationToken extends BaseModel<VerificationTokenAttributes, VerificationTokenCreationAttributes> {
+export class VerificationToken extends BaseModel<VerificationToken> {
   /**
    * A hashed token, using the AuthConfig.secret value.
    */

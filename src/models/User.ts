@@ -16,8 +16,7 @@ import { randomBytes, createHmac } from 'crypto';
 import {
   DataTypes,
   Op,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type CreationAttributes,
   type CreationOptional,
   type NonAttribute,
   type Attributes,
@@ -55,16 +54,16 @@ import type { Session } from './Session';
 export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
 
 // These are all the attributes in the User model
-export type UserAttributes = InferAttributes<User>;
+export type UserAttributes = Attributes<User>;
 
 // Some attributes are optional in `User.build` and `User.create` calls
-export type UserCreationAttributes = InferCreationAttributes<User>;
+export type UserCreationAttributes = CreationAttributes<User>;
 // 用户登录属性
 export type UserSigninAttributes = Pick<UserAttributes, 'username' | 'password'>;
 // 用户注册属性
 export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' | 'email'>;
 
-export class User extends BaseModel<UserAttributes, UserCreationAttributes> {
+export class User extends BaseModel<User> {
   declare id: CreationOptional<number>;
 
   declare username: string | null;

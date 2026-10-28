@@ -6,8 +6,8 @@
 
 import {
   DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -28,11 +28,11 @@ import {
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 /** These are all the attributes in the Group model */
-export type GroupAttributes = InferAttributes<Group>;
+export type GroupAttributes = Attributes<Group>;
 /** Some attributes are optional in `Group.build` and `Group.create` calls */
-export type GroupCreationAttributes = InferCreationAttributes<Group>;
+export type GroupCreationAttributes = CreationAttributes<Group>;
 
-export class Group extends BaseModel<GroupAttributes, GroupCreationAttributes> {
+export class Group extends BaseModel<Group> {
   declare name: string;
 
   declare description: string;

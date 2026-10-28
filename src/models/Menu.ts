@@ -6,8 +6,8 @@
 
 import {
   DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -30,11 +30,11 @@ import { sequelize, BaseModel } from '@/lib/sequelize';
 import type { User } from './User';
 
 /** These are all the attributes in the Menu model */
-export type MenuAttributes = InferAttributes<Menu>;
+export type MenuAttributes = Attributes<Menu>;
 /** Some attributes are optional in `Menu.build` and `Menu.create` calls */
-export type MenuCreationAttributes = InferCreationAttributes<Menu>;
+export type MenuCreationAttributes = CreationAttributes<Menu>;
 
-export class Menu extends BaseModel<MenuAttributes, MenuCreationAttributes> {
+export class Menu extends BaseModel<Menu> {
   declare userId: number;
 
   declare name: string;

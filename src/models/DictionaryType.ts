@@ -6,8 +6,8 @@
 
 import {
   DataTypes,
-  type InferAttributes,
-  InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   type Association,
   type NonAttribute,
   type HasManyGetAssociationsMixin,
@@ -27,12 +27,12 @@ import { sequelize, BaseModel } from '@/lib/sequelize';
 import type { DictionaryItem } from './DictionaryItem';
 
 /** These are all the attributes in the DictionaryType model */
-export type DictionaryTypeAttributes = InferAttributes<DictionaryType>;
+export type DictionaryTypeAttributes = Attributes<DictionaryType>;
 
 /** Some attributes are optional in `DictionaryType.build` and `DictionaryType.create` calls */
-export type DictionaryTypeCreationAttributes = InferCreationAttributes<DictionaryType>;
+export type DictionaryTypeCreationAttributes = CreationAttributes<DictionaryType>;
 
-export class DictionaryType extends BaseModel<DictionaryTypeAttributes, DictionaryTypeCreationAttributes> {
+export class DictionaryType extends BaseModel<DictionaryType> {
   declare name: string;
 
   declare code: string;

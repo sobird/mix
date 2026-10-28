@@ -8,8 +8,8 @@
 
 import {
   DataTypes,
-  type InferAttributes,
-  type InferCreationAttributes,
+  type Attributes,
+  type CreationAttributes,
   type CreationOptional,
   type Association,
   type NonAttribute,
@@ -23,11 +23,11 @@ import { sequelize, BaseModel } from '@/lib/sequelize';
 import type { User } from './User';
 
 /** These are all the attributes in the Session model */
-export type SessionAttributes = InferAttributes<Session>;
+export type SessionAttributes = Attributes<Session>;
 /** Some attributes are optional in `Session.build` and `Session.create` calls */
-export type SessionCreationAttributes = InferCreationAttributes<Session>;
+export type SessionCreationAttributes = CreationAttributes<Session>;
 
-export class Session extends BaseModel<SessionAttributes, SessionCreationAttributes> {
+export class Session extends BaseModel<Session> {
   declare id: CreationOptional<number>;
 
   /**
