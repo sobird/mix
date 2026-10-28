@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun -e 'const f=(JSON.parse(await Bun.stdin.text()).tool_input||{}).file_path; if(f && /\\.(js|jsx|ts|tsx|mjs|cjs|json|jsonc|css|scss|less|md|yml|yaml)$/.test(f)) Bun.spawnSync([\"bunx\",\"oxfmt\",f],{stdout:\"ignore\",stderr:\"inherit\"})' 2>/dev/null || true",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
