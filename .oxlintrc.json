@@ -16,5 +16,5 @@
     "react/react-in-jsx-scope": "off",
     "import/no-unassigned-import": "off"
   },
-  "ignorePatterns": ["node_modules", ".next", "coverage", "public"]
+  "ignorePatterns": ["node_modules", ".next", "coverage", "public", "next-env.d.ts"]
 }
