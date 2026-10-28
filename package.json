@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "mix",
   "private": true,
+  "packageManager": "bun@1.3.13",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -72,5 +73,14 @@
     "mix"
   ],
   "author": "sobird",
-  "license": "MIT"
+  "license": "MIT",
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@prisma/client",
+    "@prisma/engines",
+    "esbuild",
+    "prisma",
+    "sharp",
+    "sqlite3"
+  ]
 }
