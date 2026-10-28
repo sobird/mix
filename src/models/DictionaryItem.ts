@@ -27,21 +27,13 @@ export type DictionaryItemCreationAttributes = CreationAttributes<DictionaryItem
 
 export class DictionaryItem extends BaseModel<DictionaryItem> {
   declare label: string;
-
   declare value: string;
-
   declare sort: number;
-
   declare status: string;
-
   declare typeId: number;
-
   declare DictionaryType: NonAttribute<DictionaryType>;
-
   declare getDictionaryType: BelongsToGetAssociationMixin<DictionaryType>;
-
   declare setDictionaryType: BelongsToSetAssociationMixin<DictionaryType, DictionaryType['id']>;
-
   declare createDictionaryType: BelongsToCreateAssociationMixin<DictionaryType>;
 
   static associate({ DictionaryType }) {

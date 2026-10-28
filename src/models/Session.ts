@@ -29,7 +29,6 @@ export type SessionCreationAttributes = CreationAttributes<Session>;
 
 export class Session extends BaseModel<Session> {
   declare id: CreationOptional<number>;
-
   /**
    * The absolute date when the session expires.
    *
@@ -41,24 +40,18 @@ export class Session extends BaseModel<Session> {
    * it will be removed from the database to clean up inactive sessions.
    */
   declare expires: Date;
-
   /**
    * A randomly generated value that is used to look up the session in the database when using "database" AuthConfig.strategy option.
    * This value is saved in a secure, HTTP-Only cookie on the client.
    */
   declare sessionToken: string;
-
   /**
    * Connects the active session to a user in the database
    */
   declare userId: number;
-
   declare User: NonAttribute<User>;
-
   declare getUser: BelongsToGetAssociationMixin<User>;
-
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
-
   declare createUser: BelongsToCreateAssociationMixin<User>;
 
   static associate({ User }) {

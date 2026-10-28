@@ -35,16 +35,12 @@ export type AccountCreationAttributes = CreationAttributes<Account>;
 
 export class Account extends BaseModel<Account> {
   declare id: CreationOptional<number>;
-
   declare userId: number;
-
   declare type: AdapterAccountType;
-
   /**
    * Provider's id for this account. Eg.: 'google'
    */
   declare provider: string;
-
   /**
    * This value depends on the type of the provider being used to create the account.
    *
@@ -53,32 +49,21 @@ export class Account extends BaseModel<Account> {
    * credentials: id returned from the authorize() callback
    */
   declare providerAccountId: string;
-
   declare refresh_token?: string;
-
   declare access_token?: string | undefined;
-
   /**
    * Calculated value based on [OAuth2TokenEndpointResponse.expires_in]([object Object]).
    * It is the absolute timestamp (in seconds) when the [OAuth2TokenEndpointResponse.access_token]([object Object]) expires.
    * This value can be used for implementing token rotation together with [OAuth2TokenEndpointResponse.refresh_token]([object Object]).
    */
   declare expires_at?: number;
-
   declare token_type?: 'bearer' | 'dpop' | Lowercase<string>;
-
   declare scope?: string;
-
   declare id_token?: string;
-
   declare session_state: CreationOptional<string>;
-
   declare User: NonAttribute<User>;
-
   declare getUser: BelongsToGetAssociationMixin<User>;
-
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
-
   declare createUser: BelongsToCreateAssociationMixin<User>;
 
   static associate({ User }) {

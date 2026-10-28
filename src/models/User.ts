@@ -65,134 +65,72 @@ export type UserSignupAttributes = Pick<UserAttributes, 'username' | 'password' 
 
 export class User extends BaseModel<User> {
   declare id: CreationOptional<number>;
-
   declare username: string | null;
-
   declare name: CreationOptional<string | null>;
-
   declare image: string | null;
-
   declare nickname: string | null;
-
   declare realname: string | null;
-
   declare salt: CreationOptional<string>;
-
   declare password: CreationOptional<string>;
-
   declare email: string;
-
   declare emailVerified: Date | null;
-
   declare mobile: CreationOptional<string>;
-
   declare gender: CreationOptional<string>;
-
   declare ip: CreationOptional<string>;
-
   declare status: CreationOptional<boolean>;
-
   declare createdBy: CreationOptional<number>;
-
   declare updatedBy: CreationOptional<number>;
-
   // declare createdAt: CreationOptional<Date>;
-
   // declare updatedAt: CreationOptional<Date>;
-
   declare Roles: NonAttribute<Role[]>;
-
   // associates method
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
-
   /** Remove all previous associations and set the new ones */
   declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
-
   declare addRole: BelongsToManyAddAssociationMixin<Role, number>;
-
   declare addRoles: BelongsToManyAddAssociationsMixin<Role, number>;
-
   declare removeRole: BelongsToManyRemoveAssociationMixin<Role, number>;
-
   declare removeRoles: BelongsToManyRemoveAssociationsMixin<Role, number>;
-
   declare hasRole: BelongsToManyHasAssociationMixin<Role, number>;
-
   declare hasRoles: BelongsToManyHasAssociationsMixin<Role, number>;
-
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
-
   declare countRoles: BelongsToManyCountAssociationsMixin;
-
   declare Accounts: NonAttribute<Account[]>;
-
   declare getAccounts: HasManyGetAssociationsMixin<Account>;
-
   declare setAccounts: HasManySetAssociationsMixin<Account, Account['id']>;
-
   declare addAccount: HasManyAddAssociationMixin<Account, Account['id']>;
-
   declare addAccounts: HasManyAddAssociationsMixin<Account, Account['id']>;
-
   declare removeAccount: HasManyRemoveAssociationMixin<Account, Account['id']>;
-
   declare removeAccounts: HasManyRemoveAssociationsMixin<Account, Account['id']>;
-
   declare hasAccount: HasManyHasAssociationMixin<Account, Account['id']>;
-
   declare hasAccounts: HasManyHasAssociationsMixin<Account, Account['id']>;
-
   declare createAccount: HasManyCreateAssociationMixin<Account>;
-
   declare countAccounts: HasManyCountAssociationsMixin;
-
   declare Sessions: NonAttribute<Session[]>;
-
   declare getSessions: HasManyGetAssociationsMixin<Session>;
-
   declare setSessions: HasManySetAssociationsMixin<Session, Session['id']>;
-
   declare addSession: HasManyAddAssociationMixin<Session, Session['id']>;
-
   declare addSessions: HasManyAddAssociationsMixin<Session, Session['id']>;
-
   declare removeSession: HasManyRemoveAssociationMixin<Session, Session['id']>;
-
   declare removeSessions: HasManyRemoveAssociationsMixin<Session, Session['id']>;
-
   declare hasSession: HasManyHasAssociationMixin<Session, Session['id']>;
-
   declare hasSessions: HasManyHasAssociationsMixin<Session, Session['id']>;
-
   declare createSession: HasManyCreateAssociationMixin<Session>;
-
   declare countSessions: HasManyCountAssociationsMixin;
-
   declare Menus: NonAttribute<Menu[]>;
-
   declare getMenus: HasManyGetAssociationsMixin<Menu>;
-
   declare setMenus: HasManySetAssociationsMixin<Menu, Menu['id']>;
-
   declare addMenu: HasManyAddAssociationMixin<Menu, Menu['id']>;
-
   declare addMenus: HasManyAddAssociationsMixin<Menu, Menu['id']>;
-
   declare removeMenu: HasManyRemoveAssociationMixin<Menu, Menu['id']>;
-
   declare removeMenus: HasManyRemoveAssociationsMixin<Menu, Menu['id']>;
-
   declare hasMenu: HasManyHasAssociationMixin<Menu, Menu['id']>;
-
   declare hasMenus: HasManyHasAssociationsMixin<Menu, Menu['id']>;
-
   declare createMenu: HasManyCreateAssociationMixin<Menu>;
-
   declare countMenus: HasManyCountAssociationsMixin;
-
   /**
    * associate
    *
@@ -281,7 +219,6 @@ User.init(
       autoIncrement: true,
       primaryKey: true,
     },
-
     username: {
       type: DataTypes.STRING(32),
       unique: true,

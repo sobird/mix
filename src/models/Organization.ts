@@ -15,9 +15,7 @@ export type OrganizationCreationAttributes = CreationAttributes<Organization>;
 
 export class Organization extends BaseModel<Organization> {
   declare name: string;
-
   declare description: string;
-
   // public userId: number;
 }
 

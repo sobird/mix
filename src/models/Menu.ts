@@ -36,55 +36,30 @@ export type MenuCreationAttributes = CreationAttributes<Menu>;
 
 export class Menu extends BaseModel<Menu> {
   declare userId: number;
-
   declare name: string;
-
   declare icon: string;
-
   declare href: string;
-
   declare description: string;
-
   declare parentId: number;
-
   declare sort: number;
-
   declare User: NonAttribute<User>;
-
   declare getUser: BelongsToGetAssociationMixin<User>;
-
   declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
-
   declare createUser: BelongsToCreateAssociationMixin<User>;
-
   declare parent: NonAttribute<Menu | null>;
-
   declare children: NonAttribute<Menu[]>;
-
   declare getParent: BelongsToGetAssociationMixin<Menu>;
-
   declare setParent: BelongsToSetAssociationMixin<Menu, Menu['id']>;
-
   declare createParent: BelongsToCreateAssociationMixin<Menu>;
-
   declare getChildren: HasManyGetAssociationsMixin<Menu>;
-
   declare setChildren: HasManySetAssociationsMixin<Menu, Menu['id']>;
-
   declare addChild: HasManyAddAssociationMixin<Menu, Menu['id']>;
-
   declare addChildren: HasManyAddAssociationsMixin<Menu, Menu['id']>;
-
   declare removeChild: HasManyRemoveAssociationMixin<Menu, Menu['id']>;
-
   declare removeChildren: HasManyRemoveAssociationsMixin<Menu, Menu['id']>;
-
   declare hasChild: HasManyHasAssociationMixin<Menu, Menu['id']>;
-
   declare hasChildren: HasManyHasAssociationsMixin<Menu, Menu['id']>;
-
   declare createChild: HasManyCreateAssociationMixin<Menu>;
-
   declare countChildren: HasManyCountAssociationsMixin;
 
   static associate({ User }) {

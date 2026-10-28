@@ -34,31 +34,18 @@ export type DictionaryTypeCreationAttributes = CreationAttributes<DictionaryType
 
 export class DictionaryType extends BaseModel<DictionaryType> {
   declare name: string;
-
   declare code: string;
-
   declare status: string;
-
   declare Items: NonAttribute<DictionaryItem[]>;
-
   declare getItems: HasManyGetAssociationsMixin<DictionaryItem>;
-
   declare setItems: HasManySetAssociationsMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare addItem: HasManyAddAssociationMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare addItems: HasManyAddAssociationsMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare removeItem: HasManyRemoveAssociationMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare removeItems: HasManyRemoveAssociationsMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare hasItem: HasManyHasAssociationMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare hasItems: HasManyHasAssociationsMixin<DictionaryItem, DictionaryItem['id']>;
-
   declare createItem: HasManyCreateAssociationMixin<DictionaryItem>;
-
   declare countItems: HasManyCountAssociationsMixin;
 
   static associate({ DictionaryItem }) {

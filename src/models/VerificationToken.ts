@@ -25,12 +25,10 @@ export class VerificationToken extends BaseModel<VerificationToken> {
    * A hashed token, using the AuthConfig.secret value.
    */
   declare token: string;
-
   /**
    * The user's email address.
    */
   declare identifier: string;
-
   /**
    * The absolute date when the token expires.
    */

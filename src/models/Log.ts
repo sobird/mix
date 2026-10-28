@@ -15,11 +15,8 @@ export type LogCreationAttributes = CreationAttributes<Log>;
 
 export class Log extends BaseModel<Log> {
   declare type: string;
-
   declare content: string;
-
   declare operator: number;
-
   declare agent: string;
 }
 

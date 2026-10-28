@@ -34,39 +34,22 @@ export type GroupCreationAttributes = CreationAttributes<Group>;
 
 export class Group extends BaseModel<Group> {
   declare name: string;
-
   declare description: string;
-
   declare parentId: number;
-
   declare parent: NonAttribute<Group | null>;
-
   declare children: NonAttribute<Group[]>;
-
   declare getParent: BelongsToGetAssociationMixin<Group>;
-
   declare setParent: BelongsToSetAssociationMixin<Group, Group['id']>;
-
   declare createParent: BelongsToCreateAssociationMixin<Group>;
-
   declare getChildren: HasManyGetAssociationsMixin<Group>;
-
   declare setChildren: HasManySetAssociationsMixin<Group, Group['id']>;
-
   declare addChild: HasManyAddAssociationMixin<Group, Group['id']>;
-
   declare addChildren: HasManyAddAssociationsMixin<Group, Group['id']>;
-
   declare removeChild: HasManyRemoveAssociationMixin<Group, Group['id']>;
-
   declare removeChildren: HasManyRemoveAssociationsMixin<Group, Group['id']>;
-
   declare hasChild: HasManyHasAssociationMixin<Group, Group['id']>;
-
   declare hasChildren: HasManyHasAssociationsMixin<Group, Group['id']>;
-
   declare createChild: HasManyCreateAssociationMixin<Group>;
-
   declare countChildren: HasManyCountAssociationsMixin;
 
   static associate() {

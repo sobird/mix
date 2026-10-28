@@ -27,25 +27,15 @@ export type RolePermissionCreationAttributes = CreationAttributes<RolePermission
 
 export class RolePermission extends BaseModel<RolePermission> {
   declare roleId: number;
-
   declare permissionId: number;
-
   declare rules: JSON;
-
   declare Role: NonAttribute<Role>;
-
   declare getRole: BelongsToGetAssociationMixin<Role>;
-
   declare setRole: BelongsToSetAssociationMixin<Role, Role['id']>;
-
   declare createRole: BelongsToCreateAssociationMixin<Role>;
-
   declare Permission: NonAttribute<Permission>;
-
   declare getPermission: BelongsToGetAssociationMixin<Permission>;
-
   declare setPermission: BelongsToSetAssociationMixin<Permission, Permission['id']>;
-
   declare createPermission: BelongsToCreateAssociationMixin<Permission>;
 
   static associate({ Role: RoleModel, Permission: PermissionModel }) {

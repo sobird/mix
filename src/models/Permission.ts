@@ -44,40 +44,23 @@ export type PermissionCreationAttributes = CreationAttributes<Permission>;
 
 export class Permission extends BaseModel<Permission> {
   declare name: string;
-
   declare description: string;
-
   declare subject: string;
-
   declare action: string;
-
   declare expires: CreationOptional<Date>;
-
   declare isBuiltin: CreationOptional<boolean>;
-
   declare RolePermission: NonAttribute<RolePermission>;
-
   declare Roles: NonAttribute<Role[]>;
-
   declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
-
   /** Remove all previous associations and set the new ones */
   declare setRoles: BelongsToManySetAssociationsMixin<Role, Role['id']>;
-
   declare addRole: BelongsToManyAddAssociationMixin<Role, Role['id']>;
-
   declare addRoles: BelongsToManyAddAssociationsMixin<Role, Role['id']>;
-
   declare removeRole: BelongsToManyRemoveAssociationMixin<Role, Role['id']>;
-
   declare removeRoles: BelongsToManyRemoveAssociationsMixin<Role, Role['id']>;
-
   declare hasRole: BelongsToManyHasAssociationMixin<Role, Role['id']>;
-
   declare hasRoles: BelongsToManyHasAssociationsMixin<Role, Role['id']>;
-
   declare createRole: BelongsToManyCreateAssociationMixin<Role>;
-
   declare countRoles: BelongsToManyCountAssociationsMixin;
 
   static associate({ Role, RolePermission }) {
