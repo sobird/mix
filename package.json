@@ -68,6 +68,7 @@
     "@vitest/coverage-v8": "5.0.5",
     "husky": "^9.1.7",
     "jsdom": "^30.1.3",
+    "lint-staged": "^17.6.0",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",
     "sass": "^1.106.1",
@@ -75,6 +76,15 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,jsx,ts,tsx}": [
+      "oxlint --fix",
+      "oxfmt"
+    ],
+    "*.{json,jsonc,css,scss,md}": [
+      "oxfmt"
+    ]
   },
   "packageManager": "bun@1.3.13",
   "trustedDependencies": [
