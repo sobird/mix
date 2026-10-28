@@ -8,7 +8,7 @@ const r = (p: string) => { return resolve(__dirname, p); };
 export default defineConfig({
   resolve: {
     // @see https://github.com/vitest-dev/vitest/discussions/3042
-    alias: [{ find: '@', replacement: resolve(__dirname, './') }],
+    alias: [{ find: '@', replacement: resolve(__dirname, './src') }],
   },
   plugins: [react()],
   test: {
@@ -16,7 +16,7 @@ export default defineConfig({
     globals: true,
     setupFiles: './tests/setup.ts',
     alias: {
-      '@/': r('./'),
+      '@/': r('./src/'),
     },
     reporters: 'verbose',
   },
