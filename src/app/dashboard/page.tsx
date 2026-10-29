@@ -6,13 +6,7 @@ const DashBoard = () => {
   return (
     <div>
       DashBoardPage
-      <Button onClick={() => {
-
-      }}
-      >
-        dispatch
-
-      </Button>
+      <Button onClick={() => {}}>dispatch</Button>
     </div>
   );
 };

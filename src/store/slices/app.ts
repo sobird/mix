@@ -10,14 +10,14 @@ import Cookies from 'js-cookie';
 export const TOGGLE_ASIDE = 'TOGGLE_ASIDE';
 
 export type User = {
-  name: string,
+  name: string;
 };
 
 export interface IAppState {
-  user: User,
+  user: User;
   collapsed: boolean;
   micro: {
-    loading: boolean
+    loading: boolean;
   };
 }
 
@@ -55,7 +55,5 @@ export const appSlice = createSlice({
   },
 });
 
-export const {
-  updateUser, updateMicro, toggleAside,
-} = appSlice.actions;
+export const { updateUser, updateMicro, toggleAside } = appSlice.actions;
 export default appSlice.reducer;

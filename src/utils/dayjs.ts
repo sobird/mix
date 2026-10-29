@@ -11,9 +11,9 @@
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
-import weekday from 'dayjs/plugin/weekday';
-import localeData from 'dayjs/plugin/localeData';
 import duration from 'dayjs/plugin/duration';
+import localeData from 'dayjs/plugin/localeData';
+import weekday from 'dayjs/plugin/weekday';
 
 const { parse, format } = dayjs.prototype;
 

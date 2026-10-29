@@ -1,15 +1,11 @@
 'use client';
 
-import {
-  Row, Col, Form, Input, DatePicker, Radio,
-} from 'antd';
+import { Row, Col, Form, Input, DatePicker, Radio } from 'antd';
 
 import DebounceSelect from '@/components/debounce-select';
 import withActionForm from '@/components/with-action-form';
 import dayjs from '@/utils/dayjs';
-import {
-  userFormRule, usernameRule, emailRule, passwordRule,
-} from '@/zod/user';
+import { userFormRule, usernameRule, emailRule, passwordRule } from '@/zod/user';
 
 const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
   const { roleOptions } = data;
@@ -19,23 +15,12 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         <Input name="id" hidden />
       </Form.Item>
       <Col span={12}>
-        <Form.Item
-          name="username"
-          label="用户名"
-          validateDebounce={300}
-          rules={[usernameRule]}
-          required
-        >
+        <Form.Item name="username" label="用户名" validateDebounce={300} rules={[usernameRule]} required>
           <Input placeholder="用户登录名称" />
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item
-          name="nickname"
-          label="用户昵称"
-          validateDebounce={300}
-          rules={[userFormRule]}
-        >
+        <Form.Item name="nickname" label="用户昵称" validateDebounce={300} rules={[userFormRule]}>
           <Input placeholder="用户昵称" />
         </Form.Item>
       </Col>
@@ -51,18 +36,24 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
       </Col>
 
       {mode === 'create' && (
-      <>
-        <Col span={12}>
-          <Form.Item label="登录密码" name="password" rules={[passwordRule]} required>
-            <Input.Password placeholder="密码(由8-16位大小写字母、数字及特殊字符组成)" />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="密码确认" name="confirmPassword" dependencies={['password']} rules={[passwordRule]} required>
-            <Input.Password placeholder="密码确认" />
-          </Form.Item>
-        </Col>
-      </>
+        <>
+          <Col span={12}>
+            <Form.Item label="登录密码" name="password" rules={[passwordRule]} required>
+              <Input.Password placeholder="密码(由8-16位大小写字母、数字及特殊字符组成)" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="密码确认"
+              name="confirmPassword"
+              dependencies={['password']}
+              rules={[passwordRule]}
+              required
+            >
+              <Input.Password placeholder="密码确认" />
+            </Form.Item>
+          </Col>
+        </>
       )}
 
       <Col span={12}>
@@ -90,36 +81,35 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
       </Col>
 
       {mode !== 'create' && (
-      <>
-        <Col span={12}>
-          <Form.Item
-            label="更新时间"
-            name="updatedAt"
-            getValueProps={(originValue) => {
-              return {
-                value: dayjs(originValue),
-              };
-            }}
-          >
-            <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            label="创建时间"
-            name="createdAt"
-            getValueProps={(originValue) => {
-              return {
-                value: dayjs(originValue),
-              };
-            }}
-          >
-            <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
-          </Form.Item>
-        </Col>
-      </>
+        <>
+          <Col span={12}>
+            <Form.Item
+              label="更新时间"
+              name="updatedAt"
+              getValueProps={(originValue) => {
+                return {
+                  value: dayjs(originValue),
+                };
+              }}
+            >
+              <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="创建时间"
+              name="createdAt"
+              getValueProps={(originValue) => {
+                return {
+                  value: dayjs(originValue),
+                };
+              }}
+            >
+              <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
+            </Form.Item>
+          </Col>
+        </>
       )}
-
     </Row>
   );
 };

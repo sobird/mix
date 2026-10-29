@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Providers from '@/components/providers';
 
 import { SignupForm } from './form';
+
 import styles from './index.module.scss';
 
 export default async function RegisterPage({ searchParams }) {

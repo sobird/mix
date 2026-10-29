@@ -11,7 +11,9 @@
   :global(.account-container) {
     padding: 20px 30px;
     background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,.1), 0 12px 20px rgba(38,38,38,.12);
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.1),
+      0 12px 20px rgba(38, 38, 38, 0.12);
     border-radius: 8px;
   }
   h1 {
@@ -27,7 +29,7 @@
 }
 
 body {
-  &:has( .auth) {
+  &:has(.auth) {
     background-color: #f8fcff;
   }
 }

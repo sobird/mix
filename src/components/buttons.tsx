@@ -1,12 +1,18 @@
 'use client';
 
 import { Button } from 'antd';
-import Link from 'next/link';
 import { signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 export const LoginButton = () => {
   return (
-    <Button type="primary" style={{ marginRight: 10 }} onClick={() => { return signIn(); }}>
+    <Button
+      type="primary"
+      style={{ marginRight: 10 }}
+      onClick={() => {
+        return signIn();
+      }}
+    >
       Sign in
     </Button>
   );
@@ -22,12 +28,22 @@ export const RegisterButton = () => {
 
 export const LogoutButton = () => {
   return (
-    <Button type="default" style={{ marginRight: 10 }} onClick={() => { return signOut(); }}>
+    <Button
+      type="default"
+      style={{ marginRight: 10 }}
+      onClick={() => {
+        return signOut();
+      }}
+    >
       Sign Out
     </Button>
   );
 };
 
 export const ProfileButton = () => {
-  return <Link type="link" href="/profile">Profile</Link>;
+  return (
+    <Link type="link" href="/profile">
+      Profile
+    </Link>
+  );
 };

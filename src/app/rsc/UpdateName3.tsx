@@ -12,10 +12,10 @@ function UpdateName3() {
     <form action={submitAction}>
       <input type="text" name="name" disabled={isPending} />
       {state.error && (
-      <span>
-        Failed:
-        {state.error}
-      </span>
+        <span>
+          Failed:
+          {state.error}
+        </span>
       )}
       <button type="submit">submit</button>
     </form>

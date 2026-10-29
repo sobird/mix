@@ -13,7 +13,7 @@ import Submitter, { type SubmitterProps } from '@/components/submitter';
 
 export interface MixFormProps extends FormProps {
   pending?: boolean;
-  submitter?: SubmitterProps<{ form?: FormInstance<any>; }> | false;
+  submitter?: SubmitterProps<{ form?: FormInstance<any> }> | false;
 }
 
 const MixForm: React.FC<MixFormProps> = ({
@@ -36,15 +36,15 @@ const MixForm: React.FC<MixFormProps> = ({
     <Form form={form} layout={layout} labelCol={labelCol} wrapperCol={wrapperCol} {...props}>
       {children as any}
       {submitter !== false && (
-      <Submitter
-        labelCol={labelCol}
-        wrapperCol={wrapperCol}
-        // reversed
-        submitButtonProps={{
-          disabled: pending,
-        }}
-        {...submitter}
-      />
+        <Submitter
+          labelCol={labelCol}
+          wrapperCol={wrapperCol}
+          // reversed
+          submitButtonProps={{
+            disabled: pending,
+          }}
+          {...submitter}
+        />
       )}
     </Form>
   );

@@ -17,14 +17,20 @@ export default function useServerAction<State, Payload>(
   permalink?: string,
 ): [state: Awaited<State>, dispatch: (payload: Payload) => void, pending: boolean] {
   const [pending, startTransition] = useTransition();
-  const [state, dispatch] = useFormState<State, Payload>((preState, payload) => {
-    return action(payload, preState);
-  }, initialState, permalink);
+  const [state, dispatch] = useFormState<State, Payload>(
+    (preState, payload) => {
+      return action(payload, preState);
+    },
+    initialState,
+    permalink,
+  );
 
   return [
     state,
     (payload: Payload) => {
-      startTransition(() => { dispatch(payload); });
+      startTransition(() => {
+        dispatch(payload);
+      });
     },
     pending,
   ];

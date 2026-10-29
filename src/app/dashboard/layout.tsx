@@ -14,10 +14,10 @@ import { useAppSelector } from '@/store';
 
 import styles from './layout.module.scss';
 
-export default function DashboardLayout({ children }: {
-  children: React.ReactNode
-}) {
-  const { collapsed } = useAppSelector((state) => { return state.app; });
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { collapsed } = useAppSelector((state) => {
+    return state.app;
+  });
   return (
     <div
       className={classNames(styles.container, {
@@ -32,7 +32,6 @@ export default function DashboardLayout({ children }: {
           {children}
         </main>
       </div>
-
     </div>
   );
 }

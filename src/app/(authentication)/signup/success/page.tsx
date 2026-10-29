@@ -18,7 +18,11 @@ export default function Home() {
         status="success"
         title="注册账号成功"
         subTitle="欢迎您的加入，开始登录使用吧"
-        extra={<Link href="/signin"><Button type="primary">现在登录</Button></Link>}
+        extra={
+          <Link href="/signin">
+            <Button type="primary">现在登录</Button>
+          </Link>
+        }
       />
     </div>
   );

@@ -24,12 +24,19 @@ function UpdateName() {
 
   return (
     <form action={submitAction}>
-      <input type="text" name="name" disabled={isPending} onChange={(e) => { setName(e.target.value); }} />
+      <input
+        type="text"
+        name="name"
+        disabled={isPending}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
+      />
       {error && (
-      <span>
-        Failed:
-        {error}
-      </span>
+        <span>
+          Failed:
+          {error}
+        </span>
       )}
       <button type="submit">submit</button>
     </form>

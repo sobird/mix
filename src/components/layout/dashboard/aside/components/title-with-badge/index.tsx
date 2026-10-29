@@ -24,10 +24,18 @@ const TitleWithBadge: React.FC<PropsWithChildren<TitleWithBadgeProps>> = ({ chil
       titleNode = <Badge dot>{children}</Badge>;
       break;
     case 20:
-      titleNode = <Badge offset={[10, 0]} count={noticeContent}>{children}</Badge>;
+      titleNode = (
+        <Badge offset={[10, 0]} count={noticeContent}>
+          {children}
+        </Badge>
+      );
       break;
     case 30:
-      titleNode = <Badge status="success" text={noticeContent}>{children}</Badge>;
+      titleNode = (
+        <Badge status="success" text={noticeContent}>
+          {children}
+        </Badge>
+      );
       break;
     default:
       titleNode = <Badge dot>{children}</Badge>;

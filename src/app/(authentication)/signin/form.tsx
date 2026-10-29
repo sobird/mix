@@ -1,10 +1,8 @@
 'use client';
 
-import {
-  Form, Input, Button, ConfigProvider, message, Tabs,
-} from 'antd';
-import { useRouter } from 'next/navigation';
+import { Form, Input, Button, ConfigProvider, message, Tabs } from 'antd';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 import { isEmail } from '@/utils/validator';
@@ -25,7 +23,10 @@ const SigninForm: React.FC<SigninFormProps> = ({ callbackUrl }) => {
   const onCredentialsFinish = async ({ username, password }) => {
     setLoading(true);
     const res = await signIn('credentials', {
-      username, password, redirect: false, callbackUrl,
+      username,
+      password,
+      redirect: false,
+      callbackUrl,
     });
     setLoading(false);
 
@@ -70,11 +71,7 @@ const SigninForm: React.FC<SigninFormProps> = ({ callbackUrl }) => {
             </Form.Item>
             {/* todo 忘记密码 */}
             <div>
-              <Button
-                type="primary"
-                style={{ width: '100%', borderColor: 'transparent' }}
-                htmlType="submit"
-              >
+              <Button type="primary" style={{ width: '100%', borderColor: 'transparent' }} htmlType="submit">
                 登录
               </Button>
             </div>
@@ -84,15 +81,17 @@ const SigninForm: React.FC<SigninFormProps> = ({ callbackUrl }) => {
           <Form form={emailForm} name="email" onFinish={onEmailFinish}>
             <Form.Item
               name="email"
-              rules={[{
-                async validator(rule, value) {
-                  if (isEmail(value)) {
-                    setDisabled(false);
-                  } else {
-                    setDisabled(true);
-                  }
+              rules={[
+                {
+                  async validator(rule, value) {
+                    if (isEmail(value)) {
+                      setDisabled(false);
+                    } else {
+                      setDisabled(true);
+                    }
+                  },
                 },
-              }]}
+              ]}
             >
               <Input name="email" placeholder="输入电子邮箱" allowClear />
             </Form.Item>

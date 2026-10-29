@@ -1,6 +1,4 @@
-import {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Updater<T> = T | ((prevState: T) => T);
 type SetState<T> = (value: Updater<T>) => void;
@@ -24,9 +22,7 @@ function useMergedState<T>(
     if (isControlled) {
       return value!;
     }
-    return typeof defaultStateValue === 'function'
-      ? (defaultStateValue as () => T)()
-      : defaultStateValue!;
+    return typeof defaultStateValue === 'function' ? (defaultStateValue as () => T)() : defaultStateValue!;
   });
 
   // 合并后的最终值
@@ -49,9 +45,7 @@ function useMergedState<T>(
   // 增强的 setState 函数
   const setState: SetState<T> = useCallback(
     (updater: Updater<T>) => {
-      const newValue = typeof updater === 'function'
-        ? (updater as (prevState: T) => T)(mergedValue)
-        : updater;
+      const newValue = typeof updater === 'function' ? (updater as (prevState: T) => T)(mergedValue) : updater;
 
       // 受控模式下只触发 onChange
       if (isControlled) {

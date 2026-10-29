@@ -59,10 +59,10 @@ const passwordZod = z
         const analysis = analyzePassword(password);
 
         if (
-          analysis.uppercaseCount < 1
-          || analysis.lowercaseCount < 1
-          || analysis.numberCount < 1
-          || analysis.symbolCount < 1
+          analysis.uppercaseCount < 1 ||
+          analysis.lowercaseCount < 1 ||
+          analysis.numberCount < 1 ||
+          analysis.symbolCount < 1
         ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -90,22 +90,24 @@ const passwordZod = z
     },
   );
 
-const verificationCodeZod = z.object({
-  email: z.string(),
-  verificationCode: z
-    .string({
-      error: '请输入验证码',
-    })
-    .regex(/^\d{6}$/, '验证码为6位数字'),
-}).refine(
-  async (payload) => {
-    return verifyVerificationCode(payload);
-  },
-  {
-    message: '验证码错误',
-    path: ['verificationCode'],
-  },
-);
+const verificationCodeZod = z
+  .object({
+    email: z.string(),
+    verificationCode: z
+      .string({
+        error: '请输入验证码',
+      })
+      .regex(/^\d{6}$/, '验证码为6位数字'),
+  })
+  .refine(
+    async (payload) => {
+      return verifyVerificationCode(payload);
+    },
+    {
+      message: '验证码错误',
+      path: ['verificationCode'],
+    },
+  );
 
 // 通用字段校验
 const ohtersZod = z.object({

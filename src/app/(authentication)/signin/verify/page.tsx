@@ -28,7 +28,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
         status="success"
         title="发送邮件成功"
         subTitle="我们已向您的邮箱发送了一封登录邮件，请点击邮件中的链接完成登录"
-        extra={<Button type="primary" href={emailLoginUrl} target="_blank">进入邮箱查收登录邮件</Button>}
+        extra={
+          <Button type="primary" href={emailLoginUrl} target="_blank">
+            进入邮箱查收登录邮件
+          </Button>
+        }
       >
         <div className={styles.suggest}>
           <h3>没收到邮件怎么办？</h3>

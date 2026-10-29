@@ -28,7 +28,7 @@ const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
   return (
     <>
       <h1>欢迎登录</h1>
-      <div className='account-container'>
+      <div className="account-container">
         <SigninForm callbackUrl={callbackUrl} />
 
         <Typography>

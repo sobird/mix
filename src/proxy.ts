@@ -1,5 +1,5 @@
-import { NextResponse, type NextFetchEvent } from 'next/server';
 import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
+import { NextResponse, type NextFetchEvent } from 'next/server';
 
 // export const config = {
 //   // matcher: ["/profile"],

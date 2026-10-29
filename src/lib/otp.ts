@@ -9,8 +9,7 @@ const period = expire * 60;
 const base32 = new ScureBase32Plugin();
 
 /** 将任意标识转换为 otplib 要求的 base32 secret */
-const toSecret = (identifier: string) =>
-  base32.encode(createHash('sha256').update(identifier).digest());
+const toSecret = (identifier: string) => base32.encode(createHash('sha256').update(identifier).digest());
 
 export const generate = (identifier: string) => {
   return generateSync({ secret: toSecret(identifier), period });

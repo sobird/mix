@@ -15,6 +15,7 @@ import { cookies } from 'next/headers';
 import mix from '@/assets/mix-data';
 import StyledComponentsRegistry from '@/lib/antd';
 import StoreProvider from '@/store/provider';
+
 import '@/styles/presets.scss';
 import { TOGGLE_ASIDE } from '@/store/slices/app';
 import config from '@/styles/theme';
@@ -27,9 +28,7 @@ export const metadata: Metadata = {
   icons: mix,
 };
 
-export default async function RootLayout({ children }: {
-  children: React.ReactNode
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const collapsedCookie = cookieStore.get(TOGGLE_ASIDE);
 

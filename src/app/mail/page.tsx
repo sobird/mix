@@ -8,7 +8,7 @@ const Mail = async () => {
 
   return (
     <div className="mail">
-      <Verification url='https://sobird.me' />
+      <Verification url="https://sobird.me" />
 
       <div dangerouslySetInnerHTML={{ __html: prerenderStaticComponent }} />
       <div dangerouslySetInnerHTML={{ __html: captchaEmailHtml }} />

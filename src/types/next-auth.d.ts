@@ -1,6 +1,4 @@
-import type {
-  DefaultSession,
-} from 'next-auth';
+import type { DefaultSession } from 'next-auth';
 
 declare module '@auth/core' {
   /**
@@ -9,14 +7,14 @@ declare module '@auth/core' {
   interface Session {
     user: {
       /** The user's postal address. */
-      address: string
+      address: string;
       /**
        * By default, TypeScript merges new interface properties and overwrite existing ones.
        * In this case, the default session user properties will be overwritten, with the new one defined above.
        * To keep the default session user properties,
        * you need to add them back into the newly declared interface
        */
-    } & DefaultSession['user'] // To keep the default types
+    } & DefaultSession['user']; // To keep the default types
   }
 
   /**

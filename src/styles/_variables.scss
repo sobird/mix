@@ -1,18 +1,18 @@
-@use "sass:color";
-@use "sass:map";
+@use 'sass:color';
+@use 'sass:map';
 // class统一前缀
 $prefixCls: 'mix' !default;
 $isBrand: 'true';
 
 // 主题颜色
-$primary: #0080FF !default;
-$secondary: #C8C8CC !default;
+$primary: #0080ff !default;
+$secondary: #c8c8cc !default;
 $brand: $primary !default;
-$success: #00B84A !default;
-$info: #0080FF !default;
-$warning: #FF6A00 !default;
-$danger: #FF4338 !default;
-$light: #FFFFFF !default;
+$success: #00b84a !default;
+$info: #0080ff !default;
+$warning: #ff6a00 !default;
+$danger: #ff4338 !default;
+$light: #ffffff !default;
 $dark: #333333 !default;
 
 // 高亮色: 一般用于高亮选项
@@ -22,13 +22,14 @@ $active-global: $brand !default;
 $gray-100: #333333 !default;
 $gray-200: #666666 !default;
 $gray-300: #999999 !default;
-$gray-400: #BDBDBD !default;
-$gray-500: #EBEBEB !default;
-$gray-600: #F8F8F8 !default;
-$gray-700: #FBFBFB !default;
+$gray-400: #bdbdbd !default;
+$gray-500: #ebebeb !default;
+$gray-600: #f8f8f8 !default;
+$gray-700: #fbfbfb !default;
 
 // 字体
-$font-family-base: 'Helvetica Neue', Arial, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'microsoft yahei', 'STXihei', sans-serif;
+$font-family-base:
+  'Helvetica Neue', Arial, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'microsoft yahei', 'STXihei', sans-serif;
 $font-icon: '#{$prefixCls}-icon' !default;
 $font-size-sm: 12px !default;
 $font-size-base: 14px !default;
@@ -82,17 +83,20 @@ $btn-primary-color: $primary !default;
 $breadcrumb-primary: $primary;
 
 $theme-colors: () !default;
-$theme-colors: map.merge((
-  "primary":    $primary,
-  "secondary":  $secondary,
-  "brand":      $brand,
-  "success":    $success,
-  "info":       $info,
-  "warning":    $warning,
-  "danger":     $danger,
-  "light":      $light,
-  "dark":       $dark
-), $theme-colors);
+$theme-colors: map.merge(
+  (
+    'primary': $primary,
+    'secondary': $secondary,
+    'brand': $brand,
+    'success': $success,
+    'info': $info,
+    'warning': $warning,
+    'danger': $danger,
+    'light': $light,
+    'dark': $dark,
+  ),
+  $theme-colors
+);
 
 // Tabs  =======================
 $tab-primary: $primary;

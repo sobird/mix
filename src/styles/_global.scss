@@ -1,4 +1,4 @@
-@use "variables" as *;
+@use 'variables' as *;
 
 :root {
   --primary: #{$primary};
@@ -49,20 +49,18 @@
 
   --border-radius: #{$border-radius};
 
-
   --default-height: #{$input-height-base};
 }
 
-
 @mixin colorGroup($name, $value) {
   .#{$prefixCls}-#{$name}-text {
-      color: $value !important;
+    color: $value !important;
   }
   .#{$prefixCls}-#{$name}-bg {
-      background-color: $value !important;
+    background-color: $value !important;
   }
   .#{$prefixCls}-#{$name}-bc {
-      border-color: $value !important;
+    border-color: $value !important;
   }
 }
 

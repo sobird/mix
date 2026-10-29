@@ -6,17 +6,13 @@
 
 'use client';
 
-import {
-  Input, Button, Form, ConfigProvider,
-} from 'antd';
+import { Input, Button, Form, ConfigProvider } from 'antd';
 
 import { ActionStatus } from '@/actions';
 import { signUpAction } from '@/actions/user';
 import FieldCaptcha from '@/components/field-captcha';
 import useServerAction from '@/hooks/useServerAction';
-import {
-  usernameRule, passwordRule, emailRule, verificationCodeRule,
-} from '@/zod/user';
+import { usernameRule, passwordRule, emailRule, verificationCodeRule } from '@/zod/user';
 
 export const SignupForm = () => {
   const initialState: ServerActionState = {
@@ -33,11 +29,7 @@ export const SignupForm = () => {
           dispatch(values);
         }}
       >
-        <Form.Item
-          name="username"
-          validateDebounce={300}
-          rules={[usernameRule]}
-        >
+        <Form.Item name="username" validateDebounce={300} rules={[usernameRule]}>
           <Input placeholder="用户名" />
         </Form.Item>
         <Form.Item name="password" rules={[passwordRule]}>

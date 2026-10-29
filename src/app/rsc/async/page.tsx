@@ -20,11 +20,13 @@ export default async function Page() {
   // });
 
   // 注意: 没有使用 await, 所以从这里开始执行，但是客户端上面进行 await
-  const clientPromise = fetch('http://localhost:3000/api/rsc').then((data) => {
-    return data.json();
-  }).then((data) => {
-    return data;
-  });
+  const clientPromise = fetch('http://localhost:3000/api/rsc')
+    .then((data) => {
+      return data.json();
+    })
+    .then((data) => {
+      return data;
+    });
 
   return (
     <div>

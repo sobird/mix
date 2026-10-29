@@ -16,7 +16,8 @@
   overflow-x: hidden;
 
   // :global test
-  :global(.plyr), :global(.plyr__video-wrapper) {
+  :global(.plyr),
+  :global(.plyr__video-wrapper) {
     height: 100%;
   }
 
@@ -25,15 +26,14 @@
     overflow-y: overlay;
     height: calc(100% - 33px);
     border-right: none;
-  
+
     &::-webkit-scrollbar {
       background-color: transparent;
       width: 0px;
       // height: 4px;
     }
-  
+
     &:hover {
-  
       // 自定义滚动条
       /*定义滚动条高宽及背景
           高宽分别对应横竖滚动条的尺寸*/
@@ -41,13 +41,13 @@
         width: 0px;
         background-color: transparent;
       }
-  
+
       /*定义滚动条轨道
             内阴影+圆角*/
       &::-webkit-scrollbar-track {
         display: none;
       }
-  
+
       /*定义滑块
             内阴影+圆角*/
       &::-webkit-scrollbar-thumb {
@@ -99,11 +99,11 @@
     text-align: left;
     border-radius: 0;
     border-top: 1px solid rgb(232, 232, 232);
-  
+
     &:hover {
       background-color: rgba(0, 0, 0, 0.025);
     }
-  
+
     .iconfont {
       font-size: 20px;
       display: inline-block;
@@ -112,10 +112,7 @@
   }
 }
 
-
-
 .menu {
-
   // 菜单项通用样式
   .mix-menu {
     border-right: none !important;
@@ -167,7 +164,6 @@
 
     .mix-menu-item-selected {
       font-weight: 500;
-
     }
 
     .mix-menu-submenu-selected {
@@ -182,11 +178,9 @@
     }
   }
 
-
   .mix-menu-root {
-
     // 根菜单项
-    &>.mix-menu-item {
+    & > .mix-menu-item {
       background-color: transparent;
       line-height: normal;
       height: auto;
@@ -197,7 +191,7 @@
       }
     }
 
-    &>.mix-menu-item-selected {
+    & > .mix-menu-item-selected {
       &::after {
         border: 0;
       }
@@ -259,11 +253,11 @@
         }
       }
 
-      &>.mix-menu-item-divider {
+      & > .mix-menu-item-divider {
         display: none;
       }
 
-      &>.mix-menu-submenu {
+      & > .mix-menu-submenu {
         width: 100%;
         background-color: #f3f6f9;
         border-radius: 3px;
@@ -280,7 +274,7 @@
           }
         }
 
-        &>.mix-menu-sub {
+        & > .mix-menu-sub {
           width: auto;
           margin: 0 10px;
           background-color: transparent;
@@ -314,14 +308,14 @@
       margin: 0;
     }
 
-    &>.mix-menu-item {
+    & > .mix-menu-item {
       text-align: center;
       padding: 10px 0 !important;
 
       .iconfont {
         font-size: 18px;
 
-        &+span {
+        & + span {
           display: inline-block;
           max-width: 0;
           opacity: 0;
@@ -336,7 +330,7 @@
         .iconfont {
           font-size: 18px;
 
-          &+span {
+          & + span {
             display: inline-block;
             max-width: 0;
             opacity: 0;
@@ -368,15 +362,14 @@
   }
 }
 
-
 // 收藏夹
 .fav-submenu {
-  &>div {
+  & > div {
     cursor: default !important;
   }
 
   &-setting {
-    color: rgba(0, 0, 0, .6);
+    color: rgba(0, 0, 0, 0.6);
     font-size: 12px;
     cursor: pointer;
 
@@ -392,7 +385,7 @@
   }
 
   &-count {
-    color: rgba(0, 0, 0, .4);
+    color: rgba(0, 0, 0, 0.4);
     font-size: 12px;
   }
 
@@ -433,19 +426,16 @@
       font-size: 12px;
       position: absolute;
       right: 0;
-      color: var(--primary);    
+      color: var(--primary);
     }
   }
-
-  
 
   .filled {
     display: none;
   }
 
   &:hover {
-    .anticon {  
-      
+    .anticon {
     }
     .filled {
       display: block;

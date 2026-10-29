@@ -6,9 +6,7 @@
 
 'use client';
 
-import {
-  Form, FormProps, FormInstance, message,
-} from 'antd';
+import { Form, FormProps, FormInstance, message } from 'antd';
 import React from 'react';
 
 import { ActionStatus } from '@/actions';
@@ -17,7 +15,7 @@ import { useServerAction, useUpdate } from '@/hooks';
 
 export interface ActionFormProps extends Omit<FormProps, 'action'>, WithFormProps {
   action: FormServerAction;
-  submitter?: SubmitterProps<{ form?: FormInstance<any>; }> | false;
+  submitter?: SubmitterProps<{ form?: FormInstance<any> }> | false;
   /**
    * async server action finish
    *
@@ -68,24 +66,18 @@ const ActionForm: React.FC<ActionFormProps> = ({
     labelCol = undefined;
   }
   return (
-    <Form
-      layout={layout}
-      onFinish={dispatch}
-      labelCol={labelCol}
-      wrapperCol={wrapperCol}
-      {...props}
-    >
+    <Form layout={layout} onFinish={dispatch} labelCol={labelCol} wrapperCol={wrapperCol} {...props}>
       {children as any}
       {submitter !== false && (
-      <Submitter
-        labelCol={labelCol}
-        wrapperCol={wrapperCol}
-        // reversed
-        submitButtonProps={{
-          disabled: pending,
-        }}
-        {...submitter}
-      />
+        <Submitter
+          labelCol={labelCol}
+          wrapperCol={wrapperCol}
+          // reversed
+          submitButtonProps={{
+            disabled: pending,
+          }}
+          {...submitter}
+        />
       )}
     </Form>
   );

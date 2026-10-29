@@ -1,7 +1,7 @@
 'use client';
 
-import { redirect } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 // import { cache, use } from 'react';
 
 export default function Profile() {
@@ -16,9 +16,5 @@ export default function Profile() {
     return <p>Loading....</p>;
   }
 
-  return (
-    <div>
-      {JSON.stringify(status)}
-    </div>
-  );
+  return <div>{JSON.stringify(status)}</div>;
 }

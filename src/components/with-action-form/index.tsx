@@ -15,7 +15,9 @@ const withActionForm = (Slot: any) => {
     const { children, mode = 'create', data } = actionFormProps;
     return (
       <ActionForm {...actionFormProps}>
-        <Slot mode={mode} data={data}>{children}</Slot>
+        <Slot mode={mode} data={data}>
+          {children}
+        </Slot>
       </ActionForm>
     );
   };
