@@ -15,8 +15,16 @@ permissions:
   pull-requests: write
 
 jobs:
+  # Gate releases on checks and reuse the built artifacts in the deploy job.
+  ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      upload-artifacts: true
+
   release:
+    needs: ci
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       created: ${{ steps.release.outputs.release_created }}
     steps:
@@ -29,7 +37,9 @@ jobs:
           manifest-file: .release-please-manifest.json
 
   deploy:
-    if: needs.release.outputs.created
     needs: release
+    if: ${{ needs.release.outputs.created == 'true' }}
+    permissions:
+      contents: read
     uses: ./.github/workflows/deploy.yml
     secrets: inherit

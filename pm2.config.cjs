@@ -13,8 +13,8 @@ module.exports = {
       /** script path relative to pm2 start */
       script: 'server.js',
       // args: '-p 3000',
-      /** the directory from which your app will be launched */
-      // cwd: "",
+      /** the directory from which your app will be launched (release directory) */
+      cwd: __dirname,
       /** true by default. if false, PM2 will not restart your app if it crashes or ends peacefully */
       autorestart: true,
       /** enable watch & restart feature, if a file change in the folder or subfolder, your app will get reloaded */

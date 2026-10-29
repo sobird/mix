@@ -1,87 +1,179 @@
 name: deploy
 
 on:
-  # Runs on pushes targeting the default branch
-  # push:
-  #   branches: ["master"]
   workflow_call:
+    inputs:
+      build:
+        description: Build from source instead of downloading CI artifacts
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      build:
+        description: Build from source (no CI artifacts are available when run manually)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Never let two releases write to the same deployment directory concurrently.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  BUN_VERSION: 1.3.13
+  NODE_VERSION: 22
+  APP_PORT: 8085
+  # Baked into the client bundle at build time; configure as a repository variable.
+  NEXT_PUBLIC_baseURL: ${{ vars.NEXT_PUBLIC_baseURL }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
     steps:
-      - name: Checkout
+      - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org/
-
-      - name: Setup Bun
+      - name: Set up Bun
+        if: inputs.build
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.3.13
+          bun-version: ${{ env.BUN_VERSION }}
 
-      - name: Restore cache
+      - name: Set up Node
+        if: inputs.build
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore Bun cache
+        if: inputs.build
         uses: actions/cache@v6
         with:
-          path: |
-            ~/.bun/install/cache
+          path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
+        if: inputs.build
         run: bun install --frozen-lockfile
 
       - name: Build ☕️
+        if: inputs.build
         run: bun run build
 
-      - name: Copy Files
-        run: cp pm2.config.cjs .next/standalone
+      - name: Download build artifacts
+        if: ${{ !inputs.build }}
+        uses: actions/download-artifact@v8
+        with:
+          name: next-build
+          path: .
 
-      - name: Deploy Standalone 🚀
-        uses: appleboy/scp-action@v0.1.4
+      # Assemble the standalone server the way Next.js expects it:
+      # .next/static and public are not copied into the standalone output.
+      - name: Prepare release bundle
+        run: |
+          set -euo pipefail
+          cp pm2.config.cjs .next/standalone/pm2.config.cjs
+          rm -rf .next/standalone/.next/static .next/standalone/public
+          mkdir -p .next/standalone/.next
+          cp -R .next/static .next/standalone/.next/static
+          cp -R public .next/standalone/public
+          tar -czf release.tar.gz -C .next/standalone .
+
+      - name: Upload release bundle
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: '.next/standalone/**'
+          source: release.tar.gz
           target: ${{ secrets.TARGET }}
-          strip_components: 2
+          overwrite: true
 
-      - name: Deploy Static 🚀
-        uses: appleboy/scp-action@v0.1.4
+      - name: Deploy release
+        uses: appleboy/ssh-action@v1
+        env:
+          APP_ROOT: ${{ secrets.TARGET }}
+          APP_PORT: ${{ env.APP_PORT }}
+          RELEASE_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          AUTHMAIL: ${{ secrets.AUTHMAIL }}
+          AUTHCODE: ${{ secrets.AUTHCODE }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: '.next/static/**'
-          target: ${{ secrets.TARGET }}
-          strip_components: 0
-
-      - name: Deploy public 🚀
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          target: ${{ secrets.TARGET }}
-          source: 'public/**'
-          strip_components: 0
-
-      - name: Reload server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
+          command_timeout: 5m
+          envs: APP_ROOT,APP_PORT,RELEASE_ID,AUTHMAIL,AUTHCODE
           script: |
-            cd ${{ secrets.TARGET }}
-            PORT=8085 AUTHMAIL=${{ secrets.AUTHMAIL }} AUTHCODE=${{ secrets.AUTHCODE }} pm2 reload pm2.config.cjs
+            set -euo pipefail
+
+            cd "$APP_ROOT"
+
+            RELEASE_DIR="releases/$RELEASE_ID"
+            mkdir -p "$RELEASE_DIR"
+            tar -xzf release.tar.gz -C "$RELEASE_DIR"
+            rm -f release.tar.gz
+
+            # Keep runtime state (env files, SQLite database) outside the release
+            # directories so that every release keeps using the same data.
+            for file in .env .env.production .env.local .env.production.local database.sqlite; do
+              if [ -e "$APP_ROOT/$file" ]; then
+                ln -sfn "$APP_ROOT/$file" "$RELEASE_DIR/$file"
+              fi
+            done
+
+            FIRST_DEPLOY=0
+            PREVIOUS=""
+            if [ -L current ]; then
+              PREVIOUS="$(readlink current)"
+            else
+              FIRST_DEPLOY=1
+            fi
+
+            ln -sfn "$RELEASE_DIR" current
+            cd "$APP_ROOT/current"
+
+            if [ "$FIRST_DEPLOY" -eq 1 ]; then
+              # Migrate from the old in-place deployment: recreate the app so the
+              # process picks up the release directory (cwd) from pm2.config.cjs.
+              pm2 delete mix >/dev/null 2>&1 || true
+              PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 start pm2.config.cjs
+            else
+              PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 reload pm2.config.cjs
+            fi
+
+            healthy=0
+            status=""
+            for _ in $(seq 1 15); do
+              status="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$APP_PORT/" || true)"
+              if [ "$status" -ge 200 ] && [ "$status" -lt 500 ]; then
+                healthy=1
+                break
+              fi
+              sleep 2
+            done
+
+            if [ "$healthy" -ne 1 ]; then
+              echo "Health check failed (last status: ${status:-none}), rolling back"
+              if [ "$FIRST_DEPLOY" -eq 1 ]; then
+                # The previous in-place deployment is still untouched at APP_ROOT.
+                pm2 delete mix >/dev/null 2>&1 || true
+                cd "$APP_ROOT"
+                PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 start pm2.config.cjs
+              elif [ -n "$PREVIOUS" ]; then
+                ln -sfn "$PREVIOUS" current
+                cd "$APP_ROOT/current"
+                PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 reload pm2.config.cjs
+              fi
+              exit 1
+            fi
+
+            # Keep the last five releases for rollbacks.
+            ls -1dt "$APP_ROOT"/releases/* 2>/dev/null | tail -n +6 | xargs -r rm -rf

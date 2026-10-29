@@ -1,16 +1,29 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
+  workflow_call:
+    inputs:
+      upload-artifacts:
+        description: Upload the standalone build for a deploy job in the same run
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  BUN_VERSION: 1.3.13
+  NODE_VERSION: 22
+  # Baked into the client bundle at build time; configure as a repository variable.
+  NEXT_PUBLIC_baseURL: ${{ vars.NEXT_PUBLIC_baseURL }}
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -18,12 +31,12 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.3.13
+          bun-version: ${{ env.BUN_VERSION }}
 
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache Bun dependencies
         uses: actions/cache@v6
@@ -44,13 +57,9 @@ jobs:
       - name: Check formatting
         run: bun run format:check
 
-  test:
-    runs-on: ${{ matrix.platform }}
-    strategy:
-      matrix:
-        platform: [ubuntu-latest]
-        node: [22]
-      fail-fast: false
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -58,12 +67,12 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.3.13
+          bun-version: ${{ env.BUN_VERSION }}
 
-      - name: Set up Node ${{ matrix.node }}
+      - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache Bun dependencies
         uses: actions/cache@v6
@@ -71,6 +80,13 @@ jobs:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
           restore-keys: ${{ runner.os }}-bun-
+
+      - name: Cache Next.js build
+        uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-next-${{ hashFiles('**/bun.lock') }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-next-${{ hashFiles('**/bun.lock') }}-
 
       - name: Install Dependencies
         run: bun install --frozen-lockfile
@@ -80,3 +96,18 @@ jobs:
 
       - name: Test
         run: bunx vitest run
+
+      # Only needed by the deploy job; pull request runs do not consume it.
+      - name: Upload build artifacts
+        if: inputs.upload-artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: next-build
+          path: |
+            .next/standalone
+            .next/static
+            public
+            pm2.config.cjs
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
