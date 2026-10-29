@@ -10,14 +10,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run coverage` — tests with coverage
 - `bun run lint` / `bun run lint:fix` — oxlint
 - `bun run format` / `bun run format:check` — oxfmt
-- `bun run db:seed` — **destructive**: `sequelize.sync({ force: true })` on `./database.sqlite`
+- `bun run db:migrate` — run pending umzug migrations (baseline creates all tables)
+- `bun run db:sync-catalog` — sync the code-defined permission catalog and assign the first user as owner
+- `bun run db:seed` — migrate + catalog sync + seed on `./database.sqlite`; no `sync({ force: true })`, safe to re-run
+- `bun run build:db-tools` — bundle `scripts/db-tools.ts` to `dist/db-tools.cjs` for the deploy host
 
 Package manager is Bun (`bun.lock`); hooks run via `bunx`.
 
 ## Architecture
 
 - Next.js 16 + React 19, all app source under `src/`. Middleware lives in `src/proxy.ts` (Next 16 replacement for `middleware.ts`); path alias `@/*` → `src/*`.
-- Database is Sequelize 6 (SQLite at `./database.sqlite`, configured in `src/lib/sequelize.ts`, associations in `src/models/index.ts`). There are no migrations — schema comes from `db:seed`.
+- Database is Sequelize 6 (SQLite at `./database.sqlite`, configured in `src/lib/sequelize.ts`, associations in `src/models/index.ts`). Schema is managed by umzug migrations in `src/migrations/` (run through `src/lib/migrator.ts`; executed names are recorded in the `sequelize_meta` table). `db:seed` is migrate + catalog sync + seed — it no longer calls `sync({ force: true })`.
 - Auth is next-auth v4 with database sessions and a custom Sequelize adapter (`src/services/auth/adapter-sequelize.ts`).
 - Authorization uses CASL 7; query conversion lives in `src/lib/casl.ts` (`rulesToCondition`, not the removed `rulesToQuery`).
 - Form validation bridges zod 4 and antd via `src/zod/`; shared UI is antd 6 with SCSS modules.
