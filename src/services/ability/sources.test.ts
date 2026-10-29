@@ -37,26 +37,22 @@ describe('loadUserGrants', () => {
 
   it('skips expired and malformed grants', async () => {
     const role = await createRole();
-    const expired = await createPermission({
-      action: 'read',
-      subject: 'User',
-      expires: new Date('2000-01-01'),
-    });
+    const expired = await createPermission({ action: 'read', subject: 'User' });
     const broken = await createPermission({ action: 'update', subject: 'User' });
-    await createRolePermission({ roleId: role.id, permissionId: expired.id });
-    await createRolePermission({ roleId: role.id, permissionId: broken.id, rules: 'oops' as never });
+    await createRolePermission({ roleId: role.id, permissionId: expired.id, expiresAt: new Date('2000-01-01') });
+    await createRolePermission({ roleId: role.id, permissionId: broken.id, narrowing: 'oops' as never });
     await createUserRole({ userId: user.id, roleId: role.id });
 
     expect(await loadUserGrants(user.id)).toEqual([]);
   });
 
   it('dedupes grants with the same action, subject and narrowing', async () => {
-    const role = await createRole();
-    const first = await createPermission({ action: 'read', subject: 'User' });
-    const second = await createPermission({ action: 'read', subject: 'User' });
-    await createRolePermission({ roleId: role.id, permissionId: first.id });
-    await createRolePermission({ roleId: role.id, permissionId: second.id });
-    await createUserRole({ userId: user.id, roleId: role.id });
+    const parent = await createRole();
+    const child = await createRole({ parentId: parent.id });
+    const permission = await createPermission({ action: 'read', subject: 'User' });
+    await createRolePermission({ roleId: parent.id, permissionId: permission.id });
+    await createRolePermission({ roleId: child.id, permissionId: permission.id });
+    await createUserRole({ userId: user.id, roleId: child.id });
 
     const grants = await loadUserGrants(user.id);
     expect(grants).toHaveLength(1);

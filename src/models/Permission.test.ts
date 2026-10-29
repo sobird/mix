@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-import { ValidationError } from 'sequelize';
+import { UniqueConstraintError, ValidationError } from 'sequelize';
 
 import { Permission, Role, RolePermission } from '@/models';
 
@@ -25,11 +25,14 @@ describe('Permission model', () => {
       await expect(Permission.create({ name: null } as never)).rejects.toBeInstanceOf(ValidationError);
     });
 
-    it('allows nullable action and subject', async () => {
-      const permission = await createPermission({ action: null as never, subject: null as never });
+    it('requires action and subject', async () => {
+      await expect(Permission.create({ name: 'x' } as never)).rejects.toBeInstanceOf(ValidationError);
+    });
 
-      expect(permission.action).toBeNull();
-      expect(permission.subject).toBeNull();
+    it('rejects duplicate action/subject', async () => {
+      await createPermission({ action: 'read', subject: 'User' });
+
+      await expect(createPermission({ action: 'read', subject: 'User' })).rejects.toBeInstanceOf(UniqueConstraintError);
     });
 
     it('supports soft delete', async () => {

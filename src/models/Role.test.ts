@@ -102,19 +102,19 @@ describe('Role model', () => {
       expect(fresh?.Users).toHaveLength(1);
     });
 
-    it('links permissions through RolePermission and keeps the rules payload', async () => {
+    it('links permissions through RolePermission and keeps the narrowing payload', async () => {
       const role = await createRole();
       const permission = await createPermission({ action: 'read', subject: 'User' });
-      const rules = [{ action: 'read', fields: ['username', 'email'] }];
+      const narrowing = { fields: ['username', 'email'] };
 
-      await role.addPermission(permission, { through: { rules } });
+      await role.addPermission(permission, { through: { narrowing } });
 
       const fresh = await Role.findByPk(role.id, {
-        include: [{ model: Permission, through: { attributes: ['rules'] } }],
+        include: [{ model: Permission, through: { attributes: ['narrowing'] } }],
       });
 
       expect(fresh?.Permissions).toHaveLength(1);
-      expect(fresh?.Permissions[0].RolePermission.rules).toEqual(rules);
+      expect(fresh?.Permissions[0].RolePermission.narrowing).toEqual(narrowing);
       expect(await RolePermission.count()).toBe(1);
     });
 

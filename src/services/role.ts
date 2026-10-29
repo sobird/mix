@@ -50,7 +50,7 @@ class RoleService {
 
           await role.addPermission(permission, {
             through: {
-              rules: fields,
+              narrowing: fields?.length ? { fields } : null,
             },
           });
         }

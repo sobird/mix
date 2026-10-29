@@ -8,6 +8,7 @@ import {
   DataTypes,
   type Attributes,
   type CreationAttributes,
+  type CreationOptional,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -26,10 +27,18 @@ export type RolePermissionAttributes = Attributes<RolePermission>;
 /** Some attributes are optional in `RolePermission.build` and `RolePermission.create` calls */
 export type RolePermissionCreationAttributes = CreationAttributes<RolePermission>;
 
+/** 授予上的收紧规则，由 `normalizeNarrowing` 解析为 CASL 规则 */
+export interface RolePermissionNarrowing {
+  fields?: string[];
+  conditions?: Record<string, unknown>;
+  inverted?: boolean;
+}
+
 export class RolePermission extends BaseModel<RolePermission> {
   declare roleId: number;
   declare permissionId: number;
-  declare rules: JSON;
+  declare narrowing: CreationOptional<RolePermissionNarrowing> | null;
+  declare expiresAt: CreationOptional<Date> | null;
 
   // Role, alias 'Role'
   declare Role: NonAttribute<Role>;
@@ -72,9 +81,13 @@ RolePermission.init(
         key: 'id',
       },
     },
-    rules: {
+    narrowing: {
       type: DataTypes.JSON,
-      defaultValue: [],
+      allowNull: true,
+    },
+    expiresAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

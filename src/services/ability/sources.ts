@@ -83,12 +83,12 @@ export async function loadUserGrants(userId: number): Promise<AbilityGrant[]> {
       continue;
     }
 
-    // expires 为空表示永不过期；过期时间等于当前时刻同样视为过期
-    if (permission.expires && new Date(permission.expires).getTime() <= now) {
+    // expiresAt 为空表示永不过期；过期时间等于当前时刻同样视为过期
+    if (rolePermission.expiresAt && new Date(rolePermission.expiresAt).getTime() <= now) {
       continue;
     }
 
-    const narrowing = normalizeNarrowing(rolePermission.rules);
+    const narrowing = normalizeNarrowing(rolePermission.narrowing);
     if (narrowing === null) {
       console.warn(
         `[ability] 跳过无法解析的规则 roleId=${rolePermission.roleId} permissionId=${rolePermission.permissionId}`,
@@ -106,7 +106,7 @@ export async function loadUserGrants(userId: number): Promise<AbilityGrant[]> {
       action: permission.action,
       subject: permission.subject,
       narrowing,
-      expiresAt: permission.expires,
+      expiresAt: rolePermission.expiresAt,
     });
   }
 

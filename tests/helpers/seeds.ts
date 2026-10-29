@@ -159,15 +159,15 @@ export async function seedRolePermissions() {
 
   await RolePermission.findOrCreate({
     where: { roleId: admin.id, permissionId: manageAll.id },
-    defaults: { rules: [] },
+    defaults: { narrowing: null },
   } as never);
   await RolePermission.findOrCreate({
     where: { roleId: admin.id, permissionId: readUser.id },
-    defaults: { rules: [{ action: 'read', fields: ['username', 'email'] }] },
+    defaults: { narrowing: { fields: ['username', 'email'] } },
   } as never);
   await RolePermission.findOrCreate({
     where: { roleId: admin.id, permissionId: updateUser.id },
-    defaults: { rules: [] },
+    defaults: { narrowing: null },
   } as never);
 
   return { admin };

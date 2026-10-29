@@ -28,6 +28,17 @@ describe('UserRole model', () => {
     expect(UserRole.primaryKeyAttributes).toEqual(['userId', 'roleId']);
   });
 
+  it('stores expiresAt', async () => {
+    const user = await createUser();
+    const role = await createRole();
+    const expiresAt = new Date('2099-12-31T00:00:00.000Z');
+
+    const userRole = await createUserRole({ userId: user.id, roleId: role.id, expiresAt });
+
+    await userRole.reload();
+    expect(userRole.expiresAt?.toISOString()).toBe(expiresAt.toISOString());
+  });
+
   it('belongs to user and role', async () => {
     const user = await createUser();
     const role = await createRole();

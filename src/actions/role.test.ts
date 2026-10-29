@@ -34,17 +34,17 @@ describe('saveRolePermissions', () => {
     vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]));
   });
 
-  it('replaces a role permissions and stores the rules payload', async () => {
+  it('replaces a role permissions and stores the narrowing payload', async () => {
     await saveRolePermissions(1, permissions);
 
     const rows = await RolePermission.findAll({ where: { roleId: 1 } });
     expect(rows).toHaveLength(2);
 
     const role = await Role.findByPk(1, {
-      include: [{ model: Permission, through: { attributes: ['rules'] } }],
+      include: [{ model: Permission, through: { attributes: ['narrowing'] } }],
     });
     const read = role?.Permissions.find((permission) => permission.action === 'read');
-    expect(read?.RolePermission.rules).toEqual(['username', 'email']);
+    expect(read?.RolePermission.narrowing).toEqual({ fields: ['username', 'email'] });
   });
 
   it('is idempotent when called repeatedly', async () => {

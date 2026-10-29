@@ -49,7 +49,6 @@ export class Permission extends BaseModel<Permission> {
   declare description: string;
   declare subject: string;
   declare action: string;
-  declare expires: CreationOptional<Date>;
   declare isBuiltin: CreationOptional<boolean>;
   declare RolePermission: NonAttribute<RolePermission>;
 
@@ -97,13 +96,11 @@ Permission.init(
     },
     action: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     subject: {
       type: DataTypes.STRING,
-    },
-    expires: {
-      type: DataTypes.DATE,
-      comment: 'Permission Expires',
+      allowNull: false,
     },
     isBuiltin: {
       type: DataTypes.BOOLEAN,
@@ -113,13 +110,13 @@ Permission.init(
   {
     sequelize,
     modelName: 'Permission',
-    // indexes: [
-    //   {
-    //     unique: true,
-    //     fields: ['action', 'subject'],
-    //     name: 'unique_permission',
-    //   },
-    // ],
+    indexes: [
+      {
+        unique: true,
+        fields: ['action', 'subject'],
+        name: 'permissions_action_subject',
+      },
+    ],
     comment: '用户权限表',
   },
 );

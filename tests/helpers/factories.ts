@@ -57,7 +57,12 @@ export function createRole(overrides: Partial<RoleCreationAttributes> = {}) {
 }
 
 export function createPermission(overrides: Partial<PermissionCreationAttributes> = {}) {
-  return Permission.create({ name: nextKey('permission'), ...overrides } as PermissionCreationAttributes);
+  return Permission.create({
+    name: nextKey('permission'),
+    action: 'read',
+    subject: nextKey('subject'),
+    ...overrides,
+  } as PermissionCreationAttributes);
 }
 
 export function createRolePermission(overrides: Partial<RolePermissionCreationAttributes> = {}) {

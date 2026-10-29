@@ -8,6 +8,7 @@ import {
   DataTypes,
   type Attributes,
   type CreationAttributes,
+  type CreationOptional,
   type Association,
   type NonAttribute,
   type BelongsToGetAssociationMixin,
@@ -29,6 +30,7 @@ export type UserRoleCreationAttributes = CreationAttributes<UserRole>;
 export class UserRole extends BaseModel<UserRole> {
   declare userId: number;
   declare roleId: number;
+  declare expiresAt: CreationOptional<Date> | null;
 
   // User, alias 'User'
   declare User: NonAttribute<User>;
@@ -70,6 +72,10 @@ UserRole.init(
         model: Role,
         key: 'id',
       },
+    },
+    expiresAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

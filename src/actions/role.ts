@@ -183,7 +183,7 @@ export const saveRolePermissions = async (roleId, permissions) => {
 
         await role.addPermission(permission, {
           through: {
-            rules: fields,
+            narrowing: fields?.length ? { fields } : null,
           },
         });
       }

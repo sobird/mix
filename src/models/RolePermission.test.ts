@@ -10,28 +10,32 @@ import { createPermission, createRole, createRolePermission } from '../../tests/
 useInMemoryDatabase();
 
 describe('RolePermission model', () => {
-  it('defaults rules to an empty array', async () => {
+  it('leaves narrowing null by default', async () => {
     const role = await createRole();
     const permission = await createPermission();
 
     const rolePermission = await createRolePermission({ roleId: role.id, permissionId: permission.id });
 
-    expect(rolePermission.rules).toEqual([]);
+    await rolePermission.reload();
+    expect(rolePermission.narrowing).toBeNull();
   });
 
-  it('stores the rules JSON payload', async () => {
+  it('stores narrowing as JSON and expiresAt', async () => {
     const role = await createRole();
     const permission = await createPermission();
-    const rules = [{ action: 'read', fields: ['username'] }];
+    const narrowing = { fields: ['email'] };
+    const future = new Date('2099-12-31T00:00:00.000Z');
 
     const rolePermission = await createRolePermission({
       roleId: role.id,
       permissionId: permission.id,
-      rules: rules as never,
+      narrowing,
+      expiresAt: future,
     });
 
     await rolePermission.reload();
-    expect(rolePermission.rules).toEqual(rules);
+    expect(rolePermission.narrowing).toEqual(narrowing);
+    expect(rolePermission.expiresAt?.toISOString()).toBe(future.toISOString());
   });
 
   it('requires roleId and permissionId', async () => {
