@@ -22,8 +22,10 @@ import {
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
+import { resolveLogLevel } from './logger';
+
 const logger = log4js.getLogger('sequelize');
-logger.level = log4js.levels.DEBUG;
+logger.level = resolveLogLevel(process.env);
 
 /** 数据库链接实例 */
 export const sequelize = new Sequelize({
