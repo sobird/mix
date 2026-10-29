@@ -6,6 +6,7 @@
 
 import { Role, Permission, User, UserRole, sequelize } from '@/models';
 import { isAllowed, type AppAbility } from '@/services/ability';
+import { queryAccessible } from '@/services/ability/query';
 
 import { paginateAccessible, type PageQuery } from './access';
 import { ForbiddenError, NotFoundError } from './errors';
@@ -85,6 +86,13 @@ class RoleService {
   /** 分页读取当前用户可访问的角色 */
   static async listWithPage(ability: AppAbility, query: PageQuery) {
     return paginateAccessible(Role, ability, 'read', query);
+  }
+
+  /** 读取当前用户可访问的角色选项，用于表单下拉；无权时返回空数组 */
+  static async listOptions(ability: AppAbility): Promise<Array<{ value: number; label: string }>> {
+    const roles = await queryAccessible(Role, ability, 'read');
+
+    return roles.map((role) => ({ value: role.id, label: role.name }));
   }
 
   /** 读取可编辑的角色，包含其权限关联 */

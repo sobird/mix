@@ -12,9 +12,14 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { FC } from 'react';
 
 import { deleteRoleAction } from '@/actions/role';
-import { Role, RoleAttributes } from '@/models';
+import type { RoleAttributes } from '@/models/Role';
 
-type RoleTableData = Awaited<ReturnType<typeof Role.findManyByPage<Role>>>;
+interface RoleTableData {
+  pn: number;
+  ps: number;
+  count: number;
+  rows: RoleAttributes[];
+}
 
 interface RoleTableProps {
   data: RoleTableData;

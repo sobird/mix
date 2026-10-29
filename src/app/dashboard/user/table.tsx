@@ -12,9 +12,14 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { FC } from 'react';
 
 import { deleteUserAction } from '@/actions/user';
-import { User, UserAttributes } from '@/models';
+import type { UserAttributes } from '@/models/User';
 
-type UserTableData = Awaited<ReturnType<typeof User.findManyByPage<User>>>;
+interface UserTableData {
+  pn: number;
+  ps: number;
+  count: number;
+  rows: UserAttributes[];
+}
 
 interface UserTableProps {
   data: UserTableData;

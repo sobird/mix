@@ -82,6 +82,21 @@ describe('RoleService.savePermissions', () => {
   });
 });
 
+describe('RoleService.listOptions', () => {
+  it('returns an empty list without read access', async () => {
+    await createRole();
+
+    await expect(RoleService.listOptions(buildAbility([]))).resolves.toEqual([]);
+  });
+
+  it('returns role options for an unconditional read grant', async () => {
+    const role = await createRole();
+    const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: {} }]);
+
+    await expect(RoleService.listOptions(ability)).resolves.toContainEqual({ value: role.id, label: role.name });
+  });
+});
+
 describe('RoleService.assignOwnerToFirstUser', () => {
   it('assigns owner to the earliest user only', async () => {
     const first = await createUser();
