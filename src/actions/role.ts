@@ -10,8 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { Role, Permission, sequelize } from '@/models';
-import { defineAbilityFor } from '@/services/ability/legacy';
-import { getServerAuthToken } from '@/services/auth';
+import { getCurrentAbility, isAllowed } from '@/services/ability';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 
 import { ActionStatus } from '.';
@@ -26,6 +25,15 @@ type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;
  * @returns
  */
 export async function createRoleAction(payload: RoleFormAttributes): Promise<RoleFormServerActionState> {
+  const ability = await getCurrentAbility();
+
+  if (!isAllowed(ability, 'create', 'Role')) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '您没有创建角色的权限',
+    };
+  }
+
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
@@ -50,6 +58,10 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
   }
 
   revalidatePath('/dashboard/role');
+
+  return {
+    status: ActionStatus.SUCCESS,
+  };
 }
 
 // 创建角色成功跳转列表页
@@ -59,15 +71,7 @@ export async function createRoleActionWithRedirect(payload: RoleFormAttributes) 
 }
 
 export async function updateRoleAction(payload: RoleFormAttributes): Promise<RoleFormServerActionState> {
-  const token = await getServerAuthToken();
-  const ability = defineAbilityFor(token);
-
-  if (ability.cannot('update', 'Role')) {
-    return {
-      status: ActionStatus.FAILURE,
-      message: '您没有更新角色的权限',
-    };
-  }
+  const ability = await getCurrentAbility();
 
   const validated = RoleFormZod.safeParse(payload);
 
@@ -76,6 +80,22 @@ export async function updateRoleAction(payload: RoleFormAttributes): Promise<Rol
       status: ActionStatus.FAILURE,
       errors: validated.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Update Role.',
+    };
+  }
+
+  const role = await Role.findByPk(payload.id);
+
+  if (!role) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '角色不存在',
+    };
+  }
+
+  if (!isAllowed(ability, 'update', 'Role', role)) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '您没有更新角色的权限',
     };
   }
 
@@ -99,23 +119,57 @@ export async function updateRoleAction(payload: RoleFormAttributes): Promise<Rol
 }
 
 export async function deleteRoleAction(id: string) {
-  const role = await Role.destroy({
+  const ability = await getCurrentAbility();
+  const role = await Role.findByPk(id);
+
+  if (!role) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '角色不存在',
+    };
+  }
+
+  if (!isAllowed(ability, 'delete', 'Role', role)) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '您没有删除角色的权限',
+    };
+  }
+
+  const destroyed = await Role.destroy({
     where: {
       id,
     },
   });
   revalidatePath('/dashboard/role');
-  return role;
+  return destroyed;
 }
 
 export const saveRolePermissions = async (roleId, permissions) => {
+  const ability = await getCurrentAbility();
+
   // 开启事务（确保原子性）
   const transaction = await sequelize.transaction();
 
   try {
     // 1. 查找目标角色
     const role = await Role.findByPk(roleId, { transaction });
-    if (!role) throw new Error('角色不存在');
+
+    if (!role) {
+      await transaction.rollback();
+      return {
+        status: ActionStatus.FAILURE,
+        message: '角色不存在',
+      };
+    }
+
+    if (!isAllowed(ability, 'update', 'Role', role)) {
+      await transaction.rollback();
+      return {
+        status: ActionStatus.FAILURE,
+        message: '您没有更新角色的权限',
+      };
+    }
 
     // 2. 删除该角色所有旧权限（避免残留）
     await role.setPermissions([], { transaction });
@@ -137,6 +191,10 @@ export const saveRolePermissions = async (roleId, permissions) => {
 
     // 提交事务
     await transaction.commit();
+
+    return {
+      status: ActionStatus.SUCCESS,
+    };
   } catch (error) {
     console.log('error', error.message);
     // 回滚事务

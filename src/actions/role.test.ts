@@ -1,8 +1,17 @@
 import { Permission, Role, RolePermission } from '@/models';
+import { buildAbility, getCurrentAbility } from '@/services/ability';
 
-import { saveRolePermissions } from './role';
+import { ActionStatus } from '.';
+import { createRole } from '../../tests/helpers/factories';
+import { createRoleAction, deleteRoleAction, saveRolePermissions, updateRoleAction } from './role';
 
 vi.mock('@/models');
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn<() => void>() }));
+
+vi.mock('@/services/ability', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/services/ability')>();
+  return { ...actual, getCurrentAbility: vi.fn<typeof actual.getCurrentAbility>() };
+});
 
 const permissions = [
   {
@@ -14,7 +23,15 @@ const permissions = [
   },
 ];
 
+beforeEach(() => {
+  vi.mocked(getCurrentAbility).mockReset();
+});
+
 describe('saveRolePermissions', () => {
+  beforeEach(() => {
+    vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]));
+  });
+
   it('replaces a role permissions and stores the rules payload', async () => {
     await saveRolePermissions(1, permissions);
 
@@ -33,5 +50,27 @@ describe('saveRolePermissions', () => {
     await saveRolePermissions(1, permissions);
 
     expect(await RolePermission.count({ where: { roleId: 1 } })).toBe(2);
+  });
+});
+
+describe('role authorization', () => {
+  it('rejects create/delete for a user without permission', async () => {
+    vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([]));
+    expect((await createRoleAction({ name: '测试角色2' }))!.status).toBe(ActionStatus.FAILURE);
+    expect(await deleteRoleAction('1')).toEqual(expect.objectContaining({ status: ActionStatus.FAILURE }));
+  });
+
+  it('allows an owner to create a role', async () => {
+    vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]));
+    expect((await createRoleAction({ name: '新角色' }))!.status).not.toBe(ActionStatus.FAILURE);
+  });
+
+  it('checks the target instance for update', async () => {
+    vi.mocked(getCurrentAbility).mockResolvedValue(
+      buildAbility([{ action: 'update', subject: 'Role', narrowing: { conditions: { id: 1 } } }]),
+    );
+    const other = await createRole();
+    // 名称需满足 3 字符下限，否则会先触发表单校验，无法覆盖实例级检查
+    expect((await updateRoleAction({ id: other.id, name: '改名测试' }))!.status).toBe(ActionStatus.FAILURE);
   });
 });
