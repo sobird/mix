@@ -13,7 +13,7 @@ import { getCsrfAuthToken } from '@/services/auth';
 import styles from './index.module.scss';
 
 interface ProvidersProps {
-  callbackUrl: string;
+  callbackUrl?: string;
 }
 
 const Providers: React.FC<ProvidersProps> = async ({ callbackUrl }) => {

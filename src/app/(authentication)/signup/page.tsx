@@ -1,5 +1,6 @@
 import { Divider, Typography } from 'antd';
 import classNames from 'classnames';
+import { Metadata } from 'next';
 import Link from 'next/link';
 
 import Providers from '@/components/providers';
@@ -8,7 +9,15 @@ import { SignupForm } from './form';
 
 import styles from './index.module.scss';
 
-export default async function RegisterPage({ searchParams }) {
+export const metadata: Metadata = {
+  title: '注册账号',
+};
+
+interface SearchParams {
+  callbackUrl?: string;
+}
+
+const RegisterPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
   const { callbackUrl } = await searchParams;
 
   return (
@@ -28,4 +37,6 @@ export default async function RegisterPage({ searchParams }) {
       </div>
     </>
   );
-}
+};
+
+export default RegisterPage;
