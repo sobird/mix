@@ -5,8 +5,23 @@
  */
 
 import { Role, Permission, User, UserRole, sequelize } from '@/models';
+import { isAllowed, type AppAbility } from '@/services/ability';
+
+import { paginateAccessible, type PageQuery } from './access';
+import { ForbiddenError, NotFoundError } from './errors';
 
 const OWNER_ROLE_NAME = '拥有者';
+
+export interface RoleWriteData {
+  name: string;
+  description?: string | null;
+  parentId?: number;
+}
+
+export interface PermissionInput {
+  subject: string;
+  actions: { action: string; fields?: string[] }[];
+}
 
 const OWNER_ROLE_DEFAULTS = {
   name: OWNER_ROLE_NAME,
@@ -67,33 +82,99 @@ class RoleService {
     });
   }
 
-  static async savePermissions(roleId: number, permissions) {
-    const transaction = await sequelize.transaction();
+  /** 分页读取当前用户可访问的角色 */
+  static async listWithPage(ability: AppAbility, query: PageQuery) {
+    return paginateAccessible(Role, ability, 'read', query);
+  }
 
-    try {
-      const role = await Role.findByPk(roleId, { transaction });
-      if (!role) throw new Error('角色不存在');
+  /** 读取可编辑的角色，包含其权限关联 */
+  static async findForEdit(ability: AppAbility, id: number | string): Promise<Role> {
+    const role = await Role.findByPk(id, { include: [Role.associations.Permissions] });
 
+    if (!role) {
+      throw new NotFoundError('角色不存在');
+    }
+
+    if (!isAllowed(ability, 'update', 'Role', role)) {
+      throw new ForbiddenError('您没有更新角色的权限');
+    }
+
+    return role;
+  }
+
+  static async create(ability: AppAbility, data: RoleWriteData): Promise<[Role, boolean]> {
+    if (!isAllowed(ability, 'create', 'Role')) {
+      throw new ForbiddenError('您没有创建角色的权限');
+    }
+
+    return Role.findOrCreate({
+      defaults: data,
+      where: { name: data.name },
+    });
+  }
+
+  static async update(ability: AppAbility, id: number | string, data: RoleWriteData): Promise<void> {
+    const role = await Role.findByPk(id);
+
+    if (!role) {
+      throw new NotFoundError('角色不存在');
+    }
+
+    if (!isAllowed(ability, 'update', 'Role', role)) {
+      throw new ForbiddenError('您没有更新角色的权限');
+    }
+
+    await role.update(data);
+  }
+
+  static async remove(ability: AppAbility, id: number | string): Promise<void> {
+    const role = await Role.findByPk(id);
+
+    if (!role) {
+      throw new NotFoundError('角色不存在');
+    }
+
+    if (!isAllowed(ability, 'delete', 'Role', role)) {
+      throw new ForbiddenError('您没有删除角色的权限');
+    }
+
+    await role.destroy();
+  }
+
+  /** 以给定权限集合整体替换角色的授予 */
+  static async savePermissions(ability: AppAbility, roleId: number, permissions: PermissionInput[]): Promise<void> {
+    const role = await Role.findByPk(roleId);
+
+    if (!role) {
+      throw new NotFoundError('角色不存在');
+    }
+
+    if (!isAllowed(ability, 'update', 'Role', role)) {
+      throw new ForbiddenError('您没有更新角色的权限');
+    }
+
+    await sequelize.transaction(async (transaction) => {
       await role.setPermissions([], { transaction });
 
-      for await (const { subject, actions } of permissions) {
-        for await (const { action, fields } of actions) {
+      for (const { subject, actions } of permissions) {
+        for (const { action, fields } of actions) {
+          // SQLite 单连接下事务内的查询必须串行，不能并发
+          // oxlint-disable-next-line no-await-in-loop
           const [permission] = await Permission.findOrCreate({
             where: { action, subject },
             transaction,
           });
 
+          // oxlint-disable-next-line no-await-in-loop
           await role.addPermission(permission, {
             through: {
               narrowing: fields?.length ? { fields } : null,
             },
+            transaction,
           });
         }
       }
-      await transaction.commit();
-    } catch {
-      await transaction.rollback();
-    }
+    });
   }
 }
 

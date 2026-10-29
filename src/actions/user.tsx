@@ -8,9 +8,11 @@ import CaptchaEmailBody from '@/components/email-template/captcha';
 import { generate, verify } from '@/lib/otp';
 import reactToHtml from '@/lib/reactToHtml';
 import { User } from '@/models';
-import { getCurrentAbility, isAllowed } from '@/services/ability';
+import { getCurrentAbility } from '@/services/ability';
+import { ForbiddenError, NotFoundError } from '@/services/errors';
 import { transporter } from '@/services/mailer';
 import RoleService from '@/services/role';
+import { UserService } from '@/services/user';
 import { signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod } from '@/zod/user';
 
 import { ActionStatus } from '.';
@@ -53,15 +55,6 @@ export async function signUpAction(payload: SignUpAttributes): Promise<UserServe
 }
 
 export async function createUserAction(payload: UserAttributes): Promise<UserServerActionState> {
-  const ability = await getCurrentAbility();
-
-  if (!isAllowed(ability, 'create', 'User')) {
-    return {
-      status: ActionStatus.FAILURE,
-      message: '您没有创建用户的权限',
-    };
-  }
-
   const validated = await createUserZod.safeParseAsync(payload);
   if (!validated.success) {
     return {
@@ -70,27 +63,28 @@ export async function createUserAction(payload: UserAttributes): Promise<UserSer
       message: 'Validation Fields Failed to Sign Up.',
     };
   }
-  const { data } = validated;
-  const [user, created] = await User.findOrCreate({
-    defaults: {
-      ...data,
-      emailVerified: new Date(),
-    },
-    where: {
-      [Op.or]: [{ username: data.username }, { email: data.email }],
-    },
-  });
-  // 已存在
-  if (!created) {
-    return {
-      status: ActionStatus.FAILURE,
-      message: '账户已存在',
-    };
-  }
 
-  await RoleService.assignDefaultRole(user.id);
-  if (data.roles?.length) {
-    await user.setRoles(data.roles);
+  const ability = await getCurrentAbility();
+
+  try {
+    const [, created] = await UserService.create(ability, validated.data);
+
+    // 已存在
+    if (!created) {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '账户已存在',
+      };
+    }
+  } catch (error) {
+    if (error instanceof ForbiddenError) {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '您没有创建用户的权限',
+      };
+    }
+
+    throw error;
   }
 
   revalidatePath('/dashboard/user');
@@ -99,7 +93,6 @@ export async function createUserAction(payload: UserAttributes): Promise<UserSer
 
 // 更新用户信息
 export async function updateUserAction(payload: UserAttributes): Promise<UserServerActionState> {
-  const ability = await getCurrentAbility();
   const validated = await updateUserZod.safeParseAsync(payload);
 
   if (!validated.success) {
@@ -110,35 +103,33 @@ export async function updateUserAction(payload: UserAttributes): Promise<UserSer
     };
   }
 
-  try {
-    const { data } = validated;
-    const target = await User.findByPk(payload.id);
+  const ability = await getCurrentAbility();
 
-    if (!target) {
+  try {
+    await UserService.update(ability, payload.id as number, validated.data);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
       return {
         status: ActionStatus.FAILURE,
         message: '用户不存在',
       };
     }
 
-    if (!isAllowed(ability, 'update', 'User', target)) {
+    if (error instanceof ForbiddenError) {
       return {
         status: ActionStatus.FAILURE,
         message: '您没有更新用户的权限',
       };
     }
 
-    await target.update(data);
-    if (data.roles?.length) {
-      await target.setRoles(data.roles);
-    }
-  } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       return {
         status: ActionStatus.FAILURE,
         message: '用户已存在',
       };
     }
+
+    throw error;
   }
 
   revalidatePath('/dashboard/user');
@@ -147,29 +138,29 @@ export async function updateUserAction(payload: UserAttributes): Promise<UserSer
 
 export async function deleteUserAction(id: string) {
   const ability = await getCurrentAbility();
-  const user = await User.findByPk(id);
 
-  if (!user) {
-    return {
-      status: ActionStatus.FAILURE,
-      message: '用户不存在',
-    };
+  try {
+    await UserService.remove(ability, id);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '用户不存在',
+      };
+    }
+
+    if (error instanceof ForbiddenError) {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '您没有删除用户的权限',
+      };
+    }
+
+    throw error;
   }
 
-  if (!isAllowed(ability, 'delete', 'User', user)) {
-    return {
-      status: ActionStatus.FAILURE,
-      message: '您没有删除用户的权限',
-    };
-  }
-
-  const destroyed = await User.destroy({
-    where: {
-      id,
-    },
-  });
   revalidatePath('/dashboard/user');
-  return destroyed;
+  return { status: ActionStatus.SUCCESS };
 }
 
 /**

@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 
-import { Permission, Role, RolePermission } from '@/models';
+import { Permission, RolePermission } from '@/models';
 import { buildAbility, getCurrentAbility } from '@/services/ability';
 
 import { ActionStatus } from '.';
@@ -37,14 +37,14 @@ describe('saveRolePermissions', () => {
   it('replaces a role permissions and stores the narrowing payload', async () => {
     await saveRolePermissions(1, permissions);
 
-    const rows = await RolePermission.findAll({ where: { roleId: 1 } });
+    const rows = await RolePermission.findAll({
+      where: { roleId: 1 },
+      include: [{ model: Permission, required: true }],
+    });
     expect(rows).toHaveLength(2);
 
-    const role = await Role.findByPk(1, {
-      include: [{ model: Permission, through: { attributes: ['narrowing'] } }],
-    });
-    const read = role?.Permissions.find((permission) => permission.action === 'read');
-    expect(read?.RolePermission.narrowing).toEqual({ fields: ['username', 'email'] });
+    const read = rows.find((row) => row.Permission.action === 'read');
+    expect(read?.narrowing).toEqual({ fields: ['username', 'email'] });
   });
 
   it('is idempotent when called repeatedly', async () => {

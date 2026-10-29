@@ -9,7 +9,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
 
-import { User } from '@/models';
+import { getCurrentAbility } from '@/services/ability';
+import { UserService } from '@/services/user';
 
 import UserTable from './table';
 
@@ -22,7 +23,8 @@ interface SearchParams extends PaginationSearchParams {
 }
 
 const UserPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
-  const userWithPage = await User.findManyByPage(await searchParams);
+  const ability = await getCurrentAbility();
+  const userWithPage = await UserService.listWithPage(ability, await searchParams);
 
   return (
     <div>

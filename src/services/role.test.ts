@@ -3,7 +3,9 @@
 import { Role, UserRole } from '@/models';
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
-import { createUser } from '../../tests/helpers/factories';
+import { createRole, createUser } from '../../tests/helpers/factories';
+import { buildAbility } from './ability';
+import { ForbiddenError } from './errors';
 import { syncPermissionCatalog } from './permission-catalog';
 import RoleService from './role';
 
@@ -41,6 +43,22 @@ describe('RoleService.assignDefaultRole', () => {
     expect(await UserRole.count({ where: { userId: user.id } })).toBe(0);
 
     warn.mockRestore();
+  });
+});
+
+describe('RoleService write authorization', () => {
+  it('rejects writes from a member', async () => {
+    const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: {} }]);
+    await expect(RoleService.create(ability, { name: '新角色' })).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it('checks the role instance on update', async () => {
+    const allowed = await createRole();
+    const other = await createRole();
+    const ability = buildAbility([
+      { action: 'update', subject: 'Role', narrowing: { conditions: { id: allowed.id } } },
+    ]);
+    await expect(RoleService.update(ability, other.id, { name: '改名' })).rejects.toBeInstanceOf(ForbiddenError);
   });
 });
 

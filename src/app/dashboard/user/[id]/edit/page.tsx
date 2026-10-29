@@ -9,7 +9,9 @@ import React from 'react';
 
 import { updateUserAction } from '@/actions/user';
 import UserForm from '@/app/dashboard/user/components/user-form';
-import { User, Role } from '@/models';
+import { getCurrentAbility } from '@/services/ability';
+import { NotFoundError } from '@/services/errors';
+import { UserService } from '@/services/user';
 
 interface UserEditPageParams {
   id: string;
@@ -18,31 +20,18 @@ interface UserEditPageParams {
 const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
   const { id } = await params;
 
-  const user = await User.findOne({
-    where: {
-      id,
-    },
-    attributes: {
-      exclude: ['password'],
-    },
-    include: [
-      {
-        model: Role,
-        attributes: ['id'],
-      },
-    ],
-  });
+  const ability = await getCurrentAbility();
 
-  if (!user) {
-    notFound();
+  let initialValues;
+  try {
+    initialValues = await UserService.findForEdit(ability, id);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      notFound();
+    }
+
+    throw error;
   }
-
-  const { Roles, ...initialValues } = user.toJSON() as ReturnType<typeof user.toJSON> & {
-    Roles?: { id: number }[];
-  };
-  (initialValues as any).roles = Roles?.map((item) => {
-    return item.id;
-  });
 
   return <UserForm action={updateUserAction} initialValues={initialValues} mode="edit" />;
 };
