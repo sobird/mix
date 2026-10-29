@@ -1,12 +1,12 @@
 // @vitest-environment node
 
-import { mkdtemp, readdir, rm, utimes, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, utimes, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { Sequelize } from 'sequelize';
 
-import { backupDatabase, pruneBackups } from './backup';
+import { backupDatabase, pruneBackups, restoreDatabase } from './backup';
 
 async function makeTempDir(): Promise<string> {
   return mkdtemp(join(tmpdir(), 'mix-backup-'));
@@ -45,6 +45,44 @@ describe('pruneBackups', () => {
 
   it('returns zero when the directory does not exist', async () => {
     expect(await pruneBackups(join(dir, 'missing'), 5)).toBe(0);
+  });
+});
+
+describe('restoreDatabase', () => {
+  it('restores a valid backup and keeps a pre-restore copy', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'mix-restore-'));
+    const target = join(dir, 'database.sqlite');
+    const backup = join(dir, 'backup.sqlite');
+    await writeFile(target, 'old');
+    await writeFile(backup, Buffer.concat([Buffer.from('SQLite format 3\0'), Buffer.from('new')]));
+    await restoreDatabase(backup, target);
+    expect(await readFile(target, 'utf8')).toBe('SQLite format 3\0new');
+    expect((await readdir(dir)).some((name) => name.startsWith('database.sqlite.pre-restore-'))).toBe(true);
+  });
+
+  it('refuses a corrupt backup and leaves the target untouched', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'mix-restore-'));
+    const target = join(dir, 'database.sqlite');
+    const backup = join(dir, 'backup.sqlite');
+    await writeFile(target, 'keep-me');
+    await writeFile(backup, 'not-a-database');
+    // oxlint-disable-next-line vitest/require-to-throw-message
+    await expect(restoreDatabase(backup, target)).rejects.toThrow();
+    expect(await readFile(target, 'utf8')).toBe('keep-me');
+  });
+
+  it('prunes older backups and keeps the newest', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'mix-backups-'));
+    for (let i = 0; i < 7; i += 1) {
+      const file = join(dir, `db-${i}.sqlite`);
+      // 顺序写入并设置 mtime，保证保留最新的判定稳定
+      // oxlint-disable-next-line no-await-in-loop
+      await writeFile(file, String(i));
+      // oxlint-disable-next-line no-await-in-loop
+      await utimes(file, new Date(2026, 0, i + 1), new Date(2026, 0, i + 1));
+    }
+    expect(await pruneBackups(dir, 5)).toBe(2);
+    expect(await readdir(dir)).toContain('db-6.sqlite');
   });
 });
 

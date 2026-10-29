@@ -1,22 +1,26 @@
 import { mkdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { pendingMigrations, runMigrations } from '@/lib/migrator';
 import { sequelize } from '@/models';
-import { backupDatabase, pruneBackups } from '@/services/backup';
+import { backupDatabase, pruneBackups, restoreDatabase } from '@/services/backup';
 import { syncMenuCatalog } from '@/services/menu-catalog';
 import { syncPermissionCatalog } from '@/services/permission-catalog';
 import RoleService from '@/services/role';
 
 const BACKUP_DIR = '../backups';
+// 迁移前的自动快照保留 5 份；手动备份默认保留更多。
 const BACKUP_KEEP = 5;
+const MANUAL_BACKUP_KEEP = 30;
 
 const USAGE = `Usage: db-tools <command>
 
 Commands:
-  migrate               Run pending migrations (snapshotting first when needed)
-  sync-catalog          Sync the permission and menu catalogs, then assign the owner
-  backup --to <path>    Write a standalone database snapshot to <path>
+  migrate                     Run pending migrations (snapshotting first when needed)
+  sync-catalog                Sync the permission and menu catalogs, then assign the owner
+  backup [--to <path>]        Write a standalone database snapshot (default ${BACKUP_DIR})
+         [--keep <n>]         Keep the newest <n> snapshots (default ${MANUAL_BACKUP_KEEP})
+  restore --from <path>       Restore a snapshot onto ./database.sqlite
 `;
 
 /** 参数错误：打印用法并以非零状态退出。 */
@@ -53,16 +57,47 @@ async function syncCatalog(): Promise<void> {
   console.log(ownerId === null ? 'owner: none (database empty or already assigned)' : `owner: user ${ownerId}`);
 }
 
-async function backup(argv: string[]): Promise<void> {
-  const flagIndex = argv.indexOf('--to');
-  const target = flagIndex === -1 ? undefined : argv[flagIndex + 1];
+/** 读取 `--flag <value>` 形式的参数，未出现时返回 undefined。 */
+function readFlag(argv: string[], flag: string): string | undefined {
+  const index = argv.indexOf(flag);
 
-  if (!target) {
-    throw new UsageError('backup requires --to <path>');
+  if (index === -1) {
+    return undefined;
+  }
+
+  const value = argv[index + 1];
+
+  if (value === undefined || value.startsWith('--')) {
+    throw new UsageError(`${flag} requires a value`);
+  }
+
+  return value;
+}
+
+async function backup(argv: string[]): Promise<void> {
+  const stamp = new Date().toISOString().replaceAll(':', '-');
+  const target = readFlag(argv, '--to') ?? join(BACKUP_DIR, `database-${stamp}.sqlite`);
+  const keepFlag = readFlag(argv, '--keep');
+  const keep = keepFlag === undefined ? MANUAL_BACKUP_KEEP : Number.parseInt(keepFlag, 10);
+
+  if (!Number.isInteger(keep) || keep < 0) {
+    throw new UsageError('--keep requires a non-negative integer');
   }
 
   await backupDatabase(sequelize, target);
-  console.log(`backup written: ${target}`);
+  const pruned = await pruneBackups(dirname(target), keep);
+  console.log(`backup written: ${target} (pruned ${pruned})`);
+}
+
+async function restore(argv: string[]): Promise<void> {
+  const from = readFlag(argv, '--from');
+
+  if (!from) {
+    throw new UsageError('restore requires --from <path>');
+  }
+
+  await restoreDatabase(from, './database.sqlite');
+  console.log(`database restored from: ${from}`);
 }
 
 async function main(argv: string[]): Promise<void> {
@@ -78,6 +113,9 @@ async function main(argv: string[]): Promise<void> {
         break;
       case 'backup':
         await backup(rest);
+        break;
+      case 'restore':
+        await restore(rest);
         break;
       default:
         throw new UsageError(command ? `unknown command: ${command}` : 'missing command');

@@ -1,4 +1,4 @@
-import { mkdir, readdir, stat, unlink } from 'node:fs/promises';
+import { copyFile, mkdir, open, readdir, stat, unlink } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 import type { Sequelize } from 'sequelize';
@@ -50,4 +50,48 @@ export async function pruneBackups(dir: string, keep: number): Promise<number> {
   await Promise.all(stale.map((file) => unlink(file.path)));
 
   return stale.length;
+}
+
+/** SQLite 数据库文件固定以这 16 个字节开头。 */
+const SQLITE_HEADER = Buffer.from('SQLite format 3\0');
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path);
+    return true;
+  } catch (error) {
+    if ((error as { code?: string }).code === 'ENOENT') {
+      return false;
+    }
+    throw error;
+  }
+}
+
+/**
+ * 用 `from` 处的备份覆盖 `target`。
+ *
+ * 先校验备份文件的 SQLite 头，校验失败直接抛错且不触碰 `target`；校验通过后，
+ * 若 `target` 已存在则先复制为 `target.pre-restore-<ISO>`，再写回备份内容。
+ */
+export async function restoreDatabase(from: string, target: string): Promise<void> {
+  const handle = await open(from, 'r');
+
+  try {
+    const header = Buffer.alloc(SQLITE_HEADER.length);
+    const { bytesRead } = await handle.read(header, 0, header.length, 0);
+
+    if (bytesRead !== SQLITE_HEADER.length || !header.equals(SQLITE_HEADER)) {
+      throw new Error(`not a SQLite database: ${from}`);
+    }
+  } finally {
+    await handle.close();
+  }
+
+  if (await pathExists(target)) {
+    const stamp = new Date().toISOString().replaceAll(':', '-');
+    await copyFile(target, `${target}.pre-restore-${stamp}`);
+  }
+
+  await mkdir(dirname(target), { recursive: true });
+  await copyFile(from, target);
 }
