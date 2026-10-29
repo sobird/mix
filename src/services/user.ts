@@ -1,6 +1,6 @@
 import { Op, type Attributes } from 'sequelize';
 
-import { Role, User } from '@/models';
+import { Role, User, UserExcludeAttributes } from '@/models';
 import { isAllowed, type AppAbility } from '@/services/ability';
 
 import { paginateAccessible, type PageQuery } from './access';
@@ -33,7 +33,8 @@ export interface UserUpdateInput {
   roles?: number[];
 }
 
-export type UserEditData = Attributes<User> & { roles: number[] };
+/** findForEdit 返回的字段：不包含密码等隐私字段，角色以 id 数组给出 */
+export type UserEditData = Omit<Attributes<User>, (typeof UserExcludeAttributes)[number]> & { roles: number[] };
 
 /**
  * 用户服务：所有读写都先经过能力检查。
@@ -44,13 +45,13 @@ export type UserEditData = Attributes<User> & { roles: number[] };
 // oxlint-disable-next-line typescript/no-extraneous-class
 export class UserService {
   static async listWithPage(ability: AppAbility, query: PageQuery) {
-    return paginateAccessible(User, ability, 'read', query, { exclude: ['password'] });
+    return paginateAccessible(User, ability, 'read', query, { exclude: [...UserExcludeAttributes] });
   }
 
   /** 读取可编辑用户：不含密码，角色以 id 数组返回 */
   static async findForEdit(ability: AppAbility, id: number | string): Promise<UserEditData> {
     const user = await User.findByPk(id, {
-      attributes: { exclude: ['password'] },
+      attributes: { exclude: [...UserExcludeAttributes] },
       include: [{ model: Role, attributes: ['id'] }],
     });
 
@@ -62,7 +63,9 @@ export class UserService {
       throw new ForbiddenError('您没有更新用户的权限');
     }
 
-    const { Roles, ...rest } = user.toJSON() as Attributes<User> & { Roles?: { id: number }[] };
+    const { Roles, ...rest } = user.toJSON() as Omit<Attributes<User>, (typeof UserExcludeAttributes)[number]> & {
+      Roles?: { id: number }[];
+    };
 
     return { ...rest, roles: Roles?.map((role) => role.id) ?? [] };
   }

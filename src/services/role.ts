@@ -76,9 +76,9 @@ class RoleService {
   }
 
   static async setDefaultRole(roleId: number) {
-    return sequelize.transaction(async () => {
-      await Role.update({ isDefault: false }, { where: { isDefault: true } });
-      await Role.update({ isDefault: true }, { where: { id: roleId } });
+    return sequelize.transaction(async (transaction) => {
+      await Role.update({ isDefault: false }, { where: { isDefault: true }, transaction });
+      await Role.update({ isDefault: true }, { where: { id: roleId }, transaction });
     });
   }
 

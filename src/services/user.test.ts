@@ -1,7 +1,9 @@
 // @vitest-environment node
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
+import { createUser } from '../../tests/helpers/factories';
 import { buildAbility } from './ability';
+import { ForbiddenError, NotFoundError } from './errors';
 import { UserService } from './user';
 
 useInMemoryDatabase();
@@ -15,5 +17,50 @@ describe('UserService.create', () => {
       password: 'secret12',
     });
     expect((await user.getRoles()).map((role) => role.name)).toContain('成员');
+  });
+});
+
+describe('UserService credential redaction', () => {
+  const readAbility = buildAbility([{ action: 'read', subject: 'User', narrowing: {} }]);
+  const updateAbility = buildAbility([{ action: 'update', subject: 'User', narrowing: {} }]);
+
+  it('omits credential fields from listWithPage rows', async () => {
+    await createUser({ password: 'secret12', emailVerified: new Date() });
+
+    const page = await UserService.listWithPage(readAbility, {});
+
+    expect(page.rows).toHaveLength(1);
+    const [row] = page.rows;
+    expect(row).not.toHaveProperty('password');
+    expect(row).not.toHaveProperty('salt');
+    expect(row).not.toHaveProperty('emailVerified');
+  });
+
+  it('omits credential fields from findForEdit', async () => {
+    const user = await createUser({ password: 'secret12', emailVerified: new Date() });
+
+    const data = await UserService.findForEdit(updateAbility, user.id);
+
+    expect(data).not.toHaveProperty('password');
+    expect(data).not.toHaveProperty('salt');
+    expect(data).not.toHaveProperty('emailVerified');
+    expect(data.roles).toEqual([]);
+  });
+});
+
+describe('UserService.findForEdit authorization', () => {
+  it('throws NotFoundError for a missing user', async () => {
+    const ability = buildAbility([{ action: 'update', subject: 'User', narrowing: {} }]);
+
+    await expect(UserService.findForEdit(ability, 999_999)).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it('throws ForbiddenError under a conditional-only grant', async () => {
+    const user = await createUser();
+    const ability = buildAbility([
+      { action: 'update', subject: 'User', narrowing: { conditions: { id: user.id + 1 } } },
+    ]);
+
+    await expect(UserService.findForEdit(ability, user.id)).rejects.toBeInstanceOf(ForbiddenError);
   });
 });

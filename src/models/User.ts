@@ -51,7 +51,7 @@ import type { Role } from './Role';
 import type { Session } from './Session';
 
 /** 隐私属性字段排除 */
-export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'];
+export const UserExcludeAttributes = ['salt', 'password', 'emailVerified'] as const;
 
 // These are all the attributes in the User model
 export type UserAttributes = Attributes<User>;
@@ -181,10 +181,9 @@ export class User extends BaseModel<User> {
 
     if (user.verifyPassword(password)) {
       const plain = user.get({ plain: true });
-      return Object.fromEntries(Object.entries(plain).filter(([key]) => !UserExcludeAttributes.includes(key))) as Omit<
-        UserAttributes,
-        'salt' | 'password' | 'emailVerified'
-      >;
+      return Object.fromEntries(
+        Object.entries(plain).filter(([key]) => !(UserExcludeAttributes as readonly string[]).includes(key)),
+      ) as Omit<UserAttributes, 'salt' | 'password' | 'emailVerified'>;
     }
     throw Error('密码不正确');
   }

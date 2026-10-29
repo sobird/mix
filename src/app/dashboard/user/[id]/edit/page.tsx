@@ -10,7 +10,7 @@ import React from 'react';
 import { updateUserAction } from '@/actions/user';
 import UserForm from '@/app/dashboard/user/components/user-form';
 import { getCurrentAbility } from '@/services/ability';
-import { NotFoundError } from '@/services/errors';
+import { ForbiddenError, NotFoundError } from '@/services/errors';
 import { UserService } from '@/services/user';
 
 interface UserEditPageParams {
@@ -26,7 +26,8 @@ const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
   try {
     initialValues = await UserService.findForEdit(ability, id);
   } catch (error) {
-    if (error instanceof NotFoundError) {
+    // 不存在与无权访问统一按 404 处理，避免暴露记录是否存在
+    if (error instanceof NotFoundError || error instanceof ForbiddenError) {
       notFound();
     }
 

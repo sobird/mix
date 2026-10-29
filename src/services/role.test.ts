@@ -62,6 +62,26 @@ describe('RoleService write authorization', () => {
   });
 });
 
+describe('RoleService.savePermissions', () => {
+  it('propagates failures instead of swallowing them', async () => {
+    const role = await createRole();
+    const ability = buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]);
+    const failure = new Error('database unavailable');
+    const spy = vi.spyOn(Role.prototype, 'setPermissions').mockRejectedValueOnce(failure);
+
+    await expect(RoleService.savePermissions(ability, role.id, [])).rejects.toThrow('database unavailable');
+
+    spy.mockRestore();
+  });
+
+  it('rejects without update permission', async () => {
+    const role = await createRole();
+    const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: {} }]);
+
+    await expect(RoleService.savePermissions(ability, role.id, [])).rejects.toBeInstanceOf(ForbiddenError);
+  });
+});
+
 describe('RoleService.assignOwnerToFirstUser', () => {
   it('assigns owner to the earliest user only', async () => {
     const first = await createUser();

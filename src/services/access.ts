@@ -17,6 +17,12 @@ export interface PageResult<M extends Model> {
   rows: Attributes<M>[];
 }
 
+/** 将分页参数收敛为正整数；非法值回退到默认值 */
+function toPositiveInteger(value: string | number | undefined, fallback: number): number {
+  const parsed = Math.floor(Number(value));
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 /**
  * 按能力过滤后的分页查询。
  *
@@ -30,8 +36,8 @@ export async function paginateAccessible<M extends Model>(
   query: PageQuery,
   options: { exclude?: string[] } = {},
 ): Promise<PageResult<M>> {
-  const ps = Number(query.ps) || 20;
-  const pn = Number(query.pn) || 1;
+  const ps = toPositiveInteger(query.ps, 20);
+  const pn = toPositiveInteger(query.pn, 1);
 
   const access = toAccessQuery(ability, action, model.name as AppSubject);
 
