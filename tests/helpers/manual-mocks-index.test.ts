@@ -6,7 +6,7 @@ vi.mock('@/models');
 
 describe('models index manual mock', () => {
   it('re-exports the real models and seeds all sample data on load', async () => {
-    expect(Object.keys(models)).toHaveLength(14);
+    expect(Object.keys(models)).toHaveLength(15);
     expect((sequelize as unknown as { options: { storage: string } }).options.storage).toBe(':memory:');
 
     expect(await User.count()).toBe(2);

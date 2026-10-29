@@ -29,7 +29,7 @@ import {
 import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type { Models } from './index';
-import type { User } from './User';
+import { Permission } from './Permission';
 
 /** These are all the attributes in the Menu model */
 export type MenuAttributes = Attributes<Menu>;
@@ -38,7 +38,7 @@ export type MenuCreationAttributes = CreationAttributes<Menu>;
 
 export class Menu extends BaseModel<Menu> {
   declare id: CreationOptional<number>;
-  declare userId: number;
+  declare permissionId: CreationOptional<number | null>;
   declare name: string;
   declare icon: string;
   declare href: string;
@@ -46,11 +46,11 @@ export class Menu extends BaseModel<Menu> {
   declare parentId: number;
   declare sort: number;
 
-  // User, alias 'User'
-  declare User: NonAttribute<User>;
-  declare getUser: BelongsToGetAssociationMixin<User>;
-  declare setUser: BelongsToSetAssociationMixin<User, User['id']>;
-  declare createUser: BelongsToCreateAssociationMixin<User>;
+  // Permission, alias 'Permission'
+  declare Permission: NonAttribute<Permission>;
+  declare getPermission: BelongsToGetAssociationMixin<Permission>;
+  declare setPermission: BelongsToSetAssociationMixin<Permission, Permission['id']>;
+  declare createPermission: BelongsToCreateAssociationMixin<Permission>;
 
   // Menu, alias 'parent'
   declare parent: NonAttribute<Menu | null>;
@@ -71,14 +71,14 @@ export class Menu extends BaseModel<Menu> {
   declare createChild: HasManyCreateAssociationMixin<Menu>;
   declare countChildren: HasManyCountAssociationsMixin;
 
-  static associate({ User }: Models) {
-    this.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+  static associate({ Permission: PermissionModel }: Models) {
+    this.belongsTo(PermissionModel, { foreignKey: 'permissionId', onDelete: 'CASCADE' });
     this.belongsTo(Menu, { as: 'parent', foreignKey: 'parentId', onDelete: 'SET NULL' });
     this.hasMany(Menu, { as: 'children', foreignKey: 'parentId' });
   }
 
   declare static associations: {
-    User: Association<Menu, User>;
+    Permission: Association<Menu, Permission>;
     parent: Association<Menu, Menu>;
     children: Association<Menu, Menu>;
   };
@@ -92,9 +92,13 @@ Menu.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
+    permissionId: {
       type: DataTypes.INTEGER,
-      comment: 'user id',
+      references: {
+        model: Permission,
+        key: 'id',
+      },
+      comment: 'permission id',
     },
     name: {
       type: DataTypes.STRING,
@@ -120,9 +124,6 @@ Menu.init(
   {
     sequelize,
     modelName: 'Menu',
-    indexes: [
-      { name: 'menus_user_id', fields: ['user_id'] },
-      { name: 'menus_parent_id', fields: ['parent_id'] },
-    ],
+    indexes: [{ name: 'menus_parent_id', fields: ['parent_id'] }],
   },
 );

@@ -19,7 +19,7 @@ describe('runMigrations', () => {
 
   it('runs the baseline once', async () => {
     const ran = await runMigrations(sequelize);
-    expect(ran).toEqual(['001-baseline']);
+    expect(ran).toEqual(['001-baseline', '002-menu-preferences']);
     expect(await runMigrations(sequelize)).toEqual([]);
   });
 

@@ -23,6 +23,7 @@ describe('models registry', () => {
         'RolePermission',
         'Session',
         'User',
+        'UserMenuPreference',
         'UserRole',
         'VerificationToken',
       ].sort(),
@@ -46,7 +47,6 @@ describe('models registry', () => {
   it('wires up the hasMany associations', () => {
     expect(User.associations.Accounts.target).toBe(models.Account);
     expect(User.associations.Sessions.target).toBe(models.Session);
-    expect(User.associations.Menus.target).toBe(models.Menu);
     expect(models.DictionaryType.associations.Items.target).toBe(models.DictionaryItem);
   });
 });

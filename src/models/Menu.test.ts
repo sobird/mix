@@ -2,10 +2,10 @@
 
 import { ValidationError } from 'sequelize';
 
-import { Menu, User } from '@/models';
+import { Menu } from '@/models';
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
-import { createMenu, createUser } from '../../tests/helpers/factories';
+import { createMenu, createPermission } from '../../tests/helpers/factories';
 
 useInMemoryDatabase();
 
@@ -23,14 +23,15 @@ describe('Menu model', () => {
     expect(menu.sort).toBeUndefined();
   });
 
-  it('belongs to a user', async () => {
-    const user = await createUser();
-    const menu = await createMenu({ userId: user.id });
+  it('links to a permission instead of a user', async () => {
+    const permission = await createPermission({ action: 'read', subject: 'User' });
+    const menu = await createMenu({ permissionId: permission.id });
+    expect((await menu.getPermission())?.id).toBe(permission.id);
+  });
 
-    expect((await menu.getUser())?.id).toBe(user.id);
-
-    const fresh = await Menu.findByPk(menu.id, { include: [User] });
-    expect(fresh?.User.username).toBe(user.username);
+  it('allows a permission-less menu for always-visible entries', async () => {
+    const menu = await createMenu({ permissionId: null });
+    expect(menu.permissionId).toBeNull();
   });
 
   it('supports a self-referencing parent/children tree', async () => {
@@ -51,15 +52,6 @@ describe('Menu model', () => {
 
     await child.reload();
     expect(child.parentId).toBeNull();
-  });
-
-  it('cascades when the user is force deleted', async () => {
-    const user = await createUser();
-    await createMenu({ userId: user.id });
-
-    await user.destroy({ force: true });
-
-    expect(await Menu.count()).toBe(0);
   });
 
   it('supports soft delete', async () => {

@@ -47,7 +47,6 @@ import { sequelize, BaseModel } from '@/lib/sequelize';
 
 import type { Account } from './Account';
 import type { Models } from './index';
-import type { Menu } from './Menu';
 import type { Role } from './Role';
 import type { Session } from './Session';
 
@@ -125,18 +124,6 @@ export class User extends BaseModel<User> {
   declare createSession: HasManyCreateAssociationMixin<Session>;
   declare countSessions: HasManyCountAssociationsMixin;
 
-  // Menu, alias 'Menus'
-  declare Menus: NonAttribute<Menu[]>;
-  declare getMenus: HasManyGetAssociationsMixin<Menu>;
-  declare setMenus: HasManySetAssociationsMixin<Menu, Menu['id']>;
-  declare addMenu: HasManyAddAssociationMixin<Menu, Menu['id']>;
-  declare addMenus: HasManyAddAssociationsMixin<Menu, Menu['id']>;
-  declare removeMenu: HasManyRemoveAssociationMixin<Menu, Menu['id']>;
-  declare removeMenus: HasManyRemoveAssociationsMixin<Menu, Menu['id']>;
-  declare hasMenu: HasManyHasAssociationMixin<Menu, Menu['id']>;
-  declare hasMenus: HasManyHasAssociationsMixin<Menu, Menu['id']>;
-  declare createMenu: HasManyCreateAssociationMixin<Menu>;
-  declare countMenus: HasManyCountAssociationsMixin;
   /**
    * associate
    *
@@ -145,18 +132,16 @@ export class User extends BaseModel<User> {
    *
    * The `models/index` file will call this method automatically.
    */
-  static associate({ Role, UserRole, Account, Session, Menu }: Models) {
+  static associate({ Role, UserRole, Account, Session }: Models) {
     this.belongsToMany(Role, { through: UserRole, foreignKey: 'userId', otherKey: 'roleId' });
     this.hasMany(Account, { foreignKey: 'userId' });
     this.hasMany(Session, { foreignKey: 'userId' });
-    this.hasMany(Menu, { foreignKey: 'userId' });
   }
 
   declare static associations: {
     Roles: Association<User, Role>;
     Accounts: Association<User, Account>;
     Sessions: Association<User, Session>;
-    Menus: Association<User, Menu>;
   };
 
   /** 用户注册 */

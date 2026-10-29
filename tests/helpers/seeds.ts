@@ -38,6 +38,7 @@ function loadModels() {
     vi.importActual<typeof import('@/models/RolePermission')>('@/models/RolePermission'),
     vi.importActual<typeof import('@/models/Session')>('@/models/Session'),
     vi.importActual<typeof import('@/models/User')>('@/models/User'),
+    vi.importActual<typeof import('@/models/UserMenuPreference')>('@/models/UserMenuPreference'),
     vi.importActual<typeof import('@/models/UserRole')>('@/models/UserRole'),
     vi.importActual<typeof import('@/models/VerificationToken')>('@/models/VerificationToken'),
   ]);
@@ -59,6 +60,7 @@ async function useModels() {
     { RolePermission },
     { Session },
     { User },
+    { UserMenuPreference },
     { UserRole },
     { VerificationToken },
   ] = await modelsPromise;
@@ -76,6 +78,7 @@ async function useModels() {
     RolePermission,
     Session,
     User,
+    UserMenuPreference,
     UserRole,
     VerificationToken,
   };
@@ -213,19 +216,36 @@ export async function seedSessions() {
 
 export async function seedMenus() {
   const { Menu } = await useModels();
-  const { admin } = await seedUsers();
   await Menu.sync();
 
   const [root] = await Menu.findOrCreate({
-    where: { name: '控制台', userId: admin.id },
-    defaults: { href: '/dashboard', sort: 1 },
+    where: { href: '/dashboard' },
+    defaults: { name: '控制台', sort: 1 },
   } as never);
   const [users] = await Menu.findOrCreate({
-    where: { name: '用户管理', userId: admin.id },
-    defaults: { href: '/dashboard/users', parentId: root.id, sort: 2 },
+    where: { href: '/dashboard/users' },
+    defaults: { name: '用户管理', parentId: root.id, sort: 2 },
   } as never);
 
-  return { root, users, admin };
+  return { root, users };
+}
+
+export async function seedUserMenuPreferences() {
+  const { UserMenuPreference } = await useModels();
+  const { admin } = await seedUsers();
+  const { root, users } = await seedMenus();
+  await UserMenuPreference.sync();
+
+  await UserMenuPreference.findOrCreate({
+    where: { userId: admin.id, menuId: root.id },
+    defaults: { favorite: true, sort: 1 },
+  } as never);
+  await UserMenuPreference.findOrCreate({
+    where: { userId: admin.id, menuId: users.id },
+    defaults: { hidden: true, sort: 2 },
+  } as never);
+
+  return { admin, root, users };
 }
 
 export async function seedGroups() {
@@ -313,6 +333,7 @@ export async function seedAll() {
   const rolePermissions = await seedRolePermissions();
   const sessions = await seedSessions();
   const menus = await seedMenus();
+  const userMenuPreferences = await seedUserMenuPreferences();
   const groups = await seedGroups();
   const dictionaries = await seedDictionaries();
   const logs = await seedLogs();
@@ -328,6 +349,7 @@ export async function seedAll() {
     rolePermissions,
     sessions,
     menus,
+    userMenuPreferences,
     groups,
     dictionaries,
     logs,

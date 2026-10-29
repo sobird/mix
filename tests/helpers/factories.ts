@@ -11,6 +11,7 @@ import {
   RolePermission,
   Session,
   User,
+  UserMenuPreference,
   UserRole,
   VerificationToken,
   type AccountCreationAttributes,
@@ -25,6 +26,7 @@ import {
   type RolePermissionCreationAttributes,
   type SessionCreationAttributes,
   type UserCreationAttributes,
+  type UserMenuPreferenceCreationAttributes,
   type UserRoleCreationAttributes,
   type VerificationTokenCreationAttributes,
 } from '@/models';
@@ -98,6 +100,10 @@ export function createMenu(overrides: Partial<MenuCreationAttributes> = {}) {
     href: `/${nextKey('menu')}`,
     ...overrides,
   } as MenuCreationAttributes);
+}
+
+export function createUserMenuPreference(overrides: Partial<UserMenuPreferenceCreationAttributes> = {}) {
+  return UserMenuPreference.create(overrides as UserMenuPreferenceCreationAttributes);
 }
 
 export function createGroup(overrides: Partial<GroupCreationAttributes> = {}) {

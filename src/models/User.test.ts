@@ -2,7 +2,7 @@
 
 import { UniqueConstraintError, ValidationError } from 'sequelize';
 
-import { sequelize, Account, Menu, Role, Session, User, UserRole } from '@/models';
+import { sequelize, Account, Role, Session, User, UserRole } from '@/models';
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
 import { createRole, createUser } from '../../tests/helpers/factories';
@@ -238,7 +238,7 @@ describe('User model', () => {
       expect(await UserRole.count()).toBe(1);
     });
 
-    it('has many accounts, sessions and menus', async () => {
+    it('has many accounts and sessions', async () => {
       const user = await createUser();
 
       const account = await user.createAccount({
@@ -252,16 +252,13 @@ describe('User model', () => {
         sessionToken: 'token',
         userId: user.id,
       });
-      const menu = await user.createMenu({ name: '菜单', href: '/menu' } as never);
 
       expect(account.userId).toBe(user.id);
       expect(session.userId).toBe(user.id);
-      expect(menu.userId).toBe(user.id);
 
-      const fresh = await User.findByPk(user.id, { include: [Account, Session, Menu] });
+      const fresh = await User.findByPk(user.id, { include: [Account, Session] });
       expect(fresh?.Accounts).toHaveLength(1);
       expect(fresh?.Sessions).toHaveLength(1);
-      expect(fresh?.Menus).toHaveLength(1);
     });
   });
 });

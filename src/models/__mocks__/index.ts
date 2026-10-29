@@ -25,6 +25,7 @@ export const {
   RolePermission,
   Session,
   User,
+  UserMenuPreference,
   UserRole,
   VerificationToken,
   models,

@@ -20,6 +20,7 @@ import { Role } from './Role';
 import { RolePermission } from './RolePermission';
 import { Session } from './Session';
 import { User } from './User';
+import { UserMenuPreference } from './UserMenuPreference';
 import { UserRole } from './UserRole';
 import { VerificationToken } from './VerificationToken';
 
@@ -35,6 +36,7 @@ export * from './Role';
 export * from './RolePermission';
 export * from './Session';
 export * from './User';
+export * from './UserMenuPreference';
 export * from './UserRole';
 export * from './VerificationToken';
 
@@ -51,6 +53,7 @@ const models = {
   RolePermission,
   Session,
   User,
+  UserMenuPreference,
   UserRole,
   VerificationToken,
 };
