@@ -13,6 +13,7 @@
   "scripts": {
     "build": "next build",
     "coverage": "vitest run --coverage",
+    "db:migrate": "bun scripts/migrate.ts",
     "db:seed": "bun scripts/seed.ts",
     "dev": "DEBUG=app:* next dev",
     "format": "oxfmt",
