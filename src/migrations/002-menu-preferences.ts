@@ -1,4 +1,4 @@
-import { DataTypes, type Sequelize } from 'sequelize';
+import { DataTypes, type Sequelize, type Transaction } from 'sequelize';
 
 import type { Migration } from '@/lib/migrator';
 
@@ -35,6 +35,13 @@ type MenuIndex = { name: string; fields: string[] };
  * 而 `describeTable` 只保留 `{ model, key }` 形式的外键，会丢掉
  * `ON DELETE`/`ON UPDATE` 动作与 `AUTOINCREMENT`。因此升级时改为按显式目标
  * schema 一次性重建，保证升级后的表结构与 sync 生成的完全一致。
+ *
+ * `parent_id` 的自引用必须指向 `table` 自身（即重建时的临时表），不能写死成
+ * `menus`。`PRAGMA defer_foreign_keys` 只延迟约束检查，不延迟 ON DELETE 动作：
+ * 如果临时表引用的是旧 `menus`，`DROP TABLE menus` 会立刻把已拷贝行的
+ * `parent_id` 全部置空，造成菜单树丢失。改成自引用后，删除旧表不会触发表内
+ * 动作；随后在 `ALTER TABLE ... RENAME TO menus` 时，SQLite 会（在
+ * `legacy_alter_table=OFF` 且外键开启的默认行为下）把自引用改写成 `menus`。
  */
 function createMenusSql(table: string, phase1: boolean): string {
   const columns = [
@@ -46,7 +53,7 @@ function createMenusSql(table: string, phase1: boolean): string {
     '  `href` VARCHAR(255) NOT NULL,',
     '  `icon` VARCHAR(255),',
     '  `description` VARCHAR(255),',
-    '  `parent_id` INTEGER REFERENCES `menus` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,',
+    `  \`parent_id\` INTEGER REFERENCES \`${table}\` (\`id\`) ON DELETE SET NULL ON UPDATE CASCADE,`,
     '  `sort` INTEGER,',
     '  `created_at` DATETIME NOT NULL,',
     '  `updated_at` DATETIME NOT NULL,',
@@ -59,13 +66,19 @@ function createMenusSql(table: string, phase1: boolean): string {
 /**
  * 以显式目标 schema 重建 `menus` 并保留行数据。
  *
- * 重建顺序为“建临时表 → 拷贝数据 → 删旧表 → 重命名临时表”。临时表本身
- * 外键指向 `menus` 与 `permissions`，因此不会像“先重命名旧表”那样把其它表
- * （例如 `user_menu_preferences`）的外键改成指向备份表。整个过程放在事务里并
- * 打开 `defer_foreign_keys`，避免拷贝/删表顺序触发即时外键检查。
+ * 重建顺序为“建临时表 → 拷贝数据 → 删旧表 → 重命名临时表”，由调用方提供
+ * 事务并打开 `defer_foreign_keys`，避免拷贝顺序触发即时外键检查，也让索引
+ * 重建与重建同处一个事务（失败时不会留下无索引的表）。临时表的自引用外键
+ * 指向临时表自身（见 `createMenusSql`），因此 `DROP TABLE menus` 不会对
+ * 已拷贝数据的层级触发 ON DELETE 动作；同时也不会像“先重命名旧表”那样把
+ * 其它表（例如 `user_menu_preferences`）的外键改成指向备份表。
  */
-async function rebuildMenus(sequelize: Sequelize, phase1: boolean): Promise<void> {
-  const columns = await sequelize.getQueryInterface().describeTable('menus');
+async function rebuildMenus(
+  sequelize: Sequelize,
+  phase1: boolean,
+  columns: Record<string, unknown>,
+  transaction: Transaction,
+): Promise<void> {
   const copyColumns = MENU_DATA_COLUMNS.filter((column) => columns[column]);
 
   const targetColumns: string[] = [];
@@ -86,27 +99,27 @@ async function rebuildMenus(sequelize: Sequelize, phase1: boolean): Promise<void
     selectExpressions.push(columns.permission_id ? '`permission_id`' : 'NULL');
   }
 
-  await sequelize.transaction(async (transaction) => {
-    await sequelize.query('PRAGMA defer_foreign_keys = ON', { transaction });
-    await sequelize.query(createMenusSql(REBUILD_TABLE, phase1), { transaction });
-    await sequelize.query(
-      `INSERT INTO \`${REBUILD_TABLE}\` (${targetColumns.join(', ')}) SELECT ${selectExpressions.join(
-        ', ',
-      )} FROM \`menus\``,
-      { transaction },
-    );
-    await sequelize.query('DROP TABLE `menus`', { transaction });
-    await sequelize.query(`ALTER TABLE \`${REBUILD_TABLE}\` RENAME TO \`menus\``, { transaction });
-  });
+  await sequelize.query('PRAGMA defer_foreign_keys = ON', { transaction });
+  await sequelize.query(createMenusSql(REBUILD_TABLE, phase1), { transaction });
+  await sequelize.query(
+    `INSERT INTO \`${REBUILD_TABLE}\` (${targetColumns.join(', ')}) SELECT ${selectExpressions.join(
+      ', ',
+    )} FROM \`menus\``,
+    { transaction },
+  );
+  await sequelize.query('DROP TABLE `menus`', { transaction });
+  await sequelize.query(`ALTER TABLE \`${REBUILD_TABLE}\` RENAME TO \`menus\``, { transaction });
 }
 
 /** 补回缺失的 `menus` 索引（重建会连带删除旧表上的索引）。 */
-async function ensureMenuIndexes(sequelize: Sequelize, indexes: MenuIndex[]): Promise<void> {
+async function ensureMenuIndexes(sequelize: Sequelize, indexes: MenuIndex[], transaction: Transaction): Promise<void> {
   const queryInterface = sequelize.getQueryInterface();
-  const existing = toIndexList(await queryInterface.showIndex('menus'));
+  const existing = toIndexList(await queryInterface.showIndex('menus', { transaction }));
   const missing = indexes.filter((index) => !existing.some((current) => current.name === index.name));
 
-  await Promise.all(missing.map((index) => queryInterface.addIndex('menus', [...index.fields], { name: index.name })));
+  await Promise.all(
+    missing.map((index) => queryInterface.addIndex('menus', [...index.fields], { name: index.name, transaction })),
+  );
 }
 
 /**
@@ -119,79 +132,96 @@ export const menuPreferences: Migration = {
     const queryInterface = context.getQueryInterface();
     const columns = await queryInterface.describeTable('menus');
 
-    // 已经升级过的表（有 permission_id、没有 user_id）不重建，保证幂等。
-    if (columns.user_id || !columns.permission_id) {
-      await rebuildMenus(context, false);
-    }
+    // 重建与索引补建放在同一事务：任一步失败都会整体回滚，不会留下无索引的表。
+    await context.transaction(async (transaction) => {
+      // 已经升级过的表（有 permission_id、没有 user_id）不重建，保证幂等。
+      if (columns.user_id || !columns.permission_id) {
+        await rebuildMenus(context, false, columns, transaction);
+      }
 
-    await ensureMenuIndexes(context, [
-      { name: 'menus_parent_id', fields: ['parent_id'] },
-      { name: 'menus_permission_id', fields: ['permission_id'] },
-    ]);
+      await ensureMenuIndexes(
+        context,
+        [
+          { name: 'menus_parent_id', fields: ['parent_id'] },
+          { name: 'menus_permission_id', fields: ['permission_id'] },
+        ],
+        transaction,
+      );
 
-    const tables = await queryInterface.showAllTables();
-    if (!tables.includes('user_menu_preferences')) {
-      await queryInterface.createTable('user_menu_preferences', {
-        user_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          primaryKey: true,
-          references: { model: 'users', key: 'id' },
-          onDelete: 'CASCADE',
-          onUpdate: 'CASCADE',
-        },
-        menu_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          primaryKey: true,
-          references: { model: 'menus', key: 'id' },
-          onDelete: 'CASCADE',
-          onUpdate: 'CASCADE',
-        },
-        favorite: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-        },
-        hidden: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-        },
-        sort: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          defaultValue: 0,
-        },
-        created_at: {
-          type: DataTypes.DATE,
-          allowNull: false,
-        },
-        updated_at: {
-          type: DataTypes.DATE,
-          allowNull: false,
-        },
-      });
-    }
+      const tables = await queryInterface.showAllTables({ transaction });
+      if (!tables.includes('user_menu_preferences')) {
+        await queryInterface.createTable(
+          'user_menu_preferences',
+          {
+            user_id: {
+              type: DataTypes.INTEGER,
+              allowNull: false,
+              primaryKey: true,
+              references: { model: 'users', key: 'id' },
+              onDelete: 'CASCADE',
+              onUpdate: 'CASCADE',
+            },
+            menu_id: {
+              type: DataTypes.INTEGER,
+              allowNull: false,
+              primaryKey: true,
+              references: { model: 'menus', key: 'id' },
+              onDelete: 'CASCADE',
+              onUpdate: 'CASCADE',
+            },
+            favorite: {
+              type: DataTypes.BOOLEAN,
+              allowNull: false,
+              defaultValue: false,
+            },
+            hidden: {
+              type: DataTypes.BOOLEAN,
+              allowNull: false,
+              defaultValue: false,
+            },
+            sort: {
+              type: DataTypes.INTEGER,
+              allowNull: false,
+              defaultValue: 0,
+            },
+            created_at: {
+              type: DataTypes.DATE,
+              allowNull: false,
+            },
+            updated_at: {
+              type: DataTypes.DATE,
+              allowNull: false,
+            },
+          },
+          { transaction },
+        );
+      }
+    });
   },
   async down({ context }) {
     const queryInterface = context.getQueryInterface();
     const tables = await queryInterface.showAllTables();
-
-    if (tables.includes('user_menu_preferences')) {
-      await queryInterface.dropTable('user_menu_preferences');
-    }
-
     const columns = await queryInterface.describeTable('menus');
 
-    // 恢复到 phase 1：去掉 permission_id、恢复带 CASCADE 的 user_id 外键。
-    if (columns.permission_id || !columns.user_id) {
-      await rebuildMenus(context, true);
-    }
+    await context.transaction(async (transaction) => {
+      // 偏好表引用 `menus`；必须先删除，重建时 DROP TABLE menus 才不会级联删行。
+      if (tables.includes('user_menu_preferences')) {
+        await queryInterface.dropTable('user_menu_preferences', { transaction });
+      }
 
-    await ensureMenuIndexes(context, [
-      { name: 'menus_parent_id', fields: ['parent_id'] },
-      { name: 'menus_user_id', fields: ['user_id'] },
-    ]);
+      // 恢复到 phase 1：去掉 permission_id、恢复带 CASCADE 的 user_id 外键。
+      if (columns.permission_id || !columns.user_id) {
+        await rebuildMenus(context, true, columns, transaction);
+      }
+
+      await ensureMenuIndexes(
+        context,
+        [
+          { name: 'menus_parent_id', fields: ['parent_id'] },
+          { name: 'menus_user_id', fields: ['user_id'] },
+        ],
+        transaction,
+      );
+    });
   },
 };
