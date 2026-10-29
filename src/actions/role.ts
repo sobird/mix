@@ -25,7 +25,10 @@ type RoleFormServerActionState = ServerActionState<RoleFormAttributes>;
  * @param payload
  * @returns
  */
-export async function createRoleAction(payload: RoleFormAttributes): Promise<RoleFormServerActionState> {
+export async function createRoleAction(
+  prevState: RoleFormServerActionState,
+  payload: RoleFormAttributes,
+): Promise<RoleFormServerActionState> {
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
@@ -65,12 +68,15 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
 }
 
 // 创建角色成功跳转列表页
-export async function createRoleActionWithRedirect(payload: RoleFormAttributes) {
-  await createRoleAction(payload);
+export async function createRoleActionWithRedirect(prevState: RoleFormServerActionState, payload: RoleFormAttributes) {
+  await createRoleAction(prevState, payload);
   redirect('/dashboard/role');
 }
 
-export async function updateRoleAction(payload: RoleFormAttributes): Promise<RoleFormServerActionState> {
+export async function updateRoleAction(
+  prevState: RoleFormServerActionState,
+  payload: RoleFormAttributes,
+): Promise<RoleFormServerActionState> {
   const validated = RoleFormZod.safeParse(payload);
 
   if (!validated.success) {

@@ -36,7 +36,7 @@ describe('user authorization', () => {
   it('rejects user creation for a member', async () => {
     vi.mocked(getCurrentAbility).mockResolvedValue(memberAbility);
 
-    const state = await createUserAction(validPayload);
+    const state = await createUserAction(undefined, validPayload);
 
     expect(state?.status).toBe(ActionStatus.FAILURE);
     expect(state?.message).toBe('您没有创建用户的权限');
@@ -46,7 +46,7 @@ describe('user authorization', () => {
   it('creates a user and assigns the default role for an owner', async () => {
     vi.mocked(getCurrentAbility).mockResolvedValue(ownerAbility);
 
-    await createUserAction(validPayload);
+    await createUserAction(undefined, validPayload);
 
     const created = await User.findOne({ where: { username: validPayload.username } });
     expect(created).not.toBeNull();
@@ -62,7 +62,7 @@ describe('user authorization', () => {
     await createUser();
     const target = await createUser();
 
-    const state = await updateUserAction({
+    const state = await updateUserAction(undefined, {
       id: target.id,
       username: target.username ?? '',
       email: target.email,

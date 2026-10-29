@@ -7,12 +7,11 @@
 'use client';
 
 import { Alert, Button, ConfigProvider, Form, Input } from 'antd';
-import { useEffect } from 'react';
+import { useActionState, useEffect } from 'react';
 
 import { ActionStatus } from '@/actions';
 import { signUpAction } from '@/actions/user';
 import FieldCaptcha from '@/components/field-captcha';
-import useServerAction from '@/hooks/useServerAction';
 import { usernameRule, passwordRule, emailRule, verificationCodeRule } from '@/zod/user';
 
 const initialState: ServerActionState = {
@@ -21,7 +20,7 @@ const initialState: ServerActionState = {
 
 export const SignupForm = () => {
   const [form] = Form.useForm();
-  const [state, dispatch, pending] = useServerAction(signUpAction, initialState);
+  const [state, dispatch, pending] = useActionState(signUpAction, initialState);
 
   // 服务端校验失败时把字段错误回填到对应表单项
   useEffect(() => {

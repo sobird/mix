@@ -1,19 +1,20 @@
 import { render, screen } from '@testing-library/react';
+import { useActionState } from 'react';
 
 import { ActionStatus } from '@/actions';
-import useServerAction from '@/hooks/useServerAction';
 
 import { SignupForm } from './form';
 
-vi.mock('@/hooks/useServerAction', () => ({
-  default: vi.fn<(...args: unknown[]) => unknown>(),
-}));
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>();
+  return { ...actual, useActionState: vi.fn<typeof actual.useActionState>() };
+});
 
-const mockUseServerAction = vi.mocked(useServerAction);
+const mockUseActionState = vi.mocked(useActionState);
 
 function mockState(state: ServerActionState) {
-  mockUseServerAction.mockReturnValue([state, vi.fn<() => void>(), false] as unknown as ReturnType<
-    typeof useServerAction
+  mockUseActionState.mockReturnValue([state, vi.fn<() => void>(), false] as unknown as ReturnType<
+    typeof useActionState
   >);
 }
 

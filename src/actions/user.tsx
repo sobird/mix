@@ -26,7 +26,10 @@ type UserServerActionState = ServerActionState<SignUpAttributes>;
  * @param payload
  * @returns
  */
-export async function signUpAction(payload: SignUpAttributes): Promise<UserServerActionState> {
+export async function signUpAction(
+  prevState: UserServerActionState,
+  payload: SignUpAttributes,
+): Promise<UserServerActionState> {
   const validated = await signUpZod.safeParseAsync(payload);
   if (!validated.success) {
     return {
@@ -54,7 +57,10 @@ export async function signUpAction(payload: SignUpAttributes): Promise<UserServe
   redirect('/signup/success');
 }
 
-export async function createUserAction(payload: UserAttributes): Promise<UserServerActionState> {
+export async function createUserAction(
+  prevState: UserServerActionState,
+  payload: UserAttributes,
+): Promise<UserServerActionState> {
   const validated = await createUserZod.safeParseAsync(payload);
   if (!validated.success) {
     return {
@@ -92,7 +98,10 @@ export async function createUserAction(payload: UserAttributes): Promise<UserSer
 }
 
 // 更新用户信息
-export async function updateUserAction(payload: UserAttributes): Promise<UserServerActionState> {
+export async function updateUserAction(
+  prevState: UserServerActionState,
+  payload: UserAttributes,
+): Promise<UserServerActionState> {
   const validated = await updateUserZod.safeParseAsync(payload);
 
   if (!validated.success) {

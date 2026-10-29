@@ -37,12 +37,8 @@ type ServerActionState<Errors = any, Data = any> =
   | undefined;
 
 interface FormServerAction<Payload = unknown, State = ServerActionState> {
-  (payload: Payload, state?: Awaited<State>): Promise<State>;
+  (prevState: Awaited<State>, payload: Payload): Promise<State>;
 }
-
-type ServerAction<Payload = unknown, State = ServerActionState> =
-  | FormServerAction
-  | ((payload: Payload) => Promise<State>);
 
 type WithFormProps = {
   /**

@@ -58,13 +58,13 @@ describe('saveRolePermissions', () => {
 describe('role authorization', () => {
   it('rejects create/delete for a user without permission', async () => {
     vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([]));
-    expect((await createRoleAction({ name: '测试角色2' }))!.status).toBe(ActionStatus.FAILURE);
+    expect((await createRoleAction(undefined, { name: '测试角色2' }))!.status).toBe(ActionStatus.FAILURE);
     expect(await deleteRoleAction('1')).toEqual(expect.objectContaining({ status: ActionStatus.FAILURE }));
   });
 
   it('allows an owner to create a role', async () => {
     vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]));
-    expect((await createRoleAction({ name: '新角色' }))!.status).not.toBe(ActionStatus.FAILURE);
+    expect((await createRoleAction(undefined, { name: '新角色' }))!.status).not.toBe(ActionStatus.FAILURE);
   });
 
   it('checks the target instance for update', async () => {
@@ -73,7 +73,7 @@ describe('role authorization', () => {
     );
     const other = await createRole();
     // 名称需满足 3 字符下限，否则会先触发表单校验，无法覆盖实例级检查
-    expect((await updateRoleAction({ id: other.id, name: '改名测试' }))!.status).toBe(ActionStatus.FAILURE);
+    expect((await updateRoleAction(undefined, { id: other.id, name: '改名测试' }))!.status).toBe(ActionStatus.FAILURE);
   });
 });
 

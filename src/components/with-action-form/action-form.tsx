@@ -7,11 +7,11 @@
 'use client';
 
 import { Form, FormProps, FormInstance, message } from 'antd';
-import React from 'react';
+import React, { useActionState } from 'react';
 
 import { ActionStatus } from '@/actions';
 import Submitter, { type SubmitterProps } from '@/components/submitter';
-import { useServerAction, useUpdate } from '@/hooks';
+import { useUpdate } from '@/hooks';
 
 export interface ActionFormProps extends Omit<FormProps, 'action'>, WithFormProps {
   action: FormServerAction;
@@ -43,9 +43,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
     status: ActionStatus.INITIAL,
     message: 'initial',
   };
-  const [state, dispatch, pending] = useServerAction(action, initialState);
-
-  console.log('state', state);
+  const [state, dispatch, pending] = useActionState(action, initialState);
 
   useUpdate(() => {
     if (state?.status === ActionStatus.INITIAL) {
