@@ -11,7 +11,7 @@
  * sobird<i@sobird.me> at 2023/11/30 19:51:05 created.
  */
 
-import { InferSubjects, RawRule } from '@casl/ability';
+import { InferSubjects } from '@casl/ability';
 import {
   DataTypes,
   type Attributes,
@@ -57,21 +57,6 @@ export type RoleCreationAttributes = CreationAttributes<Role>;
 
 export type Subjects = InferSubjects<'Role' | 'all'>;
 export type Actions = 'create' | 'read' | 'update' | 'delete' | 'manage';
-
-type RoleAbilities = [Actions, Subjects];
-
-export interface PermissionTemplate {
-  name: string;
-  subject: string;
-
-  rules: Omit<RawRule<RoleAbilities>, 'subject'>[];
-
-  // [key: string]: {
-  //   description: string;
-  //   roles: number[];
-  //   rules?: Partial<RawRule>[];
-  // }
-}
 
 export class Role extends BaseModel<Role> {
   declare id: CreationOptional<number>;
@@ -144,23 +129,6 @@ export class Role extends BaseModel<Role> {
     this.belongsTo(Role, { as: 'parent', foreignKey: 'parentId', onDelete: 'SET NULL' });
     this.hasMany(Role, { as: 'children', foreignKey: 'parentId' });
   }
-
-  // 系统级角色表权限定义
-  static permission: PermissionTemplate = {
-    name: '角色权限设置',
-    subject: Role.name,
-    rules: [
-      {
-        action: 'create',
-        fields: [],
-        conditions: {
-          $lte: '',
-        },
-        inverted: false,
-        reason: '',
-      },
-    ],
-  };
 }
 
 Role.init(

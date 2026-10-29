@@ -1,9 +1,8 @@
 // @vitest-environment node
 
-import { sequelize } from '@/models';
-
 import { useInMemoryDatabase } from '../../tests/helpers/database';
 import { runMigrations } from './migrator';
+import { sequelize } from './sequelize';
 
 useInMemoryDatabase();
 

@@ -10,7 +10,6 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import { RawRule } from '@casl/ability';
 import log4js from 'log4js';
 import {
   Sequelize,
@@ -22,8 +21,6 @@ import {
   type CreationOptional,
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
-
-import type { Models } from '@/models';
 
 const logger = log4js.getLogger('sequelize');
 logger.level = log4js.levels.DEBUG;
@@ -133,20 +130,6 @@ export const sequelize = new Sequelize({
   },
 });
 
-// buildin permission
-export interface PermissionTemplate {
-  name: string;
-  subject: string;
-
-  rules: Omit<RawRule, 'subject'>[];
-
-  // [key: string]: {
-  //   description: string;
-  //   roles: number[];
-  //   rules?: Partial<RawRule>[];
-  // }
-}
-
 /**
  * 模型基类
  *
@@ -165,9 +148,7 @@ export abstract class BaseModel<M extends BaseModel<M> = any> extends Model<
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  public static associate?: (models: Models) => void;
-
-  declare static permission: PermissionTemplate;
+  public static associate?: (models: Record<string, any>) => void;
 
   /** 分页查找模型数据 */
   public static async findManyByPage<M extends BaseModel>(

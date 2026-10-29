@@ -16,5 +16,5 @@
     "react/react-in-jsx-scope": "off",
     "import/no-unassigned-import": "off"
   },
-  "ignorePatterns": ["public"]
+  "ignorePatterns": ["public", "examples"]
 }
