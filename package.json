@@ -12,7 +12,9 @@
   "main": "index.js",
   "scripts": {
     "build": "next build",
+    "build:db-tools": "bun build scripts/db-tools.ts --target=node --format=cjs --outfile=dist/db-tools.cjs --external sequelize --external sqlite3 --external log4js",
     "coverage": "vitest run --coverage",
+    "db:backup": "bun scripts/db-tools.ts backup",
     "db:migrate": "bun scripts/migrate.ts",
     "db:seed": "bun scripts/seed.ts",
     "db:sync-catalog": "bun scripts/sync-catalog.ts",

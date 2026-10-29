@@ -73,6 +73,12 @@ for file in .env .env.production .env.local .env.production.local database.sqlit
   fi
 done
 
+# Migrate and sync the catalog before switching traffic. A failure here aborts
+# the deploy (set -eu) while "current" still points at the previous release.
+cd "$RELEASE_DIR" || exit 1
+node db-tools.cjs migrate
+node db-tools.cjs sync-catalog
+
 FIRST_DEPLOY=0
 PREVIOUS=""
 if [ -L "$CURRENT" ] && [ -d "$(readlink "$CURRENT")" ]; then
@@ -93,8 +99,10 @@ if ! wait_healthy; then
   exit 1
 fi
 
-# Keep the last five releases for rollbacks.
-find "$RELEASES_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' |
+# Keep the last five releases for rollbacks. Restrict to release directories
+# (ids are <run_id>-<run_attempt>) so sibling directories such as the backups
+# dir are never pruned.
+find "$RELEASES_DIR" -mindepth 1 -maxdepth 1 -type d -name '[0-9]*-[0-9]*' -printf '%T@ %p\n' |
   sort -rn |
   tail -n +6 |
   cut -d' ' -f2- |

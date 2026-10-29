@@ -44,6 +44,10 @@ jobs:
         if: inputs.build
         run: bun run build
 
+      - name: Build db tools
+        if: inputs.build
+        run: bun run build:db-tools
+
       - name: Download build artifacts
         if: ${{ !inputs.build }}
         uses: actions/download-artifact@v8
@@ -57,6 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           cp pm2.config.cjs .next/standalone/
+          cp dist/db-tools.cjs .next/standalone/
           cp -r public .next/standalone/
           cp -r .next/static .next/standalone/.next/
           tar -czf release.tar.gz -C .next/standalone .
