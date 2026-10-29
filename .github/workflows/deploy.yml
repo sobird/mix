@@ -36,9 +36,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up project
+      - name: Set up
         if: inputs.build
-        uses: ./.github/actions/setup-project
+        uses: ./.github/actions/setup
 
       - name: Build ☕️
         if: inputs.build

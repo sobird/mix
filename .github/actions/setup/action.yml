@@ -1,4 +1,4 @@
-name: Set up project
+name: Set up
 description: Install Bun and Node from version files, cache Bun dependencies, and install packages.
 
 runs:

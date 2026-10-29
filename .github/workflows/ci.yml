@@ -26,8 +26,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up project
-        uses: ./.github/actions/setup-project
+      - name: Set up
+        uses: ./.github/actions/setup
 
       - name: Typecheck
         run: bun run typecheck
@@ -45,8 +45,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up project
-        uses: ./.github/actions/setup-project
+      - name: Set up
+        uses: ./.github/actions/setup
 
       - name: Cache Next.js build
         uses: actions/cache@v6
