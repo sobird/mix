@@ -85,7 +85,6 @@
       "oxfmt"
     ]
   },
-  "packageManager": "bun@1.3.13",
   "trustedDependencies": [
     "@parcel/watcher",
     "esbuild",

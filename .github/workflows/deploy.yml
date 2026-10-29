@@ -23,8 +23,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  BUN_VERSION: 1.3.13
-  NODE_VERSION: 22
   APP_PORT: 8085
   # Baked into the client bundle at build time; configure as a repository variable.
   NEXT_PUBLIC_baseURL: ${{ vars.NEXT_PUBLIC_baseURL }}
@@ -42,13 +40,13 @@ jobs:
         if: inputs.build
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: ${{ env.BUN_VERSION }}
+          bun-version-file: .bun-version
 
       - name: Set up Node
         if: inputs.build
         uses: actions/setup-node@v7
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .node-version
 
       - name: Restore Bun cache
         if: inputs.build
