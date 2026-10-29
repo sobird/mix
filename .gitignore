@@ -21,6 +21,7 @@ dist/
 .DS_Store
 
 *.tsbuildinfo
+*.bak
 
 # debug
 npm-debug.log*
