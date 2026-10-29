@@ -19,7 +19,7 @@ export default withAuth(
       async authorized({ req }) {
         const { cookies } = req;
         // 中间件只做粗粒度判断（cookie 是否存在），真正的鉴权在 layout / actions
-        return SESSION_COOKIE_NAMES.some((name) => !!cookies.get(name));
+        return SESSION_COOKIE_NAMES.some((name) => cookies.get(name));
       },
     },
   },
