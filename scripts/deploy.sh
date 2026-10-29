@@ -38,10 +38,10 @@ start_or_reload() {
 wait_healthy() {
   local status
   for _ in $(seq 1 15); do
-    status="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$APP_PORT/" || true)"
-    case "$status" in
-      2?? | 3?? | 4??) return 0 ;;
-    esac
+    status="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$APP_PORT/api/health" || true)"
+    if [ "$status" = "200" ]; then
+      return 0
+    fi
     sleep 2
   done
   return 1
