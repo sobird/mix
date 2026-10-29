@@ -84,10 +84,10 @@
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,tsx}": [
       "oxlint --fix",
-      "oxfmt"
+      "oxfmt --no-error-on-unmatched-pattern"
     ],
     "*.{json,jsonc,css,scss,md,yml,yaml}": [
-      "oxfmt"
+      "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
   "trustedDependencies": [
