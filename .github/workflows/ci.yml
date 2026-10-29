@@ -38,6 +38,9 @@ jobs:
       - name: Check formatting
         run: bun run format:check
 
+      - name: ShellCheck
+        run: shellcheck scripts/*.sh
+
       - name: Test
         run: bunx vitest run
 

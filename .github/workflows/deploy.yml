@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: release.tar.gz
+          source: release.tar.gz,scripts/deploy.sh
           target: ${{ secrets.TARGET }}
           overwrite: true
 
@@ -88,72 +88,4 @@ jobs:
           port: ${{ secrets.PORT }}
           command_timeout: 5m
           envs: APP_ROOT,APP_PORT,RELEASES_DIR,RELEASE_ID,AUTHMAIL,AUTHCODE
-          script: |
-            set -euo pipefail
-
-            cd "$APP_ROOT"
-
-            # Keep releases inside APP_ROOT by default; set the RELEASES_DIR
-            # repository variable to place them on another disk.
-            RELEASES_DIR="${RELEASES_DIR:-$APP_ROOT/releases}"
-            RELEASE_DIR="$RELEASES_DIR/$RELEASE_ID"
-            mkdir -p "$RELEASE_DIR"
-            tar -xzf release.tar.gz -C "$RELEASE_DIR"
-            rm -f release.tar.gz
-
-            # Keep runtime state (env files, SQLite database) outside the release
-            # directories so that every release keeps using the same data.
-            for file in .env .env.production .env.local .env.production.local database.sqlite; do
-              if [ -e "$APP_ROOT/$file" ]; then
-                ln -sfn "$APP_ROOT/$file" "$RELEASE_DIR/$file"
-              fi
-            done
-
-            FIRST_DEPLOY=0
-            PREVIOUS=""
-            if [ -L current ]; then
-              PREVIOUS="$(readlink current)"
-            else
-              FIRST_DEPLOY=1
-            fi
-
-            ln -sfn "$RELEASE_DIR" current
-            cd "$APP_ROOT/current"
-
-            if [ "$FIRST_DEPLOY" -eq 1 ]; then
-              # Migrate from the old in-place deployment: recreate the app so the
-              # process picks up the release directory (cwd) from pm2.config.cjs.
-              pm2 delete mix >/dev/null 2>&1 || true
-              PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 start pm2.config.cjs
-            else
-              PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 reload pm2.config.cjs
-            fi
-
-            healthy=0
-            status=""
-            for _ in $(seq 1 15); do
-              status="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$APP_PORT/" || true)"
-              if [ "$status" -ge 200 ] && [ "$status" -lt 500 ]; then
-                healthy=1
-                break
-              fi
-              sleep 2
-            done
-
-            if [ "$healthy" -ne 1 ]; then
-              echo "Health check failed (last status: ${status:-none}), rolling back"
-              if [ "$FIRST_DEPLOY" -eq 1 ]; then
-                # The previous in-place deployment is still untouched at APP_ROOT.
-                pm2 delete mix >/dev/null 2>&1 || true
-                cd "$APP_ROOT"
-                PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 start pm2.config.cjs
-              elif [ -n "$PREVIOUS" ]; then
-                ln -sfn "$PREVIOUS" "$APP_ROOT/current"
-                cd "$APP_ROOT/current"
-                PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 reload pm2.config.cjs
-              fi
-              exit 1
-            fi
-
-            # Keep the last five releases for rollbacks.
-            ls -1dt "$RELEASES_DIR"/* 2>/dev/null | tail -n +6 | xargs -r rm -rf
+          script: bash "$APP_ROOT/scripts/deploy.sh"
