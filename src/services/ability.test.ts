@@ -1,6 +1,6 @@
 import type { User } from '@/models';
 
-import AbilityService from './ability';
+import AbilityService from './ability/legacy';
 
 vi.mock('@/models');
 

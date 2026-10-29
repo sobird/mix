@@ -3,7 +3,7 @@ import { RawRule } from '@casl/ability';
 import { rulesToCondition } from '@casl/ability/extra';
 import { Op } from 'sequelize';
 
-import { type AppAbility, type Actions, type Subjects } from '@/services/ability';
+import { type AppAbility, type Actions, type Subjects } from '@/services/ability/legacy';
 
 /**
  * Tricky way to walk recursively over deeply nested object.

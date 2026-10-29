@@ -1,5 +1,5 @@
 import { LoginButton, LogoutButton, ProfileButton, RegisterButton } from '@/components/buttons';
-import { defineAbilityFor } from '@/services/ability';
+import { defineAbilityFor } from '@/services/ability/legacy';
 import { getServerAuthToken } from '@/services/auth';
 
 const HomePage = async () => {

@@ -2,7 +2,7 @@ import { defineAbility } from '@casl/ability';
 import { Op } from 'sequelize';
 
 import { User } from '@/models/User';
-import type { AppAbility, Subjects } from '@/services/ability';
+import type { AppAbility, Subjects } from '@/services/ability/legacy';
 
 import { toSequelizeQuery } from './casl';
 

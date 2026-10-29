@@ -10,7 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { Role, Permission, sequelize } from '@/models';
-import { defineAbilityFor } from '@/services/ability';
+import { defineAbilityFor } from '@/services/ability/legacy';
 import { getServerAuthToken } from '@/services/auth';
 import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
 
