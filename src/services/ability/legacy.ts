@@ -17,7 +17,6 @@ import {
   InferSubjects,
 } from '@casl/ability';
 
-import { toSequelizeQuery } from '@/lib/casl';
 import { models, User, Role, Permission, type UserAttributes } from '@/models';
 
 export type Subjects = InferSubjects<keyof typeof models | 'all'>;
@@ -97,10 +96,6 @@ class AbilityService {
     });
 
     return createMongoAbility(rules);
-  }
-
-  static accessibleBy(ability: AppAbility, action: Actions, model: Subjects) {
-    return { where: toSequelizeQuery(ability, action, model) };
   }
 }
 export default AbilityService;

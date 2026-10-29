@@ -1,38 +1,35 @@
-import { defineAbility } from '@casl/ability';
 import { Op } from 'sequelize';
 
-import { User } from '@/models/User';
-import type { AppAbility, Subjects } from '@/services/ability/legacy';
+import { buildAbility } from '@/services/ability/build';
 
-import { toSequelizeQuery } from './casl';
+import { symbolize, toAccessQuery } from './casl';
 
-const today = new Date().setHours(0, 0, 0, 0);
+describe('toAccessQuery', () => {
+  it('returns none when there are no allow rules', () => {
+    expect(toAccessQuery(buildAbility([]), 'read', 'User')).toEqual({ kind: 'none' });
+  });
 
-const ability = defineAbility((can) => {
-  can('read', User, { username: 'sobird' });
-  can('read', User, ['username', 'nickname'], { id: 1 });
-  can('update', User, ['title', 'description'], { id: 1 });
-  can('read', 'Article', { createdAt: { $lte: today }, id: { $in: [1, 2, 3, 4] } });
-  can('read', 'Article', { id: '$user.id' });
-  can('read', 'Article', ['nage', 'age', 'address.street'], { name: 123, age: 32, $or: [{ ddd: 1 }, { aaa: 2 }] });
+  it('returns all for unconditional allow', () => {
+    expect(toAccessQuery(buildAbility([{ action: 'read', subject: 'User', narrowing: {} }]), 'read', 'User')).toEqual({
+      kind: 'all',
+    });
+  });
+
+  it('returns a filter for conditional allow', () => {
+    const query = toAccessQuery(
+      buildAbility([{ action: 'read', subject: 'User', narrowing: { conditions: { id: 1 } } }]),
+      'read',
+      'User',
+    );
+
+    expect(query).toEqual({ kind: 'filter', where: { id: 1 } });
+  });
 });
 
-console.log('ability.rules', ability.rulesFor('read', 'Article'));
+describe('symbolize', () => {
+  it('keeps Date values while symbolizing operators', () => {
+    const date = new Date('2026-01-01T00:00:00.000Z');
 
-it('toSequelizeQuery', () => {
-  const query = toSequelizeQuery(ability as unknown as AppAbility, 'read', 'Article' as unknown as Subjects);
-
-  console.log('query', query);
-
-  const expected = {
-    [Op.or]: [
-      { name: 123, age: 32, [Op.or]: [{ ddd: 1 }, { aaa: 2 }] },
-      { id: '$user.id' },
-      { createdAt: { [Op.lte]: today }, id: { [Op.in]: [1, 2, 3, 4] } },
-    ],
-  };
-
-  expect(query).toEqual(expected);
+    expect(symbolize({ $lte: date })).toEqual({ [Op.lte]: date });
+  });
 });
-
-console.log('Op', Object.keys(Op));

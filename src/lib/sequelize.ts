@@ -10,7 +10,7 @@
  * sobird<i@sobird.me> at 2021/11/16 20:33:20 created.
  */
 
-import { AbilityTuple, MongoAbility, RawRule } from '@casl/ability';
+import { RawRule } from '@casl/ability';
 import log4js from 'log4js';
 import {
   Sequelize,
@@ -23,7 +23,6 @@ import {
 } from 'sequelize';
 import sqlite3 from 'sqlite3';
 
-import { accessibleBy } from '@/lib/casl';
 import type { Models } from '@/models';
 
 const logger = log4js.getLogger('sequelize');
@@ -169,13 +168,6 @@ export abstract class BaseModel<M extends BaseModel<M> = any> extends Model<
   public static associate?: (models: Models) => void;
 
   declare static permission: PermissionTemplate;
-
-  static accessibleBy = accessibleBy;
-
-  public static async findManyWithAccessible<T extends AbilityTuple>(ability: MongoAbility<T>) {
-    // todo
-    console.log('ability', ability);
-  }
 
   /** 分页查找模型数据 */
   public static async findManyByPage<M extends BaseModel>(
