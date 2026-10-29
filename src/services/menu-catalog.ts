@@ -4,7 +4,8 @@ import { Menu, Permission, sequelize, type MenuCreationAttributes } from '@/mode
 /**
  * 将代码中的菜单目录同步到数据库。
  *
- * - 菜单按 `href` 做 `findOrCreate`，已存在时更新名称、图标、排序与权限；
+ * - 菜单按 `href` 做 `findOrCreate`，已存在时更新目录中已定义的名称、排序与权限，
+ *   图标仅在目录定义时更新（未定义则保留原值）；
  * - 定义带权限时按 (action, subject) 查权限，缺失直接抛错让部署失败；
  * - 绝不删除目录之外的菜单。
  */
@@ -32,7 +33,6 @@ export async function syncMenuCatalog(): Promise<{ menus: number }> {
       const [menu, created] = await Menu.findOrCreate({
         where: { href: definition.href },
         defaults: {
-          href: definition.href,
           name: definition.name,
           sort: definition.sort,
           permissionId,
@@ -44,10 +44,12 @@ export async function syncMenuCatalog(): Promise<{ menus: number }> {
       if (created) {
         createdMenus += 1;
       } else {
+        // 全局配置 omitNull: true 会丢弃 permissionId: null（字段名映射为 permission_id，
+        // 因此 "Id" 后缀豁免不生效），必须显式关闭才能清除无权限菜单上的陈旧权限。
         // oxlint-disable-next-line no-await-in-loop
         await menu.update(
           { name: definition.name, icon: definition.icon, sort: definition.sort, permissionId },
-          { transaction },
+          { transaction, omitNull: false },
         );
       }
     }

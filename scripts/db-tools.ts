@@ -15,7 +15,7 @@ const USAGE = `Usage: db-tools <command>
 
 Commands:
   migrate               Run pending migrations (snapshotting first when needed)
-  sync-catalog          Sync the permission catalog and assign the owner
+  sync-catalog          Sync the permission and menu catalogs, then assign the owner
   backup --to <path>    Write a standalone database snapshot to <path>
 `;
 
