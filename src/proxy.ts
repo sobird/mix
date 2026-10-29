@@ -1,6 +1,8 @@
 import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
 import { NextResponse, type NextFetchEvent } from 'next/server';
 
+import { getSessionCookieName } from '@/services/auth/session-cookie';
+
 // export const config = {
 //   // matcher: ["/profile"],
 //   matcher: ['/((?!register|api|login).*)'],
@@ -53,7 +55,8 @@ export default withAuth(
         //     },
         //   },
         // });
-        const sessionToken = cookies.get('next-auth.session-token');
+        // 中间件只做粗粒度判断（cookie 是否存在），真正的鉴权在 layout / actions
+        const sessionToken = cookies.get(getSessionCookieName());
         return !!sessionToken;
       },
     },
