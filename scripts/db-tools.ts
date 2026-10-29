@@ -11,8 +11,10 @@ import RoleService from '@/services/role';
 
 // 手动/定时备份默认写入当前目录的 ../backups（即 $APP_ROOT/backups）。
 const BACKUP_DIR = '../backups';
-// 迁移在 release 目录内执行，需要显式定位到 $APP_ROOT/backups 才能与手动备份共用同一处。
-const MIGRATE_BACKUP_DIR = process.env.APP_ROOT ? join(process.env.APP_ROOT, 'backups') : BACKUP_DIR;
+// 迁移快照放在独立子目录：迁移保留策略只保留 5 份，不能与手动/定时备份（默认 30 份）共用目录，
+// 否则一次带迁移的发布会把每日备份削到只剩 5 份。
+const APP_ROOT = process.env.APP_ROOT;
+const MIGRATE_BACKUP_DIR = APP_ROOT ? join(APP_ROOT, 'backups', 'migrations') : '../backups/migrations';
 // 迁移前的自动快照保留 5 份；手动备份默认保留更多。
 const BACKUP_KEEP = 5;
 const MANUAL_BACKUP_KEEP = 30;

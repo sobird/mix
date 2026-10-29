@@ -7,15 +7,23 @@
 
 ## 备份位置与保留数量
 
-所有快照都写入 `$APP_ROOT/backups/`，手动/定时备份和迁移前自动快照共用这一处：
+所有快照都写入 `$APP_ROOT/backups/`，但按用途分成两个独立的池，各自清理、互不干扰：
 
-- 手动/定时备份（`scripts/backup.sh` 或 `node db-tools.cjs backup`）：文件名
-  `database-<时间戳>.sqlite`。`backup.sh` 使用紧凑的 UTC 时间戳 `%Y%m%dT%H%M%SZ`
-  （例如 `database-20261029T031700Z.sqlite`；对应 `date -u +%Y%m%dT%H%M%SZ`），
-  `db-tools backup` 的默认目标则使用 ISO 时间戳（`:` 替换为 `-`）。
-- 迁移前自动快照（`node db-tools.cjs migrate`）：同一目录，文件名 `database-<ISO 时间戳>.sqlite`。
-- 手动/定时备份默认保留 30 份（`--keep` 或 `BACKUP_KEEP` 覆盖）：每日备份保留约一个月的恢复点。
-- 迁移前自动快照保留 5 份：迁移不常执行，5 份足以覆盖最近几次迁移的回滚窗口，又不会堆满磁盘。
+- `$APP_ROOT/backups/`：手动/定时备份（`scripts/backup.sh` 或 `node db-tools.cjs backup`），
+  文件名 `database-<时间戳>.sqlite`，默认保留 30 份（`--keep` 或 `BACKUP_KEEP` 覆盖）：
+  每日备份可保留约一个月的恢复点。
+  - `backup.sh` 使用紧凑的 UTC 时间戳 `%Y%m%dT%H%M%SZ`
+    （例如 `database-20261029T031700Z.sqlite`；对应 `date -u +%Y%m%dT%H%M%SZ`）。
+  - `db-tools backup` 的默认目标使用 ISO 时间戳（`:` 替换为 `-`）。
+- `$APP_ROOT/backups/migrations/`：迁移前自动快照（`node db-tools.cjs migrate`），文件名
+  `database-<ISO 时间戳>.sqlite`，保留 5 份。迁移不常执行，5 份足以覆盖最近几次迁移的
+  回滚窗口，又不会堆满磁盘；单独成目录可确保迁移的清理策略不会削减每日手动备份。
+
+`db-tools backup` 的默认目标 `../backups/database-<ISO>.sqlite` 相对当前工作目录解析
+（物理路径，不跟随 `current` 软链）：从 `$APP_ROOT/current` 运行时实际落在
+`$APP_ROOT/releases/` 下的 release 树中，而不是 `$APP_ROOT/backups/`。要写入
+`$APP_ROOT/backups/` 应显式传 `--to`，或直接使用 `scripts/backup.sh`——它始终传入绝对的
+`--to "$APP_ROOT/backups/..."`。
 
 ## 定时备份
 
