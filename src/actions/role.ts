@@ -29,7 +29,7 @@ export async function createRoleAction(payload: RoleFormAttributes): Promise<Rol
   const validated = RoleFormZod.safeParse(payload);
   if (!validated.success) {
     return {
-      status: ActionStatus.SUCCESS,
+      status: ActionStatus.FAILURE,
       errors: validated.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Role.',
     };

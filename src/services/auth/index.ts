@@ -176,7 +176,6 @@ export const authOptions: AuthOptions = {
     },
 
     async jwt({ token, trigger, session, user, account }) {
-      console.log('jwt-callback', token, user, account);
       if (trigger === 'update') {
         token.name = session.user.name;
       }
@@ -202,8 +201,7 @@ export const authOptions: AuthOptions = {
       return token;
     },
 
-    async session({ session, token, user, trigger }) {
-      console.log('session-callback', token, user, trigger);
+    async session({ session, token, user, trigger: _trigger }) {
       if (token?.accessToken) {
         session.accessToken = token.accessToken;
       }
