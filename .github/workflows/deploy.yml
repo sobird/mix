@@ -56,11 +56,9 @@ jobs:
       - name: Prepare release bundle
         run: |
           set -euo pipefail
-          cp pm2.config.cjs .next/standalone/pm2.config.cjs
-          rm -rf .next/standalone/.next/static .next/standalone/public
-          mkdir -p .next/standalone/.next
-          cp -R .next/static .next/standalone/.next/static
-          cp -R public .next/standalone/public
+          cp pm2.config.cjs .next/standalone/
+          cp -r public .next/standalone/
+          cp -r .next/static .next/standalone/.next/
           tar -czf release.tar.gz -C .next/standalone .
 
       - name: Upload release bundle
