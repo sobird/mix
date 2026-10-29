@@ -204,16 +204,13 @@ export const authOptions: AuthOptions = {
 
     async session({ session, token, user, trigger }) {
       console.log('session-callback', token, user, trigger);
-      if (token.accessToken) {
+      if (token?.accessToken) {
         session.accessToken = token.accessToken;
       }
 
-      return {
-        ...session,
-        // user: {
-        //   ...session.user,
-        // },
-      };
+      if (user?.id) session.user.id = String(user.id);
+
+      return session;
     },
   },
   pages: {
