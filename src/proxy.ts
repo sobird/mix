@@ -1,7 +1,7 @@
 import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
 import { NextResponse, type NextFetchEvent } from 'next/server';
 
-import { getSessionCookieName } from '@/services/auth/session-cookie';
+import { SESSION_COOKIE_NAMES } from '@/services/auth/session-cookie';
 
 // export const config = {
 //   // matcher: ["/profile"],
@@ -56,8 +56,7 @@ export default withAuth(
         //   },
         // });
         // 中间件只做粗粒度判断（cookie 是否存在），真正的鉴权在 layout / actions
-        const sessionToken = cookies.get(getSessionCookieName());
-        return !!sessionToken;
+        return SESSION_COOKIE_NAMES.some((name) => !!cookies.get(name));
       },
     },
   },

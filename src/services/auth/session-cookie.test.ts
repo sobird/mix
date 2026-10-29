@@ -1,13 +1,9 @@
-import { getSessionCookieName } from './session-cookie';
+import { SESSION_COOKIE_NAMES } from './session-cookie';
 
-it('uses the secure cookie name behind https', () => {
-  expect(getSessionCookieName('https://mix.example.com')).toBe('__Secure-next-auth.session-token');
+it('accepts both the secure and plain session cookie names', () => {
+  expect(SESSION_COOKIE_NAMES).toEqual(['__Secure-next-auth.session-token', 'next-auth.session-token']);
 });
 
-it('uses the plain cookie name over http', () => {
-  expect(getSessionCookieName('http://localhost:3000')).toBe('next-auth.session-token');
-});
-
-it('falls back to the plain cookie name when the url is unknown', () => {
-  expect(getSessionCookieName(undefined)).toBe('next-auth.session-token');
+it('checks the secure variant first', () => {
+  expect(SESSION_COOKIE_NAMES[0].startsWith('__Secure-')).toBe(true);
 });

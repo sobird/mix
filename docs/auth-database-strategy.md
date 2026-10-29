@@ -82,10 +82,14 @@ layout / ability / menu / actions 重复查询。带 `req/res` 的重载保持�
 ### D6. 中间件 cookie 名
 
 `src/proxy.ts` 目前硬编码 `next-auth.session-token`。生产 HTTPS 下 next-auth 使用
-`__Secure-next-auth.session-token`。修复方式（二选一，评审确定）：
+`__Secure-next-auth.session-token`。修复方式（已选）：
 
-- A：按 `NEXTAUTH_URL` 是否 `https` 选择 cookie 名；（选A）
-- B：中间件只做粗粒度存在性判断，真正的鉴权交给 `dashboard/layout.tsx` 与 actions。
+- next-auth v4 未公开导出计算后的 cookie 名（`core/lib/cookie` 被 `exports` 限制），
+  `authOptions.cookies` 也只在显式配置时才有值；
+- 中间件跑在 edge runtime，不能引入 `authOptions`（会连带 Sequelize/SQLite）；
+- 因此中间件同时接受 `__Secure-next-auth.session-token` 与 `next-auth.session-token`
+  两个名字（见 `src/services/auth/session-cookie.ts`），与部署协议无关；
+  鉴权本身仍交给 `dashboard/layout.tsx` 与 actions。
 
 ## 4. 变更清单
 
@@ -193,7 +197,7 @@ export function getServerAuthSession(...args: [] | [req, res]) {
 
 ## 9. 已确认
 
-- [x] D6 采用方案 A（按 `NEXTAUTH_URL` 是否 `https` 选择 cookie 名）。
+- [x] D6 中间件同时接受 `__Secure-` 与普通 session cookie 名。
 - [x] 错误文案统一为"用户名或密码错误"，禁用账号单独提示"账号已被禁用"。
 - [x] 登录（credentials）时清理同用户旧会话，不依赖过期清理。
 - [x] 显式传入 `secret`（第 11 项）。
