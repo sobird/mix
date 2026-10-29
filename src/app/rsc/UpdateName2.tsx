@@ -3,8 +3,12 @@
 import { updateName2 } from './actions';
 
 function UpdateName2() {
+  const action = async (formData: FormData) => {
+    await updateName2(formData);
+  };
+
   return (
-    <form action={updateName2}>
+    <form action={action}>
       <input type="text" name="name" />
       <button type="submit">submit</button>
     </form>

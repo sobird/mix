@@ -9,22 +9,17 @@
 
 'use client';
 
-import { useRef, PropsWithChildren } from 'react';
+import { useState, PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
+
 import { makeStore, AppStore, RootState } from '@/store';
 
 interface StoreProviderProps {
-  preloadedState?: DeepPartial<RootState>
+  preloadedState?: DeepPartial<RootState>;
 }
 
-export default function StoreProvider({
-  preloadedState,
-  children,
-}: PropsWithChildren<StoreProviderProps>) {
-  const storeRef = useRef<AppStore | null>(null);
-  if (!storeRef.current) {
-    storeRef.current = makeStore(preloadedState);
-  }
+export default function StoreProvider({ preloadedState, children }: PropsWithChildren<StoreProviderProps>) {
+  const [store] = useState<AppStore>(() => makeStore(preloadedState));
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return <Provider store={store}>{children}</Provider>;
 }

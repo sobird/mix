@@ -51,10 +51,12 @@ export const Favorites: IMenuItem = {
 };
 
 const MenuService = {
-  async list(parentId?: number) {
+  async list(parentId?: number): Promise<[IMenuItem[], IMenuItem[], IMenuItem[]]> {
     return http.get<IMenuListResponse>('/menu', { parentId }).then(({ menuItems = [], favorites = [] }) => {
-      const items = menuItems.sort((a: any, b: any) => { return a.index - b.index; });
-      const menuTrees = listToTree(items);
+      const items = menuItems.sort((a: any, b: any) => {
+        return a.index - b.index;
+      });
+      const menuTrees = listToTree(items) as unknown as IMenuItem[];
       // 标记最后一项
       menuTrees[menuTrees.length - 1].last = true;
 

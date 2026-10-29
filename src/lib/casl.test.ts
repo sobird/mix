@@ -2,6 +2,7 @@ import { defineAbility } from '@casl/ability';
 import { Op } from 'sequelize';
 
 import { User } from '@/models/User';
+import type { AppAbility, Subjects } from '@/services/ability';
 
 import { toSequelizeQuery } from './casl';
 
@@ -19,7 +20,7 @@ const ability = defineAbility((can) => {
 console.log('ability.rules', ability.rulesFor('read', 'Article'));
 
 it('toSequelizeQuery', () => {
-  const query = toSequelizeQuery(ability, 'read', 'Article');
+  const query = toSequelizeQuery(ability as unknown as AppAbility, 'read', 'Article' as unknown as Subjects);
 
   console.log('query', query);
 

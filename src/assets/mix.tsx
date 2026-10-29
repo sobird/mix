@@ -8,16 +8,6 @@
 
 import React, { FC, ReactSVGElement } from 'react';
 
-const styles = `.path {
-  fill: #2c3e50;
-  fill-rule: evenodd;
-}
-
-@media (prefers-color-scheme: dark) {
-  .path {
-    fill: #ffffff;
-  }
-}`;
 const Mix: FC<ReactSVGElement['props']> = (props) => {
   return (
     <svg
@@ -34,10 +24,10 @@ const Mix: FC<ReactSVGElement['props']> = (props) => {
         {/* <style dangerouslySetInnerHTML={{ __html: styles }} /> */}
         <style jsx>
           {`
-        .demo {
-          color: black;
-        }
-      `}
+            .demo {
+              color: black;
+            }
+          `}
         </style>
       </defs>
       <path

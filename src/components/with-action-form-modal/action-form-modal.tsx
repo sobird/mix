@@ -10,19 +10,12 @@ import { Button, Modal, ModalProps } from 'antd';
 import React, { useState, useMemo } from 'react';
 
 export interface ActionFormModalProps extends ModalProps {
-  trigger?: JSX.Element | string;
-  children?: JSX.Element;
+  trigger?: React.JSX.Element | string;
+  children?: React.JSX.Element;
 }
 
-const ActionFormModal: React.FC<ActionFormModalProps> = ({
-  children,
-  trigger,
-  ...props
-}) => {
+const ActionFormModal: React.FC<ActionFormModalProps> = ({ children, trigger, ...props }) => {
   const [open, setOpen] = useState(false);
-  const showModal = () => {
-    setOpen(true);
-  };
 
   const handleOk = () => {
     setOpen(false);
@@ -38,18 +31,29 @@ const ActionFormModal: React.FC<ActionFormModalProps> = ({
     }
 
     if (typeof trigger === 'string') {
-      return <Button type="primary" onClick={showModal}>{trigger}</Button>;
+      return (
+        <Button
+          type="primary"
+          onClick={() => {
+            return setOpen(true);
+          }}
+        >
+          {trigger}
+        </Button>
+      );
     }
 
     return React.cloneElement(trigger, {
       key: 'trigger',
       ...trigger.props,
       onClick: async (e: any) => {
-        setOpen(!open);
+        setOpen((prev) => {
+          return !prev;
+        });
         trigger.props?.onClick?.(e);
       },
     });
-  }, [setOpen, trigger]);
+  }, [trigger]);
 
   const childrenDom = useMemo(() => {
     if (!children) {
@@ -62,7 +66,7 @@ const ActionFormModal: React.FC<ActionFormModalProps> = ({
         setOpen(false);
       },
     });
-  }, [setOpen, children]);
+  }, [children]);
 
   return (
     <>

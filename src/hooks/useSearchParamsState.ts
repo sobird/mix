@@ -4,29 +4,29 @@
  * sobird<i@sobird.me> at 2023/10/05 10:13:44 created.
  */
 
-import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+'use client';
 
-let singletonSearchParams = null;
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
 export default function useSearchParamsState(
   searchParamName: string,
   defaultValue: string,
 ): readonly [searchParamsState: string, setSearchParamsState: (newState: string) => void] {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const acquiredSearchParam = searchParams.get(searchParamName);
   const searchParamsState = acquiredSearchParam ?? defaultValue;
 
-  useEffect(() => {
-    singletonSearchParams = searchParams;
-  }, [searchParams.toString()]);
-
-  const setSearchParamsState = (newState: string) => {
-    singletonSearchParams.set(searchParamName, newState);
-    setTimeout(() => {
-      setSearchParams(singletonSearchParams);
-    }, 0);
-  };
+  const setSearchParamsState = useCallback(
+    (newState: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(searchParamName, newState);
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [searchParams, searchParamName, router, pathname],
+  );
 
   return [searchParamsState, setSearchParamsState];
 }

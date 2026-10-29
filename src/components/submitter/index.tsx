@@ -4,14 +4,14 @@
  * sobird<i@sobird.me> at 2023/12/28 16:22:10 created.
  */
 
-import {
-  Button, Form, Row, Col, ButtonProps, ColProps,
-} from 'antd';
+import { Button, Form, Row, Col, ButtonProps, ColProps } from 'antd';
 import React from 'react';
 
 interface SubmitterButtonProps extends ButtonProps {
   text?: React.ReactNode;
 }
+
+const EMPTY_BUTTON_PROPS: SubmitterButtonProps = {};
 
 export interface SubmitterProps<T = Record<string, any>> {
   labelCol?: ColProps;
@@ -20,16 +20,13 @@ export interface SubmitterProps<T = Record<string, any>> {
   submitButtonProps?: false | SubmitterButtonProps;
   resetButtonProps?: false | SubmitterButtonProps;
   render?:
-  | ((
-    props: SubmitterProps & T,
-    dom: JSX.Element[],
-  ) => React.ReactNode[] | React.ReactNode | false)
-  | false;
+    | ((props: SubmitterProps & T, dom: React.JSX.Element[]) => React.ReactNode[] | React.ReactNode | false)
+    | false;
 }
 
 const Submitter: React.FC<SubmitterProps> = ({
-  submitButtonProps = {},
-  resetButtonProps = {},
+  submitButtonProps = EMPTY_BUTTON_PROPS,
+  resetButtonProps = EMPTY_BUTTON_PROPS,
   reversed,
   render,
   labelCol,
@@ -40,17 +37,12 @@ const Submitter: React.FC<SubmitterProps> = ({
     return null;
   }
 
-  const buttonDom: JSX.Element[] = [];
+  const buttonDom: React.JSX.Element[] = [];
 
   if (submitButtonProps !== false) {
     const { text = '提交' } = submitButtonProps;
     buttonDom.push(
-      <Button
-        type="primary"
-        key="submit"
-        htmlType="submit"
-        {...submitButtonProps}
-      >
+      <Button type="primary" key="submit" htmlType="submit" {...submitButtonProps}>
         {text}
       </Button>,
     );
@@ -59,11 +51,7 @@ const Submitter: React.FC<SubmitterProps> = ({
   if (resetButtonProps !== false) {
     const { text = '重置' } = resetButtonProps;
     buttonDom.push(
-      <Button
-        key="reset"
-        htmlType="reset"
-        {...resetButtonProps}
-      >
+      <Button key="reset" htmlType="reset" {...resetButtonProps}>
         {text}
       </Button>,
     );
@@ -80,8 +68,10 @@ const Submitter: React.FC<SubmitterProps> = ({
 
   return (
     <Row gutter={5}>
-      {labelCol && (<Col {...labelCol} />)}
-      <Col {...wrapperCol} style={{ display: 'flex', gap: 8 }}>{renderDom}</Col>
+      {labelCol && <Col {...labelCol} />}
+      <Col {...wrapperCol} style={{ display: 'flex', gap: 8 }}>
+        {renderDom}
+      </Col>
     </Row>
   );
 };

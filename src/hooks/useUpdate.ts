@@ -1,3 +1,4 @@
+// oxlint-disable react-hooks/exhaustive-deps
 import { useEffect, useRef } from 'react';
 /**
  * 一个只在依赖更新时执行的 useEffect hook。

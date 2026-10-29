@@ -6,7 +6,6 @@
  */
 
 import { ReactElement } from 'react';
-
 import type { PipeableStream } from 'react-dom/server';
 
 interface ReactDOMServerMethodReturn {
@@ -19,8 +18,14 @@ interface ReactDOMServerMethodReturn {
 
 type ReactDOMServerMethod = keyof ReactDOMServerMethodReturn;
 
-const renderReactElement = async <T extends ReactDOMServerMethod = 'renderToStaticMarkup'>(element: ReactElement, method?: T) => {
-  const ReactDOMServer = (await import('react-dom/server')).default;
+const renderReactElement = async <T extends ReactDOMServerMethod = 'renderToStaticMarkup'>(
+  element: ReactElement,
+  method?: T,
+) => {
+  const ReactDOMServer = (await import('react-dom/server')) as unknown as Record<
+    ReactDOMServerMethod,
+    (element: ReactElement) => unknown
+  >;
   return ReactDOMServer[method || 'renderToStaticMarkup'](element) as ReactDOMServerMethodReturn[T];
 };
 

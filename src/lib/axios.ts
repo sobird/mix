@@ -20,7 +20,8 @@
  * sobird<i@sobird.me> at 2021/02/20 11:18:13 created.
  */
 
-import axios, {
+import {
+  create,
   CreateAxiosDefaults,
   AxiosInstance,
   AxiosResponse,
@@ -61,8 +62,8 @@ interface HttpError<T = unknown, D = unknown> extends AxiosError<T, D> {
 export class Http {
   service: AxiosInstance;
 
-  constructor(config?: CreateAxiosDefaults) {
-    this.service = axios.create(config);
+  constructor(defaults?: CreateAxiosDefaults) {
+    this.service = create(defaults);
     // 请求拦截器
     this.service.interceptors.request.use(
       (config: InternalHttpRequestConfig) => {
@@ -105,9 +106,7 @@ export class Http {
       },
       // 超出 2xx 范围的状态码都会触发该函数。
       (error: HttpError) => {
-        const {
-          code, message, request, response, config,
-        } = error;
+        const { code, message, request, response, config } = error;
 
         if (response) {
           // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围

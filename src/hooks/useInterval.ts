@@ -7,9 +7,10 @@
  * sobird<i@sobird.me> at 2023/10/27 12:01:38 created.
  */
 
-import {
-  useState, useMemo, useCallback, useEffect, useRef,
-} from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+
+// oxlint-disable react-hooks/exhaustive-deps
+// oxlint-disable react/exhaustive-effect-dependencies
 
 type ReturnType = (time: null | undefined | number) => void;
 
@@ -34,9 +35,11 @@ export interface UseIntervalOptions {
 const useInterval = (fn: () => void, delay?: number, options: UseIntervalOptions = {}): ReturnType => {
   const { immediate = false } = options;
   const [runEffect, setRunEffect] = useState(true);
-  const [time, setTime] = useState(delay);
+  const [time, setTime] = useState<number | null | undefined>(delay);
 
-  const timerCallback = useMemo(() => { return fn; }, [fn]);
+  const timerCallback = useMemo(() => {
+    return fn;
+  }, [fn]);
 
   const timerRef = useRef<NodeJS.Timer | null>(null);
 
@@ -47,7 +50,7 @@ const useInterval = (fn: () => void, delay?: number, options: UseIntervalOptions
   }, []);
 
   useEffect(() => {
-    if (!Number.isInteger(time) || time < 0) {
+    if (time === null || time === undefined || !Number.isInteger(time) || time < 0) {
       return;
     }
     if (immediate) {
@@ -56,11 +59,13 @@ const useInterval = (fn: () => void, delay?: number, options: UseIntervalOptions
 
     timerRef.current = setInterval(timerCallback, time);
     return clear;
-  }, [time, immediate, runEffect]);
+  }, [time, immediate, runEffect, timerCallback, clear]);
 
   return (interval = 1000) => {
     setTime(interval);
-    setRunEffect((v) => { return !v; });
+    setRunEffect((v) => {
+      return !v;
+    });
   };
 };
 

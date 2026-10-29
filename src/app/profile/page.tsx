@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation';
-
 import { getServerAuthSession } from '@/services/auth';
 
 export default async function Profile() {
@@ -9,9 +7,5 @@ export default async function Profile() {
     // redirect('/api/auth/signin');
   }
 
-  return (
-    <div>
-      {JSON.stringify(session)}
-    </div>
-  );
+  return <div>{JSON.stringify(session)}</div>;
 }

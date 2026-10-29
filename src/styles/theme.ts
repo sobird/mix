@@ -4,7 +4,7 @@
  * sobird<i@sobird.me> at 2023/10/20 10:26:16 created.
  */
 
-import { theme, ThemeConfig } from 'antd';
+import { ThemeConfig } from 'antd';
 
 // const defaultToken = theme.defaultConfig.token;
 
@@ -30,7 +30,6 @@ const config: ThemeConfig = {
     Form: {
       itemMarginBottom: 20,
       labelColor: '#333',
-
     },
     Alert: {
       fontSize: 12,
@@ -43,9 +42,7 @@ const config: ThemeConfig = {
     Notification: {
       motion: false,
     },
-    Upload: {
-
-    },
+    Upload: {},
   },
 };
 

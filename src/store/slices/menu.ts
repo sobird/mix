@@ -3,9 +3,8 @@
  *
  * sobird<i@sobird.me> at 2023/11/24 19:21:00 created.
  */
-import {
-  createSlice, createAsyncThunk, PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+
 import MenuService, { IMenuItem } from '@/services/menu';
 
 export interface IMenuState {
@@ -16,8 +15,8 @@ export interface IMenuState {
   /** 菜单树 用来渲染导航菜单 */
   menuTrees?: IMenuItem[];
   pathMap?: {
-    [key in string]: IMenuItem
-  },
+    [key in string]: IMenuItem;
+  };
   defaultOpenKeys?: string[];
 }
 
@@ -45,9 +44,13 @@ const menuSlice = createSlice({
       })
       .addCase(fetchMenu.fulfilled, (state, action) => {
         const [menuTrees, menuItems, favorites] = action.payload;
-        const defaultOpenKeys = menuTrees.filter((item) => {
-          return item.children && item.children.length > 0;
-        }).map((item) => { return item.id; });
+        const defaultOpenKeys = menuTrees
+          .filter((item) => {
+            return item.children && item.children.length > 0;
+          })
+          .map((item) => {
+            return item.id;
+          });
 
         return {
           ...state,
@@ -68,9 +71,11 @@ const menuSlice = createSlice({
       };
     },
     removeFavMenuItem: (state, action: PayloadAction<IMenuItem>) => {
-      const { favorites } = state;
+      const favorites = state.favorites ?? [];
 
-      const index = favorites.findIndex((item) => { return item.id === action.payload.id; });
+      const index = favorites.findIndex((item) => {
+        return item.id === action.payload.id;
+      });
 
       if (index !== -1) {
         favorites.splice(index, 1);
@@ -79,7 +84,7 @@ const menuSlice = createSlice({
       state.favorites = [...favorites];
     },
     insertFavMenuItem: (state, action: PayloadAction<IMenuItem>) => {
-      const { favorites } = state;
+      const favorites = state.favorites ?? [];
       favorites.push(action.payload);
 
       state.favorites = [...favorites];

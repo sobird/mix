@@ -42,8 +42,8 @@ const RoleTable: FC<RoleTableProps> = ({ data }) => {
           showSizeChanger: true,
           onChange: (page, pageSize) => {
             const params = new URLSearchParams(searchParams?.toString());
-            params.set('pn', page);
-            params.set('ps', pageSize);
+            params.set('pn', String(page));
+            params.set('ps', String(pageSize));
             router.push(`${pathname}?${params.toString()}`);
           },
           itemRender: (page, type, originalElement) => {

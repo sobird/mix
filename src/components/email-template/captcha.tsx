@@ -23,10 +23,11 @@ const CaptchaEmailBody: React.FC<CaptchaEmailBodyProps> = ({ code }) => {
   };
 
   return (
-    <div style={{
-      background: '#F7F9F9',
-      padding: 20,
-    }}
+    <div
+      style={{
+        background: '#F7F9F9',
+        padding: 20,
+      }}
     >
       <table
         width="100%"
@@ -56,7 +57,7 @@ const CaptchaEmailBody: React.FC<CaptchaEmailBodyProps> = ({ code }) => {
           </td>
         </tr>
         <tr>
-          <td align="center" style={{ padding: '10px 0' }}>
+          <td aria-label="验证码" align="center" style={{ padding: '10px 0' }}>
             <table border={0} cellSpacing="0" cellPadding="0">
               <tr>
                 <td align="center" style={{ lineHeight: 'normal' }}>
@@ -76,7 +77,6 @@ const CaptchaEmailBody: React.FC<CaptchaEmailBodyProps> = ({ code }) => {
                   >
                     {code}
                   </div>
-
                 </td>
               </tr>
             </table>

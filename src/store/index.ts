@@ -9,12 +9,11 @@
  */
 
 // import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
-import { configureStore } from '@reduxjs/toolkit';
-import {
-  TypedUseSelectorHook, useDispatch, useSelector, useStore,
-} from 'react-redux';
-import reducers from './slices';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector, useStore } from 'react-redux';
+
 import logger from './middleware/logger';
+import reducers from './slices';
 
 // const composeWithDevTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -30,9 +29,11 @@ import logger from './middleware/logger';
 //   // enhancers: []
 // });
 
+const rootReducer = combineReducers(reducers);
+
 export const makeStore = (preloadedState) => {
   return configureStore({
-    reducer: reducers,
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) => {
       return getDefaultMiddleware({
         thunk: {

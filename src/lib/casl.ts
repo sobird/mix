@@ -25,19 +25,32 @@ function ruleToSequelize(rule: RawRule) {
   return rule.inverted ? { $not: rule.conditions } : rule.conditions;
 }
 
+type SequelizeQuery = { $and: unknown[] } | { $or: unknown[] } | null;
+
 export function toSequelizeQuery(ability: AppAbility, action: Actions, subject: Subjects) {
-  const query = rulesToCondition(ability.rulesFor(action, subject), ruleToSequelize, {
-    and: (conditions) => { return { $and: conditions }; },
-    or: (conditions) => { return { $or: conditions }; },
-    empty: () => { return null; },
-  });
+  const query = rulesToCondition<AppAbility, unknown, SequelizeQuery>(
+    ability.rulesFor(action, subject),
+    ruleToSequelize,
+    {
+      and: (conditions) => {
+        return { $and: conditions };
+      },
+      or: (conditions) => {
+        return { $or: conditions };
+      },
+      empty: () => {
+        return null;
+      },
+    },
+  );
   return query === null ? query : symbolize(query);
 }
 
 export async function accessibleBy(ability: AppAbility, action: Actions = 'read') {
   const query = toSequelizeQuery(ability, action, this);
 
-  if (query === null) { // there is no accessible records, so no need to send query to db
+  if (query === null) {
+    // there is no accessible records, so no need to send query to db
     return [];
   }
 

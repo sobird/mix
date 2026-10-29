@@ -11,12 +11,7 @@ describe('InputCheckboxGroup', () => {
 
   // 基础渲染测试
   it('应正确渲染标题和所有选项', () => {
-    render(
-      <InputCheckboxGroup
-        title="水果选择"
-        options={mockOptions}
-      />,
-    );
+    render(<InputCheckboxGroup title="水果选择" options={mockOptions} />);
 
     // 验证标题
     expect(screen.getByText('水果选择')).toBeInTheDocument();
@@ -29,14 +24,8 @@ describe('InputCheckboxGroup', () => {
 
   // 全选功能测试
   it('全选复选框应正常工作', async () => {
-    const onChange = vi.fn();
-    render(
-      <InputCheckboxGroup
-        title="全选测试"
-        options={mockOptions}
-        onChange={onChange}
-      />,
-    );
+    const onChange = vi.fn<() => void>();
+    render(<InputCheckboxGroup title="全选测试" options={mockOptions} onChange={onChange} />);
 
     // 获取全选复选框
     const allCheckbox = screen.getByLabelText('全选测试') as HTMLInputElement;
@@ -65,13 +54,7 @@ describe('InputCheckboxGroup', () => {
 
   // 部分选中状态测试
   it('应正确显示indeterminate状态', () => {
-    const { container } = render(
-      <InputCheckboxGroup
-        title="部分选中"
-        options={mockOptions}
-        value={['apple']}
-      />,
-    );
+    const { container } = render(<InputCheckboxGroup title="部分选中" options={mockOptions} value={['apple']} />);
 
     // 获取全选复选框
     const allCheckbox = screen.getByLabelText('部分选中') as HTMLInputElement;
@@ -85,14 +68,9 @@ describe('InputCheckboxGroup', () => {
 
   // 受控组件测试
   it('应正确处理受控模式', () => {
-    const onChange = vi.fn();
+    const onChange = vi.fn<() => void>();
     const { rerender } = render(
-      <InputCheckboxGroup
-        title="受控测试"
-        options={mockOptions}
-        value={['apple']}
-        onChange={onChange}
-      />,
+      <InputCheckboxGroup title="受控测试" options={mockOptions} value={['apple']} onChange={onChange} />,
     );
 
     // 初始选中状态验证
@@ -106,14 +84,7 @@ describe('InputCheckboxGroup', () => {
     // expect(onChange).toHaveBeenCalledWith(['apple', 'banana']);
 
     // 外部更新value
-    rerender(
-      <InputCheckboxGroup
-        title="受控测试"
-        options={mockOptions}
-        value={['orange']}
-        onChange={onChange}
-      />,
-    );
+    rerender(<InputCheckboxGroup title="受控测试" options={mockOptions} value={['orange']} onChange={onChange} />);
 
     // 验证更新后的状态
     expect(screen.getByLabelText('Orange')).toBeChecked();
@@ -122,14 +93,9 @@ describe('InputCheckboxGroup', () => {
 
   // // 非受控组件测试
   it('应正确处理非受控模式', () => {
-    const onChange = vi.fn();
+    const onChange = vi.fn<() => void>();
     render(
-      <InputCheckboxGroup
-        title="非受控测试"
-        options={mockOptions}
-        defaultValue={['apple']}
-        onChange={onChange}
-      />,
+      <InputCheckboxGroup title="非受控测试" options={mockOptions} defaultValue={['apple']} onChange={onChange} />,
     );
 
     // 初始状态验证
@@ -145,33 +111,18 @@ describe('InputCheckboxGroup', () => {
 
   // // 选项禁用测试
   it('应正确处理禁用选项', () => {
-    const disabledOptions = [
-      { label: 'Disabled', value: 'disabled', disabled: true },
-    ];
+    const disabledOptions = [{ label: 'Disabled', value: 'disabled', disabled: true }];
 
-    render(
-      <InputCheckboxGroup
-        title="禁用测试"
-        options={disabledOptions}
-      />,
-    );
+    render(<InputCheckboxGroup title="禁用测试" options={disabledOptions} />);
 
     const checkbox = screen.getByLabelText('Disabled') as HTMLInputElement;
     expect(checkbox.disabled).toBe(true);
   });
 
   it('应正确处理组件禁用', () => {
-    const disabledOptions = [
-      { label: 'Disabled', value: 'disabled' },
-    ];
+    const disabledOptions = [{ label: 'Disabled', value: 'disabled' }];
 
-    render(
-      <InputCheckboxGroup
-        title="禁用测试"
-        options={disabledOptions}
-        disabled
-      />,
-    );
+    render(<InputCheckboxGroup title="禁用测试" options={disabledOptions} disabled />);
 
     const allCheckbox = screen.getByLabelText('禁用测试') as HTMLInputElement;
     expect(allCheckbox.disabled).toBe(true);
@@ -187,14 +138,8 @@ describe('InputCheckboxGroup', () => {
       { label: 'Orange', value: 'orange' },
     ];
 
-    const onChange = vi.fn();
-    render(
-      <InputCheckboxGroup
-        title="忽略禁用测试"
-        options={disabledOptions}
-        onChange={onChange}
-      />,
-    );
+    const onChange = vi.fn<() => void>();
+    render(<InputCheckboxGroup title="忽略禁用测试" options={disabledOptions} onChange={onChange} />);
 
     // 点击全选复选框
     fireEvent.click(screen.getByLabelText('忽略禁用测试'));
@@ -238,10 +183,8 @@ describe('InputCheckboxGroup', () => {
   });
 
   it('禁用选项的默认值应无法通过交互移除', () => {
-    const onChange = vi.fn();
-    const disabledOptions = [
-      { label: 'Apple', value: 'apple', disabled: true },
-    ];
+    const onChange = vi.fn<() => void>();
+    const disabledOptions = [{ label: 'Apple', value: 'apple', disabled: true }];
 
     render(
       <InputCheckboxGroup

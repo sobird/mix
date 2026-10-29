@@ -1,9 +1,7 @@
 'use client';
 
-import {
-  Button, Checkbox, Form, Row,
-} from 'antd';
-import { useState, useEffect } from 'react';
+import { Button, Checkbox, Form, Row } from 'antd';
+import { useState } from 'react';
 
 import styles from './form.module.scss';
 
@@ -14,12 +12,6 @@ type PermissionConfig = {
     action: string; // 操作类型（如 "read", "update"）
     fields?: string[]; // 允许的字段（空数组表示允许所有字段）
   }[];
-};
-
-// 表单整体数据
-type RolePermissionForm = {
-  roleId: number;
-  permissions: PermissionConfig[];
 };
 
 const permissionConfig: PermissionConfig[] = [
@@ -34,20 +26,8 @@ const permissionConfig: PermissionConfig[] = [
 
 export function PermissionForm() {
   const [roleId, setRoleId] = useState<number>(0);
-  const [models, setModels] = useState<string[]>(['User', 'Article']); // 所有可管理的模型（如 ["Article", "User"]）
-  const [permissions, setPermissions] = useState<PermissionConfig[]>(permissionConfig);
-
-  // 初始化加载模型列表
-  useEffect(() => {
-
-  }, []);
-
-  // 角色切换时加载权限
-  useEffect(() => {
-    // if (roleId > 0) {
-    //   fetchRolePermissions(roleId).then(setPermissions);
-    // }
-  }, [roleId]);
+  const [models] = useState<string[]>(['User', 'Article']); // 所有可管理的模型（如 ["Article", "User"]）
+  const [permissions] = useState<PermissionConfig[]>(permissionConfig);
 
   // 提交保存
   const handleSubmit = async () => {
@@ -64,7 +44,7 @@ export function PermissionForm() {
           console.log('values', values);
         }}
       >
-        <Form.Item name='ccc'>
+        <Form.Item name="ccc">
           <Checkbox.Group style={{ width: '100%' }}>
             <Checkbox value="A">创建自定义角色</Checkbox>
             <Checkbox value="B">修改自定义角色</Checkbox>
@@ -98,7 +78,9 @@ export function PermissionForm() {
 
       <select
         value={roleId}
-        onChange={(e) => { return setRoleId(Number(e.target.value)); }}
+        onChange={(e) => {
+          return setRoleId(Number(e.target.value));
+        }}
       >
         <option value="0">选择角色</option>
         {/* 动态加载角色选项 */}
@@ -114,18 +96,20 @@ export function PermissionForm() {
                   <label>
                     <input
                       type="checkbox"
-                      checked={permissions.some((p) => { return p.subject === model && p.actions.some((a) => { return a.action === action; }); })}
+                      checked={permissions.some((p) => {
+                        return (
+                          p.subject === model &&
+                          p.actions.some((a) => {
+                            return a.action === action;
+                          })
+                        );
+                      })}
                     />
                     {action}
                   </label>
 
                   {/* 字段选择（仅当操作允许时显示） */}
-                  {action === 'read' || action === 'update' ? (
-                    <FieldSelector
-                      model={model}
-                      action={action}
-                    />
-                  ) : null}
+                  {action === 'read' || action === 'update' ? <FieldSelector model={model} /> : null}
                 </div>
               );
             })}
@@ -138,10 +122,14 @@ export function PermissionForm() {
   );
 }
 
+interface FieldSelectorProps {
+  model: string;
+  selectedFields?: string[];
+  onSelect?: (fields: string[]) => void;
+}
+
 // 字段选择组件
-const FieldSelector = ({
-  model, action, selectedFields, onSelect,
-}) => {
+const FieldSelector = ({ model, selectedFields, onSelect }: FieldSelectorProps) => {
   const [availableFields] = useState(() => {
     // 根据模型获取字段列表（可来自 API）
     return model === 'Article' ? ['title', 'content', 'status'] : [];
@@ -158,8 +146,10 @@ const FieldSelector = ({
               onChange={(e) => {
                 const newFields = e.target.checked
                   ? [...(selectedFields || []), field]
-                  : (selectedFields || []).filter((f) => { return f !== field; });
-                onSelect(newFields);
+                  : (selectedFields || []).filter((f) => {
+                      return f !== field;
+                    });
+                onSelect?.(newFields);
               }}
             />
             {field}

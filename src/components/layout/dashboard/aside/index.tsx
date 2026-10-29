@@ -9,15 +9,11 @@
 
 'use client';
 
-import {
-  PlusCircleOutlined, MinusCircleOutlined, PlusCircleFilled, MinusCircleFilled,
-} from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, PlusCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Button, Menu } from 'antd';
 import classNames from 'classnames';
 import Link from 'next/link';
-import {
-  usePathname, useSearchParams, useParams, useRouter,
-} from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 // import { useLocation } from 'react-router-dom';
@@ -27,6 +23,7 @@ import { toggleAside } from '@/store/slices/app';
 import { fetchMenu, removeFavMenuItem, insertFavMenuItem } from '@/store/slices/menu';
 
 import TitleWithBadge from './components/title-with-badge';
+
 import styles from './index.module.scss';
 
 const { Item, SubMenu, Divider } = Menu;
@@ -36,8 +33,6 @@ const DASHBOARD = '/dashboard';
 const Aside: React.FunctionComponent = () => {
   const pathname = usePathname() || '';
   const searchParams = useSearchParams();
-  const params = useParams();
-  const router = useRouter();
   // const location = useLocation();
   const [badgeMap, setBadgeMap] = useState(new Map());
   const dispatch = useAppDispatch();
@@ -47,26 +42,28 @@ const Aside: React.FunctionComponent = () => {
     return state.app;
   });
   const {
-    menuTrees: [First, ...Others],
-    favorites,
-    defaultOpenKeys,
+    menuTrees = [],
+    favorites = [],
+    defaultOpenKeys = [],
   } = useAppSelector((state) => {
     return state.menu;
   });
 
+  const [First, ...Others] = menuTrees;
+
   // defaultOpenKeys.push(Favorites.id);
 
-  const dok = [...defaultOpenKeys];
-  dok.push(Favorites.id);
+  const dok = [...defaultOpenKeys, Favorites.id];
 
   // 收藏夹
-  Favorites.children = favorites.map((item) => {
-    const itemAssign = { ...item };
-    itemAssign.url += '?fav';
-    return itemAssign;
+  const favoritesWithQuery = favorites.map((item) => {
+    return {
+      ...item,
+      url: `${item.url}?fav`,
+    };
   });
 
-  const menuTrees = [Favorites, ...Others];
+  const menus = [{ ...Favorites, children: favoritesWithQuery }, ...Others];
 
   useEffect(() => {
     dispatch(fetchMenu());
@@ -79,56 +76,15 @@ const Aside: React.FunctionComponent = () => {
   // const asideMenu = renderMenu(menuTrees, badgeMap);
   const currentURL = `${pathname}?${searchParams?.toString()}`;
 
-  function getItem(
-    label: React.ReactNode,
-    key: React.Key,
-    icon?: React.ReactNode,
-    children?: MenuItem[],
-    type?: 'group',
-  ): MenuItem {
-    return {
-      key,
-      icon,
-      children,
-      label,
-      type,
-    } as MenuItem;
-  }
-
-  const items: MenuProps['items'] = [
-    getItem('Navigation One', 'sub1', '', [
-      getItem('Item 1', 'g1', null, [getItem('Option 1', '1'), getItem('Option 2', '2')], 'group'),
-      getItem('Item 2', 'g2', null, [getItem('Option 3', '3'), getItem('Option 4', '4')], 'group'),
-    ]),
-
-    getItem('Navigation Two', 'sub2', '', [
-      getItem('Option 5', '5'),
-      getItem('Option 6', '6'),
-      getItem('Submenu', 'sub3', null, [getItem('Option 7', '7'), getItem('Option 8', '8')]),
-    ]),
-
-    { type: 'divider' },
-
-    getItem('Navigation Three', 'sub4', '', [
-      getItem('Option 9', '9'),
-      getItem('Option 10', '10'),
-      getItem('Option 11', '11'),
-      getItem('Option 12', '12'),
-    ]),
-
-    getItem('Group', 'grp', null, [getItem('Option 13', '13'), getItem('Option 14', '14')], 'group'),
-  ];
-
   return (
     <aside className={styles.container}>
       <div className={styles.menu}>
-        {menuTrees.length > 1 && (
+        {menus.length > 1 && (
           <Menu
             mode="inline"
             inlineCollapsed={collapsed}
             selectedKeys={[currentURL, pathname]}
             defaultOpenKeys={collapsed ? [] : dok}
-            // items={items}
             inlineIndent={0}
             forceSubMenuRender
           >
@@ -144,17 +100,17 @@ const Aside: React.FunctionComponent = () => {
 
             <Divider />
 
-            {menuTrees.map((submenu) => {
+            {menus.map((submenu) => {
               const isFavorites = submenu.code === Favorites.code;
               const isEditMode = isFavorites && editMode;
               const badge = badgeMap && badgeMap.get && badgeMap.get(submenu.id);
 
-              if (submenu?.children?.length > 0 || isFavorites) {
+              if ((submenu?.children?.length ?? 0) > 0 || isFavorites) {
                 return [
                   <SubMenu
-                    className={isFavorites && 'fav-submenu'}
+                    className={isFavorites ? 'fav-submenu' : undefined}
                     key={submenu.id}
-                    title={(
+                    title={
                       <>
                         <span className="submenu-title">
                           {submenu.icon ? <i className={`icon iconfont icon-${submenu.icon}`} /> : null}
@@ -163,14 +119,15 @@ const Aside: React.FunctionComponent = () => {
                           {editMode && isFavorites ? (
                             <span className="fav-submenu-count">
                               已添加
-                              {favorites?.length}
+                              {favorites.length}
                               /10
                             </span>
                           ) : null}
                         </span>
 
                         {isFavorites && (
-                          <span
+                          <button
+                            type="button"
                             className={`fav-submenu-${editMode ? 'save' : 'setting'}`}
                             onClick={(e) => {
                               e.preventDefault();
@@ -186,19 +143,16 @@ const Aside: React.FunctionComponent = () => {
                                 setEditMode(true);
                               }
                             }}
-                            onKeyUp={() => {}}
-                            role="button"
-                            tabIndex={0}
                           >
                             {editMode ? '保存' : '管理'}
-                          </span>
+                          </button>
                         )}
                       </>
-                    )}
+                    }
                     // icon={<i className={`icon iconfont icon-${icon}`} />}
                   >
-                    {submenu?.children
-                      && submenu?.children.map((item) => {
+                    {submenu?.children &&
+                      submenu?.children.map((item) => {
                         const badgeItem = badgeMap && badgeMap.get && badgeMap.get(item.id);
                         const added = !!favorites.find((fav) => {
                           return fav.id === item.id;
@@ -245,7 +199,7 @@ const Aside: React.FunctionComponent = () => {
 
                         return (
                           <Item key={item.url}>
-                            <Link to={item.url}>
+                            <Link href={item.url}>
                               <i className={`icon iconfont icon-${item.icon}`} />
                               <TitleWithBadge badge={badge}>
                                 <span>{item.title}</span>
@@ -255,21 +209,25 @@ const Aside: React.FunctionComponent = () => {
                         );
                       })}
                   </SubMenu>,
-                  isEditMode && <li className="nav-edit-hint">点击下方功能入口即可添加</li>,
-                  !submenu.last && <Divider />,
+                  isEditMode && (
+                    <li key="nav-edit-hint" className="nav-edit-hint">
+                      点击下方功能入口即可添加
+                    </li>
+                  ),
+                  !submenu.last && <Divider key={`divider-after-${submenu.id}`} />,
                 ];
               }
 
               return [
                 <Item key={submenu.url}>
-                  <Link to={submenu.url}>
+                  <Link href={submenu.url}>
                     <i className={`icon iconfont icon-${submenu.icon}`} />
                     <TitleWithBadge badge={badge}>
                       <span>{submenu.title}</span>
                     </TitleWithBadge>
                   </Link>
                 </Item>,
-                !submenu.last && <Divider />,
+                !submenu.last && <Divider key={`divider-${submenu.id}`} />,
               ];
             })}
           </Menu>

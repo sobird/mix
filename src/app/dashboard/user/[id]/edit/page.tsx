@@ -37,7 +37,9 @@ const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
     notFound();
   }
 
-  const { Roles, ...initialValues } = user.toJSON();
+  const { Roles, ...initialValues } = user.toJSON() as ReturnType<typeof user.toJSON> & {
+    Roles?: { id: number }[];
+  };
   (initialValues as any).roles = Roles?.map((item) => {
     return item.id;
   });

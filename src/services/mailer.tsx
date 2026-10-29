@@ -4,7 +4,7 @@
  * sobird<i@sobird.me> at 2023/11/28 22:05:23 created.
  */
 
-import { SendVerificationRequestParams } from '@auth/core/providers';
+import type { SendVerificationRequestParams } from 'next-auth/providers/email';
 import { createTransport, type SendMailOptions } from 'nodemailer';
 
 import Authentication from '@/components/email-template/authentication';
@@ -12,22 +12,25 @@ import CaptchaEmailBody from '@/components/email-template/captcha';
 import reactToHtml from '@/lib/reactToHtml';
 
 // 创建发送邮件的对象
-export const transporter = createTransport({
-  service: 'qq',
-  secure: true,
-  // host: process.env.EMAIL_SERVER_HOST,
-  // port: process.env.EMAIL_SERVER_PORT,
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASS,
+export const transporter = createTransport(
+  {
+    service: 'qq',
+    secure: true,
+    // host: process.env.EMAIL_SERVER_HOST,
+    // port: process.env.EMAIL_SERVER_PORT,
+    auth: {
+      user: process.env.EMAIL_SERVER_USER,
+      pass: process.env.EMAIL_SERVER_PASS,
+    },
   },
-}, {
-  from: process.env.EMAIL_FROM,
-});
+  {
+    from: process.env.EMAIL_FROM,
+  },
+);
 
 export const sendMail = async (mailOptions: SendMailOptions) => {
   const result = await transporter.sendMail(mailOptions);
-  const failed = result.rejected.concat(result.pending).filter(Boolean);
+  const failed = (result.rejected ?? []).concat(result.pending ?? []).filter(Boolean);
   if (failed.length) {
     throw new Error(`Email(s) (${failed.join(', ')}) could not be sent`);
   }
@@ -35,9 +38,7 @@ export const sendMail = async (mailOptions: SendMailOptions) => {
 
 /** 发送邮箱登录连接 */
 export async function sendVerificationRequest(params: SendVerificationRequestParams) {
-  const {
-    identifier, url,
-  } = params;
+  const { identifier, url } = params;
   // NOTE: You are not required to use `nodemailer`, use whatever you want.
   sendMail({
     to: identifier,

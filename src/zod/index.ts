@@ -4,8 +4,8 @@
  * sobird<i@sobird.me> at 2023/12/11 23:16:58 created.
  */
 
+import { type ValidatorRule } from '@rc-component/form';
 import { FormInstance } from 'antd/es/form';
-import { ValidatorRule } from 'rc-field-form/es/interface';
 import { z, ZodArray, ZodIntersection, ZodObject, ZodOptional } from 'zod';
 
 /**

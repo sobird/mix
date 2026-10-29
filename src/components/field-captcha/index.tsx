@@ -4,15 +4,12 @@
  * sobird<i@sobird.me> at 2023/10/29 18:20:51 created.
  */
 
-import {
-  Button, Form, Input, ButtonProps, InputProps,
-} from 'antd';
+import { Button, Form, Input, ButtonProps, InputProps } from 'antd';
+import type { NamePath } from 'antd/lib/form/interface';
 import React, { useState } from 'react';
 
 import { sendCaptchaEmailAction } from '@/actions/user';
 import useInterval from '@/hooks/useInterval';
-
-import type { NamePath } from 'antd/lib/form/interface';
 
 export type FieldCaptchaProps = {
   value?: InputProps['value'];
@@ -34,7 +31,15 @@ export type FieldCaptchaProps = {
     style?: React.CSSProperties;
     width?: string;
     placeholder?: string;
-  }
+  };
+};
+
+const defaultOnCaptcha = async (mobile: string) => {
+  await sendCaptchaEmailAction(mobile);
+};
+
+const defaultButtonTextRender = (count: number) => {
+  return count ? `${count} 秒后重新获取` : '获取验证码';
 };
 
 const FieldCaptcha: React.FC<FieldCaptchaProps> = ({
@@ -42,12 +47,8 @@ const FieldCaptcha: React.FC<FieldCaptchaProps> = ({
   onChange,
   countDown,
   identifierName = 'identifier',
-  onCaptcha = async (mobile) => {
-    await sendCaptchaEmailAction(mobile);
-  },
-  buttonTextRender = (count) => {
-    return count ? `${count} 秒后重新获取` : '获取验证码';
-  },
+  onCaptcha = defaultOnCaptcha,
+  buttonTextRender = defaultButtonTextRender,
   buttonProps,
   fieldProps,
 }) => {
@@ -108,9 +109,7 @@ const FieldCaptcha: React.FC<FieldCaptchaProps> = ({
           try {
             if (identifierName) {
               await form.validateFields([identifierName].flat(1) as string[]);
-              const mobile = form.getFieldValue(
-                [identifierName].flat(1) as string[],
-              );
+              const mobile = form.getFieldValue([identifierName].flat(1) as string[]);
               await onGetCaptcha(mobile);
             } else {
               await onGetCaptcha('');

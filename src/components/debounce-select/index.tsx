@@ -1,11 +1,11 @@
 import { Select, Spin } from 'antd';
-import debounce from 'lodash/debounce';
-import React, { useMemo, useRef, useState } from 'react';
-
 import type { SelectProps } from 'antd/es/select';
+import debounce from 'lodash/debounce';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
-export interface DebounceSelectProps<ValueType = any>
-  extends Omit<SelectProps<ValueType | ValueType[]>, 'children'> {
+const EMPTY_OPTIONS: SelectProps['options'] = [];
+
+export interface DebounceSelectProps<ValueType = any> extends Omit<SelectProps<ValueType | ValueType[]>, 'children'> {
   fetcher?: (search: string) => Promise<ValueType[]>;
   delay?: number;
 }
@@ -19,18 +19,19 @@ interface SelectValueType {
 function DebounceSelect<ValueType extends SelectValueType = any>({
   fetcher,
   delay = 300,
-  options: InternalOptions = [],
+  options: InternalOptions = EMPTY_OPTIONS,
   ...props
 }: DebounceSelectProps<ValueType>) {
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState(InternalOptions);
   const fetchRef = useRef(0);
 
-  const onSearch = useMemo(() => {
-    if (!fetcher) {
-      return;
-    }
-    const search = (value: string) => {
+  const search = useCallback(
+    (value: string) => {
+      if (!fetcher) {
+        return;
+      }
+
       fetchRef.current += 1;
       const fetchId = fetchRef.current;
       // setOptions([]);
@@ -45,10 +46,18 @@ function DebounceSelect<ValueType extends SelectValueType = any>({
         setOptions(newOptions);
         setFetching(false);
       });
-    };
+    },
+    [fetcher],
+  );
 
+  const onSearch = useMemo(() => {
+    if (!fetcher) {
+      return;
+    }
+
+    // oxlint-disable-next-line react/refs
     return debounce(search, delay);
-  }, [fetcher, delay]);
+  }, [fetcher, delay, search]);
 
   return (
     <Select

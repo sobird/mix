@@ -35,10 +35,10 @@ type Roles = 'visitor' | 'member' | 'manage';
 const rolePermissions: Record<Roles, DefinePermissions> = {
   // 登录用户默认角色
   member(user, { can }) {
-    can('update', 'Role', { id: user.id });
+    can('update', 'Role', { id: user.id } as never);
   },
   manage(user, { can }) {
-    can('manage', 'all', { id: user.id });
+    can('manage', 'all', { id: user.id } as never);
   },
   // 未登录用户 访客
   visitor(_user, { can: _can }) {

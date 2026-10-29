@@ -6,7 +6,6 @@
 
 import mix from '@/assets/mix-data';
 
-
 interface AuthenticationProps {
   /** user sign in url */
   url: string;
@@ -25,10 +24,11 @@ const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
   };
 
   return (
-    <div style={{
-      background: '#F7F9F9',
-      padding: 20,
-    }}
+    <div
+      style={{
+        background: '#F7F9F9',
+        padding: 20,
+      }}
     >
       <table
         width="100%"
@@ -44,65 +44,64 @@ const Authentication: React.FC<AuthenticationProps> = ({ url }) => {
         }}
       >
         <tbody>
-        <tr>
-          <td
-            align="center"
-            style={{
-              padding: '10px 0px',
-              fontSize: '22px',
-              fontFamily: 'Helvetica, Arial, sans-serif',
-              color: `${color.text}`,
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={mix} width={48} height={48} alt="mix" />
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style={{ padding: '10px 0' }}>
-            <table border={0} cellSpacing="0" cellPadding="0">
-            <tbody>
-              <tr>
-                <td align="center" style={{ lineHeight: 'normal' }}>
-                  <a
-                    href={url}
-                    target="_blank"
-                    style={{
-                      fontSize: '18px',
-                      color: `${color.buttonText}`,
-                      textDecoration: 'none',
-                      borderRadius: '5px',
-                      padding: '7px 20px',
-                      border: `1px solid ${color.buttonBorder}`,
-                      backgroundColor: `${color.buttonBackground}`,
-                      display: 'inline-block',
-                      fontWeight: 'bold',
-                    }}
-                    rel="noreferrer"
-                  >
-                    登录
-                  </a>
-
-                </td>
-              </tr>
-            </tbody>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td
-            align="center"
-            style={{
-              padding: '10px 0px',
-              fontSize: '14px',
-              lineHeight: '22px',
-              fontFamily: 'Helvetica, Arial, sans-serif',
-              color: `${color.text}`,
-            }}
-          >
-            若非本人请求此电子邮件，请忽略
-          </td>
-        </tr>
+          <tr>
+            <td
+              align="center"
+              style={{
+                padding: '10px 0px',
+                fontSize: '22px',
+                fontFamily: 'Helvetica, Arial, sans-serif',
+                color: `${color.text}`,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={mix} width={48} height={48} alt="mix" />
+            </td>
+          </tr>
+          <tr>
+            <td aria-label="登录链接" align="center" style={{ padding: '10px 0' }}>
+              <table border={0} cellSpacing="0" cellPadding="0">
+                <tbody>
+                  <tr>
+                    <td align="center" style={{ lineHeight: 'normal' }}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        style={{
+                          fontSize: '18px',
+                          color: `${color.buttonText}`,
+                          textDecoration: 'none',
+                          borderRadius: '5px',
+                          padding: '7px 20px',
+                          border: `1px solid ${color.buttonBorder}`,
+                          backgroundColor: `${color.buttonBackground}`,
+                          display: 'inline-block',
+                          fontWeight: 'bold',
+                        }}
+                        rel="noreferrer"
+                      >
+                        登录
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td
+              align="center"
+              style={{
+                padding: '10px 0px',
+                fontSize: '14px',
+                lineHeight: '22px',
+                fontFamily: 'Helvetica, Arial, sans-serif',
+                color: `${color.text}`,
+              }}
+            >
+              若非本人请求此电子邮件，请忽略
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

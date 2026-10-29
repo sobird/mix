@@ -7,12 +7,10 @@
 'use client';
 
 import { SearchOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import {
-  Select, Tag, Button, Empty,
-} from 'antd';
+import { Select, Tag, Button, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 import Link from 'next/link';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
 import useLocalStorageState from '@/hooks/useLocalStorageState';
 import { IMenuItem } from '@/services/menu';
@@ -34,10 +32,12 @@ interface SeachDropdownProps {
   onClearHistory?: () => any;
 }
 
+const EMPTY_RESULT: ResultItem[] = [];
+
 const SeachDropdown: React.FC<SeachDropdownProps> = ({
   keyword,
-  history = [],
-  result = [],
+  history = EMPTY_RESULT,
+  result = EMPTY_RESULT,
   onSelected,
   onTagClose,
   onClearHistory,
@@ -53,7 +53,9 @@ const SeachDropdown: React.FC<SeachDropdownProps> = ({
                 target="_blank"
                 className="search-select-dropdown-suggest-item"
                 key={item.path}
-                onClick={() => { return onSelected?.(item); }}
+                onClick={() => {
+                  return onSelected?.(item);
+                }}
               >
                 {item.name}
               </Link>
@@ -84,9 +86,11 @@ const SeachDropdown: React.FC<SeachDropdownProps> = ({
               closeIcon={<CloseCircleOutlined />}
               closable
               key={item.path}
-              onClose={() => { return onTagClose?.(item); }}
+              onClose={() => {
+                return onTagClose?.(item);
+              }}
             >
-              <Link to={item.path} target="_blank" key={item.path}>
+              <Link href={item.path} target="_blank" key={item.path}>
                 {item.name}
               </Link>
             </Tag>
@@ -99,12 +103,12 @@ const SeachDropdown: React.FC<SeachDropdownProps> = ({
   );
 };
 
-const find = (data: IMenuItem[], keyword) => {
+const find = (data: IMenuItem[], keyword: string): ResultItem[] => {
   if (keyword === '' || data.length === 0) {
     return [];
   }
 
-  const result: unknown[] = [];
+  const result: ResultItem[] = [];
 
   data.forEach((parent) => {
     const parentFound = parent.title.indexOf(keyword) !== -1;
@@ -125,18 +129,19 @@ const find = (data: IMenuItem[], keyword) => {
 };
 
 const Search: React.FC = () => {
-  const { menuTrees } = useAppSelector((state) => { return state.menu; });
+  const { menuTrees } = useAppSelector((state) => {
+    return state.menu;
+  });
   const [keyword, setKeyword] = useState('');
-  const [searchHistory, setSearchHistory] = useLocalStorageState('search_history', []);
+  const [searchHistory, setSearchHistory] = useLocalStorageState<ResultItem[]>('search_history', []);
 
   // const searchHistory = [];
   // const setSearchHistory = () => {};
-  const debounceFn = useCallback(
-    debounce((value) => {
+  const debounceFn = useMemo(() => {
+    return debounce((value: string) => {
       setKeyword(value);
-    }, 200),
-    [],
-  );
+    }, 200);
+  }, []);
 
   /**
    * 记录历史
@@ -144,25 +149,56 @@ const Search: React.FC = () => {
    * @todo
    * 待测试 保证 搜索历史为最新10条记录
    */
-  const recordHistory = useCallback((record) => {
-    const internalSearchHistory = [...searchHistory];
-    const index = internalSearchHistory.findIndex((item) => { return item.path === record.path; });
+  const recordHistory = useCallback(
+    (record: ResultItem) => {
+      const internalSearchHistory = [...searchHistory];
+      const index = internalSearchHistory.findIndex((item) => {
+        return item.path === record.path;
+      });
 
-    // 如果已存在则删除
-    if (index !== -1) {
-      internalSearchHistory.splice(index, 1);
-    }
+      // 如果已存在则删除
+      if (index !== -1) {
+        internalSearchHistory.splice(index, 1);
+      }
 
-    if (internalSearchHistory.length >= 10) {
-      internalSearchHistory.pop();
-    }
+      if (internalSearchHistory.length >= 10) {
+        internalSearchHistory.pop();
+      }
 
-    internalSearchHistory.unshift(record);
+      internalSearchHistory.unshift(record);
 
-    setSearchHistory([...internalSearchHistory]);
-  }, [searchHistory]);
+      setSearchHistory([...internalSearchHistory]);
+    },
+    [searchHistory, setSearchHistory],
+  );
 
-  const result = find(menuTrees, keyword);
+  const result = find(menuTrees ?? [], keyword);
+
+  const renderDropdown = useCallback(() => {
+    return (
+      <SeachDropdown
+        keyword={keyword}
+        history={searchHistory}
+        result={result}
+        onSelected={recordHistory}
+        onTagClose={(item) => {
+          const internalSearchHistory = [...searchHistory];
+          const index = internalSearchHistory.findIndex((record) => {
+            return record.path === item.path;
+          });
+
+          if (index !== -1) {
+            internalSearchHistory.splice(index, 1);
+          }
+
+          setSearchHistory(internalSearchHistory);
+        }}
+        onClearHistory={() => {
+          setSearchHistory([]);
+        }}
+      />
+    );
+  }, [keyword, searchHistory, result, recordHistory, setSearchHistory]);
 
   return (
     <div className={styles.container}>
@@ -177,29 +213,7 @@ const Search: React.FC = () => {
           maxWidth: '580px',
         }}
         suffixIcon={<SearchOutlined />}
-        dropdownRender={() => {
-          return (
-            <SeachDropdown
-              keyword={keyword}
-              history={searchHistory}
-              result={result}
-              onSelected={recordHistory}
-              onTagClose={(item) => {
-                const internalSearchHistory = [...searchHistory];
-                const index = internalSearchHistory.findIndex((record) => { return record.path === item.path; });
-
-                if (index !== -1) {
-                  internalSearchHistory.splice(index, 1);
-                }
-
-                setSearchHistory(internalSearchHistory);
-              }}
-              onClearHistory={() => {
-                setSearchHistory([]);
-              }}
-            />
-          );
-        }}
+        dropdownRender={renderDropdown}
         onSearch={debounceFn}
       />
     </div>
