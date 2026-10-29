@@ -1,0 +1,35 @@
+# You may also need to set "Allow GitHub Actions to create and approve pull requests" under repository Settings > Actions > General.
+
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      created: ${{ steps.release.outputs.release_created }}
+    steps:
+      - name: Release please
+        uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  deploy:
+    if: needs.release.outputs.created
+    needs: release
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
