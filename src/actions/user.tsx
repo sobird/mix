@@ -8,7 +8,9 @@ import CaptchaEmailBody from '@/components/email-template/captcha';
 import { generate, verify } from '@/lib/otp';
 import reactToHtml from '@/lib/reactToHtml';
 import { User } from '@/models';
+import { getCurrentAbility, isAllowed } from '@/services/ability';
 import { transporter } from '@/services/mailer';
+import RoleService from '@/services/role';
 import { signUpZod, SignUpAttributes, createUserZod, UserAttributes, updateUserZod } from '@/zod/user';
 
 import { ActionStatus } from '.';
@@ -32,7 +34,11 @@ export async function signUpAction(payload: SignUpAttributes): Promise<UserServe
     };
   }
 
-  const [, created] = await User.signUp(payload, ['username', 'password', 'email', 'emailVerified', 'salt']);
+  // `signUp` 在 raw 模式下返回数组而非元组，这里显式标注以拿到用户实例
+  const [user, created] = (await User.signUp(payload, ['username', 'password', 'email', 'emailVerified', 'salt'])) as [
+    User,
+    boolean,
+  ];
   // 已存在
   if (!created) {
     return {
@@ -41,10 +47,21 @@ export async function signUpAction(payload: SignUpAttributes): Promise<UserServe
     };
   }
 
+  await RoleService.assignDefaultRole(user.id);
+
   redirect('/signup/success');
 }
 
 export async function createUserAction(payload: UserAttributes): Promise<UserServerActionState> {
+  const ability = await getCurrentAbility();
+
+  if (!isAllowed(ability, 'create', 'User')) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '您没有创建用户的权限',
+    };
+  }
+
   const validated = await createUserZod.safeParseAsync(payload);
   if (!validated.success) {
     return {
@@ -71,13 +88,18 @@ export async function createUserAction(payload: UserAttributes): Promise<UserSer
     };
   }
 
-  user.setRoles(data.roles);
+  await RoleService.assignDefaultRole(user.id);
+  if (data.roles?.length) {
+    await user.setRoles(data.roles);
+  }
+
   revalidatePath('/dashboard/user');
   redirect('/dashboard/user');
 }
 
 // 更新用户信息
 export async function updateUserAction(payload: UserAttributes): Promise<UserServerActionState> {
+  const ability = await getCurrentAbility();
   const validated = await updateUserZod.safeParseAsync(payload);
 
   if (!validated.success) {
@@ -90,14 +112,26 @@ export async function updateUserAction(payload: UserAttributes): Promise<UserSer
 
   try {
     const { data } = validated;
-    const user = await User.findOne({
-      where: {
-        id: payload.id,
-      },
-    });
+    const target = await User.findByPk(payload.id);
 
-    user?.update(data);
-    user?.setRoles(data.roles);
+    if (!target) {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '用户不存在',
+      };
+    }
+
+    if (!isAllowed(ability, 'update', 'User', target)) {
+      return {
+        status: ActionStatus.FAILURE,
+        message: '您没有更新用户的权限',
+      };
+    }
+
+    await target.update(data);
+    if (data.roles?.length) {
+      await target.setRoles(data.roles);
+    }
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
       return {
@@ -112,13 +146,30 @@ export async function updateUserAction(payload: UserAttributes): Promise<UserSer
 }
 
 export async function deleteUserAction(id: string) {
-  const user = await User.destroy({
+  const ability = await getCurrentAbility();
+  const user = await User.findByPk(id);
+
+  if (!user) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '用户不存在',
+    };
+  }
+
+  if (!isAllowed(ability, 'delete', 'User', user)) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '您没有删除用户的权限',
+    };
+  }
+
+  const destroyed = await User.destroy({
     where: {
       id,
     },
   });
   revalidatePath('/dashboard/user');
-  return user;
+  return destroyed;
 }
 
 /**

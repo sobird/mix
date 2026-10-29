@@ -4,10 +4,27 @@
  * sobird<i@sobird.me> at 2023/09/21 14:17:06 created.
  */
 
-import { Role, Permission, sequelize } from '@/models';
+import { Role, Permission, UserRole, sequelize } from '@/models';
 
 // oxlint-disable-next-line typescript/no-extraneous-class
 class RoleService {
+  /**
+   * 为新用户分配默认角色。
+   *
+   * 默认角色由 `Role.afterSync` 以 `isDefault: true` 标记（内置的「成员」）；
+   * 若系统未配置默认角色，则仅告警并跳过，不影响注册/创建流程。
+   */
+  static async assignDefaultRole(userId: number): Promise<void> {
+    const role = await Role.findOne({ where: { isDefault: true } });
+
+    if (!role) {
+      console.warn('[role] 未找到默认角色，跳过分配');
+      return;
+    }
+
+    await UserRole.findOrCreate({ where: { userId, roleId: role.id } });
+  }
+
   static async setDefaultRole(roleId: number) {
     return sequelize.transaction(async () => {
       await Role.update({ isDefault: false }, { where: { isDefault: true } });

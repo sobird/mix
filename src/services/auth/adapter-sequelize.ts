@@ -14,6 +14,7 @@ import { Session } from '@/models/Session';
 import { User } from '@/models/User';
 import type { UserCreationAttributes } from '@/models/User';
 import { VerificationToken } from '@/models/VerificationToken';
+import RoleService from '@/services/role';
 
 // declare module '@auth/core/adapters' {
 //   interface AdapterUser {
@@ -23,10 +24,14 @@ import { VerificationToken } from '@/models/VerificationToken';
 
 const AuthAdapter: Adapter = {
   async createUser(record) {
-    return User.create({
+    const created = await User.create({
       ...record,
       username: record.name,
-    } as unknown as UserCreationAttributes) as unknown as AdapterUser;
+    } as unknown as UserCreationAttributes);
+
+    await RoleService.assignDefaultRole(created.id);
+
+    return created as unknown as AdapterUser;
   },
   async getUser(id) {
     const user = await User.findByPk(id);
