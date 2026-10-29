@@ -77,6 +77,7 @@ jobs:
         env:
           APP_ROOT: ${{ secrets.TARGET }}
           APP_PORT: ${{ env.APP_PORT }}
+          RELEASES_DIR: ${{ vars.RELEASES_DIR }}
           RELEASE_ID: ${{ github.run_id }}-${{ github.run_attempt }}
           AUTHMAIL: ${{ secrets.AUTHMAIL }}
           AUTHCODE: ${{ secrets.AUTHCODE }}
@@ -86,13 +87,16 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           command_timeout: 5m
-          envs: APP_ROOT,APP_PORT,RELEASE_ID,AUTHMAIL,AUTHCODE
+          envs: APP_ROOT,APP_PORT,RELEASES_DIR,RELEASE_ID,AUTHMAIL,AUTHCODE
           script: |
             set -euo pipefail
 
             cd "$APP_ROOT"
 
-            RELEASE_DIR="releases/$RELEASE_ID"
+            # Keep releases inside APP_ROOT by default; set the RELEASES_DIR
+            # repository variable to place them on another disk.
+            RELEASES_DIR="${RELEASES_DIR:-$APP_ROOT/releases}"
+            RELEASE_DIR="$RELEASES_DIR/$RELEASE_ID"
             mkdir -p "$RELEASE_DIR"
             tar -xzf release.tar.gz -C "$RELEASE_DIR"
             rm -f release.tar.gz
@@ -144,7 +148,7 @@ jobs:
                 cd "$APP_ROOT"
                 PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 start pm2.config.cjs
               elif [ -n "$PREVIOUS" ]; then
-                ln -sfn "$PREVIOUS" current
+                ln -sfn "$PREVIOUS" "$APP_ROOT/current"
                 cd "$APP_ROOT/current"
                 PORT="$APP_PORT" AUTHMAIL="$AUTHMAIL" AUTHCODE="$AUTHCODE" pm2 reload pm2.config.cjs
               fi
@@ -152,4 +156,4 @@ jobs:
             fi
 
             # Keep the last five releases for rollbacks.
-            ls -1dt "$APP_ROOT"/releases/* 2>/dev/null | tail -n +6 | xargs -r rm -rf
+            ls -1dt "$RELEASES_DIR"/* 2>/dev/null | tail -n +6 | xargs -r rm -rf
