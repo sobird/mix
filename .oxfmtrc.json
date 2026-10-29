@@ -3,5 +3,5 @@
   "sortImports": { "newlinesBetween": true },
   "printWidth": 120,
   "singleQuote": true,
-  "ignorePatterns": ["CLAUDE.md", "coverage/", "dist/", "node_modules/", ".next/", "bun.lock", "next-env.d.ts"]
+  "ignorePatterns": ["CLAUDE.md", "CHANGELOG.md", "bun.lock"]
 }
