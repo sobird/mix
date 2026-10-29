@@ -5,7 +5,7 @@
  */
 
 import { type ValidatorRule } from '@rc-component/form';
-import { FormInstance } from 'antd/es/form';
+import type { FormInstance } from 'antd';
 import { z, ZodArray, ZodIntersection, ZodObject, ZodOptional } from 'zod';
 
 /**

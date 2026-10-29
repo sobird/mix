@@ -5,7 +5,7 @@
  */
 
 import { Button, Form, Input, ButtonProps, InputProps } from 'antd';
-import type { NamePath } from 'antd/lib/form/interface';
+import type { NamePath } from 'antd/es/form/interface';
 import React, { useState } from 'react';
 
 import { sendCaptchaEmailAction } from '@/actions/user';

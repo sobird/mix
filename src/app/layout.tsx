@@ -7,7 +7,7 @@
  */
 
 import { ConfigProvider } from 'antd';
-import zhCN from 'antd/lib/locale/zh_CN';
+import zhCN from 'antd/locale/zh_CN';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';

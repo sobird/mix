@@ -1,7 +1,7 @@
 'use client';
 
-import { Checkbox } from 'antd';
-import { type CheckboxProps, type CheckboxOptionType, type CheckboxGroupProps } from 'antd/lib/checkbox';
+import { Checkbox, type CheckboxProps, type CheckboxOptionType } from 'antd';
+import type { CheckboxGroupProps } from 'antd/es/checkbox';
 import { useMemo } from 'react';
 
 import { useMergedState } from '@/hooks';

@@ -16,10 +16,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  compiler: {
-    styledComponents: true,
-  },
-
   sassOptions: {
     silenceDeprecations: ['legacy-js-api'],
   },
