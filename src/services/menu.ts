@@ -1,91 +1,87 @@
 /**
- * 商家后台菜单
+ * 后台菜单
+ *
+ * 从全局菜单目录读取菜单，按用户能力过滤，并合并用户的菜单偏好。
  *
  * sobird<i@sobird.me> at 2023/09/21 14:17:06 created.
  */
 
-import http from '@/lib/axios';
-import listToTree from '@/utils/listToTree';
+import { Menu, Permission, UserMenuPreference } from '@/models';
+import { buildAbility, isAllowed, loadUserGrants, type AppActions, type AppSubject } from '@/services/ability';
 
-export interface IMenuItem {
-  title: string;
-  icon: string;
-  url: string;
-  id: string;
-  parentId: string;
-  code: string;
-  auth: boolean;
-  index: number;
-  level: number;
-  sortId: number;
-  toolMenu: boolean;
-  children?: IMenuItem[];
-
-  last?: boolean;
+/** 渲染侧边栏所需的菜单节点 */
+export interface MenuNode {
+  id: number;
+  name: string;
+  href: string;
+  icon: string | null;
+  sort: number;
+  favorite: boolean;
 }
 
-export interface IMenuListResponse {
-  menuItems: IMenuItem[];
-  favorites: IMenuItem[];
+/** 当前用户可见的菜单与收藏 */
+export interface MenuView {
+  items: MenuNode[];
+  favorites: MenuNode[];
 }
 
-export interface IMenuBadge {
-  menuId: number;
-  actionType?: 10 | 20;
-  noticeStyle: 10 | 20 | 30;
-  noticeContent: string;
+const EMPTY_MENU: MenuView = { items: [], favorites: [] };
+
+/** 先按偏好/目录排序，再按 id 稳定排序 */
+function compareNodes(a: MenuNode, b: MenuNode): number {
+  return a.sort - b.sort || a.id - b.id;
 }
 
-export const Favorites: IMenuItem = {
-  title: '常用功能',
-  code: 'favorite-sub-menu',
-  icon: 'favorite',
-  id: 'favorite-sub-menu',
-  index: 1,
-  level: 0,
-  parentId: '-1',
-  sortId: 0,
-  auth: true,
-  toolMenu: true,
-  url: '/favorite-sub-menu',
-};
+/**
+ * 获取用户可见的菜单。
+ *
+ * - 访客返回空菜单；
+ * - 无权限的菜单始终可见，有权限的菜单只在该动作的无条件规则下可见；
+ * - 应用用户的收藏、隐藏与排序偏好。
+ */
+export async function getMenuForUser(userId: number | null): Promise<MenuView> {
+  if (userId === null) {
+    return { ...EMPTY_MENU };
+  }
 
-const MenuService = {
-  async list(parentId?: number): Promise<[IMenuItem[], IMenuItem[], IMenuItem[]]> {
-    return http.get<IMenuListResponse>('/menu', { parentId }).then(({ menuItems = [], favorites = [] }) => {
-      const items = menuItems.sort((a: any, b: any) => {
-        return a.index - b.index;
-      });
-      const menuTrees = listToTree(items) as unknown as IMenuItem[];
-      // 标记最后一项
-      menuTrees[menuTrees.length - 1].last = true;
+  const [menus, preferences, ability] = await Promise.all([
+    Menu.findAll({ include: [Permission] }),
+    UserMenuPreference.findAll({ where: { userId } }),
+    loadUserGrants(userId).then(buildAbility),
+  ]);
 
-      // Favorites.children = favorites.map(item => {
-      //   item.url = item.url + '?fav';
-      //   return item;
-      // });
+  const preferenceByMenuId = new Map(preferences.map((preference) => [preference.menuId, preference]));
 
-      return [menuTrees, menuItems, favorites];
-    });
-  },
+  const items = menus
+    .filter((menu) => {
+      const preference = preferenceByMenuId.get(menu.id);
+      if (preference?.hidden) {
+        return false;
+      }
 
-  async update(data: Partial<IMenuListResponse>) {
-    return http.patch('/menu', data);
-  },
+      const permission = menu.Permission;
+      if (!permission) {
+        return true;
+      }
 
-  /** 可将此接口合并到 /menu */
-  async badges(menuId?: number) {
-    return http.get<IMenuBadge[]>('/menu/badges', { menuId }).then((res) => {
-      const badgeMap = new Map();
-      return res?.reduce((pre, cur) => {
-        if (!cur?.menuId) {
-          return pre;
-        }
-        pre.set(cur?.menuId, cur);
-        return pre;
-      }, badgeMap);
-    });
-  },
-};
+      // 严格判断：条件规则返回的「可能允许」不算放行，菜单按失败关闭处理
+      return isAllowed(ability, permission.action as AppActions, permission.subject as AppSubject);
+    })
+    .map((menu): MenuNode => {
+      const preference = preferenceByMenuId.get(menu.id);
 
-export default MenuService;
+      return {
+        id: menu.id,
+        name: menu.name,
+        href: menu.href,
+        icon: menu.icon ?? null,
+        sort: preference ? preference.sort : (menu.sort ?? 0),
+        favorite: preference?.favorite ?? false,
+      };
+    })
+    .sort(compareNodes);
+
+  const favorites = items.filter((item) => item.favorite).sort(compareNodes);
+
+  return { items, favorites };
+}

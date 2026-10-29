@@ -1,10 +1,7 @@
 /**
  * 侧边栏导航组件
  *
- * @todo
- * 优化菜单管理功能 代码 和 CSS iconfont
- *
- * sobird<i@sobird.me> at 2023/09/12 15:46:42 created.
+ * 菜单由服务端组件按用户权限过滤后传入，收藏编辑通过 Server Action 保存。
  */
 
 'use client';
@@ -13,254 +10,175 @@ import { PlusCircleOutlined, MinusCircleOutlined, PlusCircleFilled, MinusCircleF
 import { message, Button, Menu } from 'antd';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-// import { useLocation } from 'react-router-dom';
-import MenuService, { Favorites } from '@/services/menu';
-import { useAppSelector, useAppDispatch } from '@/store';
+import { ActionStatus } from '@/actions';
+import { updateMenuPreferencesAction } from '@/actions/menu';
+import type { MenuNode, MenuView } from '@/services/menu';
+import { useAppDispatch } from '@/store';
 import { toggleAside } from '@/store/slices/app';
-import { fetchMenu, removeFavMenuItem, insertFavMenuItem } from '@/store/slices/menu';
-
-import TitleWithBadge from './components/title-with-badge';
 
 import styles from './index.module.scss';
 
 const { Item, SubMenu, Divider } = Menu;
 
-const DASHBOARD = '/dashboard';
+const FAVORITES_KEY = 'favorites';
+const MAX_FAVORITES = 10;
 
-const Aside: React.FunctionComponent = () => {
+function renderMenuLink(item: MenuNode) {
+  return (
+    <Link href={item.href}>
+      {item.icon ? <i className={`icon iconfont icon-${item.icon}`} /> : null}
+      <span>{item.name}</span>
+    </Link>
+  );
+}
+
+interface AsideProps {
+  menu: MenuView;
+  collapsed: boolean;
+}
+
+const Aside: React.FC<AsideProps> = ({ menu, collapsed }) => {
   const pathname = usePathname() || '';
-  const searchParams = useSearchParams();
-  // const location = useLocation();
-  const [badgeMap, setBadgeMap] = useState(new Map());
+  const router = useRouter();
   const dispatch = useAppDispatch();
+
   const [editMode, setEditMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const { collapsed } = useAppSelector((state) => {
-    return state.app;
-  });
-  const {
-    menuTrees = [],
-    favorites = [],
-    defaultOpenKeys = [],
-  } = useAppSelector((state) => {
-    return state.menu;
-  });
+  const { items, favorites } = menu;
+  const [first, ...others] = items;
 
-  const [First, ...Others] = menuTrees;
+  const startEdit = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedIds(favorites.map((item) => item.id));
+    setEditMode(true);
+  };
 
-  // defaultOpenKeys.push(Favorites.id);
+  const toggleFavorite = (menuId: number) => {
+    setSelectedIds((current) => {
+      if (current.includes(menuId)) {
+        return current.filter((id) => id !== menuId);
+      }
 
-  const dok = [...defaultOpenKeys, Favorites.id];
+      if (current.length >= MAX_FAVORITES) {
+        message.error('已达最大添加限制');
+        return current;
+      }
 
-  // 收藏夹
-  const favoritesWithQuery = favorites.map((item) => {
-    return {
-      ...item,
-      url: `${item.url}?fav`,
-    };
-  });
-
-  const menus = [{ ...Favorites, children: favoritesWithQuery }, ...Others];
-
-  useEffect(() => {
-    dispatch(fetchMenu());
-
-    MenuService.badges().then((res) => {
-      setBadgeMap(res);
+      return [...current, menuId];
     });
-  }, [dispatch]);
+  };
 
-  // const asideMenu = renderMenu(menuTrees, badgeMap);
-  const currentURL = `${pathname}?${searchParams?.toString()}`;
+  const saveEdit = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const result = await updateMenuPreferencesAction(selectedIds);
+
+    if (result.status !== ActionStatus.SUCCESS) {
+      message.error('保存收藏失败');
+      return;
+    }
+
+    setEditMode(false);
+    router.refresh();
+  };
 
   return (
     <aside className={styles.container}>
       <div className={styles.menu}>
-        {menus.length > 1 && (
+        {items.length > 0 && (
           <Menu
             mode="inline"
             inlineCollapsed={collapsed}
-            selectedKeys={[currentURL, pathname]}
-            defaultOpenKeys={collapsed ? [] : dok}
+            selectedKeys={[pathname]}
+            defaultOpenKeys={collapsed ? [] : [FAVORITES_KEY]}
             inlineIndent={0}
             forceSubMenuRender
           >
-            {/* 后台首页 */}
-            <Item key={First.url}>
-              <Link href={First.url}>
-                <i className={`icon iconfont icon-${First.icon}`} />
-                <TitleWithBadge badge={{}}>
-                  <span>{First.title}</span>
-                </TitleWithBadge>
-              </Link>
-            </Item>
+            {first ? <Item key={first.href}>{renderMenuLink(first)}</Item> : null}
 
             <Divider />
 
-            {menus.map((submenu) => {
-              const isFavorites = submenu.code === Favorites.code;
-              const isEditMode = isFavorites && editMode;
-              const badge = badgeMap && badgeMap.get && badgeMap.get(submenu.id);
+            <SubMenu
+              className="fav-submenu"
+              key={FAVORITES_KEY}
+              title={
+                <>
+                  <span className="submenu-title">
+                    <span className="submenu-title-text">常用功能</span>
+                    {editMode ? (
+                      <span className="fav-submenu-count">
+                        已添加
+                        {selectedIds.length}/{MAX_FAVORITES}
+                      </span>
+                    ) : null}
+                  </span>
 
-              if ((submenu?.children?.length ?? 0) > 0 || isFavorites) {
-                return [
-                  <SubMenu
-                    className={isFavorites ? 'fav-submenu' : undefined}
-                    key={submenu.id}
-                    title={
-                      <>
-                        <span className="submenu-title">
-                          {submenu.icon ? <i className={`icon iconfont icon-${submenu.icon}`} /> : null}
-                          <span className="submenu-title-text">{submenu.title}</span>
-
-                          {editMode && isFavorites ? (
-                            <span className="fav-submenu-count">
-                              已添加
-                              {favorites.length}
-                              /10
-                            </span>
-                          ) : null}
-                        </span>
-
-                        {isFavorites && (
-                          <button
-                            type="button"
-                            className={`fav-submenu-${editMode ? 'save' : 'setting'}`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-
-                              if (editMode) {
-                                MenuService.update({
-                                  favorites,
-                                }).finally(() => {
-                                  setEditMode(false);
-                                });
-                              } else {
-                                setEditMode(true);
-                              }
-                            }}
-                          >
-                            {editMode ? '保存' : '管理'}
-                          </button>
-                        )}
-                      </>
-                    }
-                    // icon={<i className={`icon iconfont icon-${icon}`} />}
+                  <button
+                    type="button"
+                    className={editMode ? 'fav-submenu-save' : 'fav-submenu-setting'}
+                    onClick={editMode ? saveEdit : startEdit}
                   >
-                    {submenu?.children &&
-                      submenu?.children.map((item) => {
-                        const badgeItem = badgeMap && badgeMap.get && badgeMap.get(item.id);
-                        const added = !!favorites.find((fav) => {
-                          return fav.id === item.id;
-                        });
-
-                        // 编辑模式
-                        if (editMode) {
-                          return (
-                            <Item
-                              key={item.url}
-                              className={classNames('fav-item-edit', {
-                                'fav-item-added': added,
-                              })}
-                              onClick={() => {
-                                if (added) {
-                                  dispatch(removeFavMenuItem(item));
-                                } else {
-                                  if (favorites.length >= 10) {
-                                    message.error('已达最大添加限制');
-                                    return;
-                                  }
-                                  dispatch(insertFavMenuItem(item));
-                                }
-                              }}
-                            >
-                              <TitleWithBadge badge={badgeItem}>
-                                <span>{item.title}</span>
-                              </TitleWithBadge>
-
-                              {added ? (
-                                <>
-                                  <MinusCircleOutlined className="outlined" />
-                                  <MinusCircleFilled className="filled" />
-                                </>
-                              ) : (
-                                <>
-                                  <PlusCircleOutlined className="outlined" />
-                                  <PlusCircleFilled className="filled" />
-                                </>
-                              )}
-                            </Item>
-                          );
-                        }
-
-                        return (
-                          <Item key={item.url}>
-                            <Link href={item.url}>
-                              <i className={`icon iconfont icon-${item.icon}`} />
-                              <TitleWithBadge badge={badge}>
-                                <span>{item.title}</span>
-                              </TitleWithBadge>
-                            </Link>
-                          </Item>
-                        );
-                      })}
-                  </SubMenu>,
-                  isEditMode && (
-                    <li key="nav-edit-hint" className="nav-edit-hint">
-                      点击下方功能入口即可添加
-                    </li>
-                  ),
-                  !submenu.last && <Divider key={`divider-after-${submenu.id}`} />,
-                ];
+                    {editMode ? '保存' : '管理'}
+                  </button>
+                </>
               }
+            >
+              {editMode
+                ? items.map((item) => {
+                    const added = selectedIds.includes(item.id);
 
-              return [
-                <Item key={submenu.url}>
-                  <Link href={submenu.url}>
-                    <i className={`icon iconfont icon-${submenu.icon}`} />
-                    <TitleWithBadge badge={badge}>
-                      <span>{submenu.title}</span>
-                    </TitleWithBadge>
-                  </Link>
-                </Item>,
-                !submenu.last && <Divider key={`divider-${submenu.id}`} />,
-              ];
-            })}
+                    return (
+                      <Item
+                        key={`edit-${item.id}`}
+                        className={classNames('fav-item-edit', {
+                          'fav-item-added': added,
+                        })}
+                        onClick={() => {
+                          toggleFavorite(item.id);
+                        }}
+                      >
+                        <span>{item.name}</span>
+                        {added ? (
+                          <>
+                            <MinusCircleOutlined className="outlined" />
+                            <MinusCircleFilled className="filled" />
+                          </>
+                        ) : (
+                          <>
+                            <PlusCircleOutlined className="outlined" />
+                            <PlusCircleFilled className="filled" />
+                          </>
+                        )}
+                      </Item>
+                    );
+                  })
+                : favorites.map((item) => <Item key={`fav-${item.id}`}>{renderMenuLink(item)}</Item>)}
+            </SubMenu>
+
+            <Divider />
+
+            {others.map((item) => (
+              <Item key={item.href}>{renderMenuLink(item)}</Item>
+            ))}
           </Menu>
         )}
 
-        <Menu
-          // onClick={onClick}
-          // style={{ width: 256 }}
-          defaultSelectedKeys={['1']}
-          selectedKeys={[pathname]}
-          defaultOpenKeys={['dashboard']}
-          mode="inline"
+        <Button
+          type="text"
+          className={styles.hamburger}
+          onClick={() => {
+            return dispatch(toggleAside());
+          }}
         >
-          <Menu.SubMenu key="dashboard" title="系统管理">
-            <Menu.Item key={`${DASHBOARD}/user`}>
-              <Link href={`${DASHBOARD}/user`}>用户管理</Link>
-            </Menu.Item>
-            <Menu.Item key={`${DASHBOARD}/role`}>
-              <Link href={`${DASHBOARD}/role`}>角色管理</Link>
-            </Menu.Item>
-          </Menu.SubMenu>
-        </Menu>
+          <i className="icon iconfont icon-bars" />
+        </Button>
       </div>
-
-      <Button
-        type="text"
-        className={styles.hamburger}
-        onClick={() => {
-          return dispatch(toggleAside());
-        }}
-      >
-        <i className="icon iconfont icon-bars" />
-      </Button>
     </aside>
   );
 };

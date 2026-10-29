@@ -5,9 +5,7 @@
  */
 
 import { appSlice } from './app';
-import menu from './menu';
 
 export default {
   [appSlice.name]: appSlice.reducer,
-  menu,
 };
