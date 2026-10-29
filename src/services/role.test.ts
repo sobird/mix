@@ -4,6 +4,7 @@ import { Role, UserRole } from '@/models';
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
 import { createUser } from '../../tests/helpers/factories';
+import { syncPermissionCatalog } from './permission-catalog';
 import RoleService from './role';
 
 useInMemoryDatabase();
@@ -40,5 +41,22 @@ describe('RoleService.assignDefaultRole', () => {
     expect(await UserRole.count({ where: { userId: user.id } })).toBe(0);
 
     warn.mockRestore();
+  });
+});
+
+describe('RoleService.assignOwnerToFirstUser', () => {
+  it('assigns owner to the earliest user only', async () => {
+    const first = await createUser();
+    const second = await createUser();
+    await syncPermissionCatalog();
+    expect(await RoleService.assignOwnerToFirstUser()).toBe(first.id);
+    expect(await RoleService.assignOwnerToFirstUser()).toBeNull(); // 已存在拥有者
+    const role = await first.getRoles();
+    expect(role.map((r) => r.name)).toContain('拥有者');
+    const secondRoles = await second.getRoles();
+    expect(secondRoles.map((r) => r.name)).not.toContain('拥有者');
+  });
+  it('is a no-op on an empty database', async () => {
+    expect(await RoleService.assignOwnerToFirstUser()).toBeNull();
   });
 });

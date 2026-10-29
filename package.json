@@ -15,6 +15,7 @@
     "coverage": "vitest run --coverage",
     "db:migrate": "bun scripts/migrate.ts",
     "db:seed": "bun scripts/seed.ts",
+    "db:sync-catalog": "bun scripts/sync-catalog.ts",
     "dev": "DEBUG=app:* next dev",
     "format": "oxfmt",
     "format:check": "oxfmt --check",

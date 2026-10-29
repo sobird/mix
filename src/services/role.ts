@@ -4,7 +4,17 @@
  * sobird<i@sobird.me> at 2023/09/21 14:17:06 created.
  */
 
-import { Role, Permission, UserRole, sequelize } from '@/models';
+import { Role, Permission, User, UserRole, sequelize } from '@/models';
+
+const OWNER_ROLE_NAME = '拥有者';
+
+const OWNER_ROLE_DEFAULTS = {
+  name: OWNER_ROLE_NAME,
+  description: '系统拥有者角色',
+  isBuiltin: true,
+  editable: false,
+  defaultable: false,
+};
 
 // oxlint-disable-next-line typescript/no-extraneous-class
 class RoleService {
@@ -23,6 +33,31 @@ class RoleService {
     }
 
     await UserRole.findOrCreate({ where: { userId, roleId: role.id } });
+  }
+
+  /**
+   * 将首个用户提升为拥有者。
+   *
+   * - 若已有任意用户持有「拥有者」角色，返回 null；
+   * - 空库同样返回 null；
+   * - 否则授予创建时间最早（id 最小）的用户，并返回其 id。
+   */
+  static async assignOwnerToFirstUser(): Promise<number | null> {
+    const ownerRole = await Role.findOne({ where: { name: OWNER_ROLE_NAME } });
+
+    if (ownerRole) {
+      const existing = await UserRole.findOne({ where: { roleId: ownerRole.id } });
+      if (existing) return null;
+    }
+
+    const firstUser = await User.findOne({ order: [['id', 'ASC']] });
+    if (!firstUser) return null;
+
+    const role = ownerRole ?? (await Role.create(OWNER_ROLE_DEFAULTS));
+
+    await UserRole.findOrCreate({ where: { userId: firstUser.id, roleId: role.id } });
+
+    return firstUser.id;
   }
 
   static async setDefaultRole(roleId: number) {
