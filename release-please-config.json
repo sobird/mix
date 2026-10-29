@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/release-please/schemas/config.json",
-  "plugins": ["node-workspace"],
   "release-type": "node",
-  "packages": {}
+  "packages": {
+    ".": {}
+  }
 }
