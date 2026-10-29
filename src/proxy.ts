@@ -1,60 +1,23 @@
-import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
-import { NextResponse, type NextFetchEvent } from 'next/server';
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
-import { SESSION_COOKIE_NAMES } from '@/services/auth/session-cookie';
-
-// export const config = {
-//   // matcher: ["/profile"],
-//   matcher: ['/((?!register|api|login).*)'],
-// };
-
-// This function can be marked `async` if using `await` inside
-// export function middleware(request: NextRequest, fetchEvent: NextFetchEvent) {
-//   console.log(request);
-
-//   // return NextResponse.next({
-//   //   request: {
-//   //     test: 123,
-//   //   },
-//   // })
-
-//   if (request.nextUrl.pathname.startsWith('/api')) {
-//     // return NextResponse.rewrite(new URL('/about-2', request.url))
-
-//     // return response;
-//   }
-// }
+/**
+ * next-auth 在 HTTPS 下会给 session cookie 加上 __Secure- 前缀。
+ *
+ * next-auth v4 没有公开 API 暴露计算后的 cookie 名，中间件又跑在 edge runtime，
+ * 不能引入 authOptions（会连带 Sequelize/SQLite）。这里两个名字都认，
+ * 与部署协议无关，避免 NEXTAUTH_URL 与运行时不一致时误判。
+ */
+export const SESSION_COOKIE_NAMES = ['__Secure-next-auth.session-token', 'next-auth.session-token'] as const;
 
 export default withAuth(
-  async (request: NextRequestWithAuth, fetchEvent: NextFetchEvent) => {
-    const { nextauth } = request;
-    console.log('nextauth', nextauth, fetchEvent);
-
-    // return NextResponse.json({
-    //   message: 'ok',
-    // }, {
-    //   status: 402,
-    // });
-
-    return NextResponse.next({
-      // headers: {
-      //   nextauth,
-      // },
-    });
+  async () => {
+    return NextResponse.next();
   },
   {
     callbacks: {
-      async authorized({ req, token }) {
+      async authorized({ req }) {
         const { cookies } = req;
-        console.log('callbacks token', token);
-        // 从数据库获取session信息
-        // const session = await getSession({
-        //   req: {
-        //     headers: {
-        //       cookie: cookies.toString(),
-        //     },
-        //   },
-        // });
         // 中间件只做粗粒度判断（cookie 是否存在），真正的鉴权在 layout / actions
         return SESSION_COOKIE_NAMES.some((name) => !!cookies.get(name));
       },
