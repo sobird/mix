@@ -58,12 +58,21 @@ export function expandRoleIds(roleIds: number[], roles: RoleLink[]): number[] {
  * 未知用户返回空数组。
  */
 export async function loadUserGrants(userId: number): Promise<AbilityGrant[]> {
-  const userRoles = await UserRole.findAll({ where: { userId }, attributes: ['roleId'] });
-  if (userRoles.length === 0) {
+  const now = Date.now();
+  const userRoles = await UserRole.findAll({
+    where: { userId },
+    attributes: ['roleId', 'expiresAt'],
+  });
+
+  // expiresAt 为空表示永不过期；过期时间等于当前时刻同样视为过期
+  const directRoleIds = userRoles
+    .filter((userRole) => !userRole.expiresAt || new Date(userRole.expiresAt).getTime() > now)
+    .map((userRole) => userRole.roleId);
+
+  if (directRoleIds.length === 0) {
     return [];
   }
 
-  const directRoleIds = userRoles.map((userRole) => userRole.roleId);
   const roles = await Role.findAll({ attributes: ['id', 'parentId'] });
   const expandedRoleIds = expandRoleIds(directRoleIds, roles);
 
@@ -72,7 +81,6 @@ export async function loadUserGrants(userId: number): Promise<AbilityGrant[]> {
     include: [{ model: Permission, required: true }],
   });
 
-  const now = Date.now();
   const seen = new Set<string>();
   const grants: AbilityGrant[] = [];
 

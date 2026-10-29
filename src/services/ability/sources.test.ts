@@ -46,6 +46,30 @@ describe('loadUserGrants', () => {
     expect(await loadUserGrants(user.id)).toEqual([]);
   });
 
+  it('skips expired role assignments and grants', async () => {
+    const target = await createUser();
+    const role = await createRole();
+    const permission = await createPermission({ action: 'read', subject: 'User' });
+    await createUserRole({ userId: target.id, roleId: role.id, expiresAt: new Date('2000-01-01') });
+    await createRolePermission({ roleId: role.id, permissionId: permission.id });
+    expect(await loadUserGrants(target.id)).toEqual([]);
+  });
+
+  it('reads narrowing from the grant row', async () => {
+    const target = await createUser();
+    const role = await createRole();
+    const permission = await createPermission({ action: 'update', subject: 'Role' });
+    await createRolePermission({
+      roleId: role.id,
+      permissionId: permission.id,
+      narrowing: { conditions: { id: 1 } },
+    });
+    await createUserRole({ userId: target.id, roleId: role.id });
+    expect(await loadUserGrants(target.id)).toEqual([
+      { action: 'update', subject: 'Role', narrowing: { conditions: { id: 1 } }, expiresAt: null },
+    ]);
+  });
+
   it('dedupes grants with the same action, subject and narrowing', async () => {
     const parent = await createRole();
     const child = await createRole({ parentId: parent.id });
