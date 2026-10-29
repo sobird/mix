@@ -25,13 +25,16 @@ Package manager is Bun (`bun.lock`); hooks run via `bunx`.
 - Dashboard/admin mutations (role/user/permission/menu) go through services (`src/services/{role,user,permission,menu,menu-preferences}.ts`); server actions keep zod validation, `revalidatePath`/`redirect`, and translate `ForbiddenError`/`NotFoundError` into action state. The public sign-up flow still calls `User.signUp` directly, and the next-auth adapter writes `User` rows through the model.
 - Experimental routes live in `examples/routes/` and are excluded from tsconfig, oxlint, and oxfmt; the old `src/components/with-auth` HOC is gone.
 - Auth is next-auth v4 with database sessions and a custom Sequelize adapter (`src/services/auth/adapter-sequelize.ts`).
-- Authorization uses CASL 7; query conversion lives in `src/lib/casl.ts` (`rulesToCondition`, not the removed `rulesToQuery`).
+- Runtime config is validated at startup: `src/lib/env.ts` parses the environment with zod and `src/instrumentation.ts` calls it when the server boots, so a production process missing `AUTH_SECRET`/`NEXTAUTH_URL` or incomplete mail settings fails immediately. `LOG_LEVEL` (`error|warn|info|debug`) sets log verbosity — strict in `env.ts` (an invalid value refuses to start) and lenient in `src/lib/logger.ts` (falls back to `info` in production, `debug` elsewhere, so Sequelize only logs SQL at `debug`).
+- `/api/health` is the deploy liveness probe: it returns 503 when the database is unreachable, and `scripts/deploy.sh` only switches releases after it answers 200.
+- Operations: `scripts/backup.sh` is the cron entry point for database snapshots, and restore steps live in `docs/operations.md`. Snapshots are pooled by purpose — `$APP_ROOT/backups/` holds manual/scheduled backups (keep 30) while `$APP_ROOT/backups/migrations/` holds pre-migration snapshots (keep 5) so migration pruning never trims daily backups.
+- Authorization uses CASL 7; query conversion lives in `src/lib/casl.ts` (`toAccessQuery`, not the removed `rulesToCondition`). `isAllowed` lives in `src/services/ability/check.ts` and is re-exported from `src/services/ability/index.ts`.
 - Form validation bridges zod 4 and antd via `src/zod/`; shared UI is antd 6 with SCSS modules.
 
 ## Gotchas
 
 - `next-env.d.ts` is generated; never edit or commit it.
-- DB-backed tests (`src/models/*.test.ts`, `src/actions/*.test.ts`) read the local `database.sqlite`. Leave the DB alone: report schema/missing-table failures rather than reseeding. `db:seed` writes to `./database.sqlite` (migrate + catalog sync + seed; idempotent, but re-running rewrites builtin-role grants and upgrades menus) — get explicit confirmation before running it.
+- DB-backed tests (`src/models/*.test.ts`, `src/actions/*.test.ts`) use an in-memory SQLite: `tests/setup.ts` mocks `@/lib/sequelize` (via `src/lib/__mocks__/sequelize.ts`) and repoints `storage` to `:memory:` before any connection is opened, so they never read the local `./database.sqlite`. Never touch `./database.sqlite` for tests and never run `db:seed` without asking: it writes to `./database.sqlite` (migrate + catalog sync + seed; idempotent, but re-running rewrites builtin-role grants and upgrades menus) — report schema/missing-table failures rather than reseeding.
 - `next.config.ts` sets `typescript.ignoreBuildErrors`; run `bunx tsc --noEmit` to catch type errors the build hides.
 - `src/lib/otp.ts` derives secrets as SHA-256 → Base32 because otplib 13 rejects raw identifiers.
 - Turbopack requires `:global(.class)` (function form) in SCSS modules; Lightning CSS rejects the space form.

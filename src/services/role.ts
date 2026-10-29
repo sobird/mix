@@ -5,7 +5,8 @@
  */
 
 import { Role, Permission, User, UserRole, sequelize } from '@/models';
-import { isAllowed, type AppAbility } from '@/services/ability';
+import type { AppAbility } from '@/services/ability/build';
+import { isAllowed } from '@/services/ability/check';
 import { queryAccessible } from '@/services/ability/query';
 
 import { paginateAccessible, type PageQuery } from './access';
