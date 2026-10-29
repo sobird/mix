@@ -62,4 +62,54 @@ describe('syncPermissionCatalog', () => {
     await syncPermissionCatalog();
     expect(await RolePermission.count({ where: { roleId: custom.id } })).toBe(1);
   });
+
+  it('keeps catalog additions after re-sync', async () => {
+    const originalLength = PERMISSION_CATALOG.length;
+
+    try {
+      await syncPermissionCatalog();
+
+      // 临时向目录追加一条真实模型主题的权限，再同步一次
+      PERMISSION_CATALOG.push({ action: 'read', subject: 'Log', name: '查看日志' });
+      const second = await syncPermissionCatalog();
+
+      expect(second.permissions).toBe(1);
+      expect(await Permission.count()).toBe(originalLength + 1);
+      expect(await Permission.count({ where: { action: 'read', subject: 'Log' } })).toBe(1);
+
+      // 原有内置角色的授予不应因目录变化而丢失（拥有者只有 manage all 一条）
+      const owner = await Role.findOne({ where: { name: '拥有者' } });
+      expect(owner).not.toBeNull();
+      expect(await RolePermission.count({ where: { roleId: owner!.id } })).toBe(1);
+    } finally {
+      PERMISSION_CATALOG.length = originalLength;
+    }
+  });
+
+  it('does not delete existing grants when a catalog entry is removed', async () => {
+    const originalLength = PERMISSION_CATALOG.length;
+
+    try {
+      await syncPermissionCatalog();
+
+      // 先添加一条临时目录项并同步，随后授予自定义角色
+      PERMISSION_CATALOG.push({ action: 'read', subject: 'Log', name: '查看日志' });
+      await syncPermissionCatalog();
+
+      const added = await Permission.findOne({ where: { action: 'read', subject: 'Log' } });
+      expect(added).not.toBeNull();
+
+      const custom = await createRole();
+      await createRolePermission({ roleId: custom.id, permissionId: added!.id });
+
+      // 从目录移除后再次同步，自定义授予与权限行都应保留
+      PERMISSION_CATALOG.length = originalLength;
+      await syncPermissionCatalog();
+
+      expect(await RolePermission.count({ where: { roleId: custom.id, permissionId: added!.id } })).toBe(1);
+      expect(await Permission.count({ where: { action: 'read', subject: 'Log' } })).toBe(1);
+    } finally {
+      PERMISSION_CATALOG.length = originalLength;
+    }
+  });
 });
