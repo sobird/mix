@@ -67,7 +67,7 @@ export async function loadUserGrants(userId: number): Promise<AbilityGrant[]> {
   const roles = await Role.findAll({ attributes: ['id', 'parentId'] });
   const expandedRoleIds = expandRoleIds(directRoleIds, roles);
 
-  const rolePermissions = await RolePermission.findAll({
+  const rolePermissionRows = await RolePermission.findAll({
     where: { roleId: expandedRoleIds },
     include: [{ model: Permission, required: true }],
   });
@@ -76,7 +76,7 @@ export async function loadUserGrants(userId: number): Promise<AbilityGrant[]> {
   const seen = new Set<string>();
   const grants: AbilityGrant[] = [];
 
-  for (const rolePermission of rolePermissions) {
+  for (const rolePermission of rolePermissionRows) {
     const permission = rolePermission.Permission;
 
     if (!permission) {

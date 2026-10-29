@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+
 import { Permission, Role, RolePermission } from '@/models';
 import { buildAbility, getCurrentAbility } from '@/services/ability';
 
@@ -72,5 +74,16 @@ describe('role authorization', () => {
     const other = await createRole();
     // 名称需满足 3 字符下限，否则会先触发表单校验，无法覆盖实例级检查
     expect((await updateRoleAction({ id: other.id, name: '改名测试' }))!.status).toBe(ActionStatus.FAILURE);
+  });
+});
+
+describe('static ability removal', () => {
+  it('does not import the static ability source', async () => {
+    const source = await import('node:fs').then((fs) => fs.readFileSync('src/services/ability/index.ts', 'utf8'));
+    expect(source).not.toContain('rolePermissions');
+  });
+
+  it('removes the legacy static ability module', () => {
+    expect(existsSync('src/services/ability/legacy.ts')).toBe(false);
   });
 });
