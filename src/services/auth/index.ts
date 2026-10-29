@@ -23,7 +23,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
-import NextAuth, { getServerSession, type AuthOptions } from 'next-auth';
+import NextAuth, { getServerSession, type AuthOptions, type DefaultSession } from 'next-auth';
 import { encode, getToken } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
@@ -235,6 +235,16 @@ export function getServerAuthSession(
   return getServerSession(...args, authOptions);
 }
 
+export function parseSessionUserId(userId: unknown): number | null {
+  const id = Number(userId);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+export async function getSessionUserId(): Promise<number | null> {
+  const session = await getServerAuthSession();
+  return parseSessionUserId(session?.user?.id);
+}
+
 export async function getServerAuthToken() {
   return getToken({
     req: {
@@ -256,6 +266,7 @@ export async function getCsrfAuthToken() {
 
 declare module 'next-auth' {
   interface Session {
+    user: { id: string } & DefaultSession['user'];
     accessToken?: string;
   }
 }
