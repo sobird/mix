@@ -65,6 +65,11 @@ mkdir -p "$RELEASE_DIR"
 tar -xzf "$APP_ROOT/release.tar.gz" -C "$RELEASE_DIR"
 rm -f "$APP_ROOT/release.tar.gz"
 
+# The symlink loop below only links files that already exist. Create the
+# database at APP_ROOT first so the first deploy does not let migrations create
+# it inside the release dir, which the next release would abandon.
+touch "$APP_ROOT/database.sqlite"
+
 # Runtime state stays outside the release directories and is symlinked in so
 # that every version keeps using the same data.
 for file in .env .env.production .env.local .env.production.local database.sqlite; do
