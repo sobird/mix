@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   title: '用户管理',
 };
 
-interface SearchParams extends PaginationSearchParams {
-  //
-}
-
-const UserPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
+const UserPage = async ({ searchParams }: PageProps<'/dashboard/user'>) => {
+  const { pn, ps } = await searchParams;
   const ability = await getCurrentAbility();
-  const userWithPage = await UserService.listWithPage(ability, await searchParams);
+  const userWithPage = await UserService.listWithPage(ability, {
+    pn: Array.isArray(pn) ? pn[0] : pn,
+    ps: Array.isArray(ps) ? ps[0] : ps,
+  });
 
   return (
     <div>

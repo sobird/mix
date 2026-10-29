@@ -20,7 +20,7 @@ const columns = [
   { title: '描述', dataIndex: 'description', key: 'description' },
 ];
 
-const PermissionPage: AppPage = async () => {
+const PermissionPage = async () => {
   const ability = await getCurrentAbility();
   const permissions = await PermissionService.list(ability);
 

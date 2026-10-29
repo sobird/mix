@@ -13,11 +13,7 @@ import { getCurrentAbility } from '@/services/ability';
 import { ForbiddenError, NotFoundError } from '@/services/errors';
 import { UserService } from '@/services/user';
 
-interface UserEditPageParams {
-  id: string;
-}
-
-const UserEditPage: AppPage<UserEditPageParams> = async ({ params }) => {
+const UserEditPage = async ({ params }: PageProps<'/dashboard/user/[id]/edit'>) => {
   const { id } = await params;
 
   const ability = await getCurrentAbility();

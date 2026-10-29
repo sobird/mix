@@ -23,14 +23,13 @@ export const metadata: Metadata = {
 
 const RoleFormModal = withActionFormModal(RoleForm, { title: '创建角色' });
 
-interface SearchParams extends PaginationSearchParams {
-  //
-}
-
-const RolePage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
+const RolePage = async ({ searchParams }: PageProps<'/dashboard/role'>) => {
   const { pn, ps } = await searchParams;
   const ability = await getCurrentAbility();
-  const rolesWithPage = await RoleService.listWithPage(ability, { pn, ps });
+  const rolesWithPage = await RoleService.listWithPage(ability, {
+    pn: Array.isArray(pn) ? pn[0] : pn,
+    ps: Array.isArray(ps) ? ps[0] : ps,
+  });
 
   return (
     <div>

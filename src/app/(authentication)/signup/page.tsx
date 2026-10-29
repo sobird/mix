@@ -13,12 +13,9 @@ export const metadata: Metadata = {
   title: '注册账号',
 };
 
-interface SearchParams {
-  callbackUrl?: string;
-}
-
-const RegisterPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
-  const { callbackUrl } = await searchParams;
+const RegisterPage = async ({ searchParams }: PageProps<'/signup'>) => {
+  const search = await searchParams;
+  const callbackUrl = Array.isArray(search.callbackUrl) ? search.callbackUrl[0] : search.callbackUrl;
 
   return (
     <>

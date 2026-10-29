@@ -13,11 +13,7 @@ import RoleService from '@/services/role';
 
 import RoleForm from '../../components/role-form';
 
-interface Params {
-  id: string;
-}
-
-const Page: AppPage<Params> = async ({ params }) => {
+const Page = async ({ params }: PageProps<'/dashboard/role/[id]/edit'>) => {
   const { id } = await params;
 
   const ability = await getCurrentAbility();

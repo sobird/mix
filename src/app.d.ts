@@ -13,11 +13,6 @@ interface PaginationSearchParams {
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>;
 
-declare type AppPage<Params = {}, SearchParams = {}> = import('next').NextPage<{
-  params: Promise<Params>;
-  searchParams: Promise<SearchParams>;
-}>;
-
 /**
  * 至少三种状态(1.初始化，2.成功，3.失败)
  * 1.initial

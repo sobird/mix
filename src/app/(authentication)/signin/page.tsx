@@ -18,12 +18,9 @@ export const metadata: Metadata = {
   title: '欢迎登录',
 };
 
-interface SearchParams {
-  callbackUrl: string;
-}
-
-const SigninPage: AppPage<{}, SearchParams> = async ({ searchParams }) => {
-  const { callbackUrl } = await searchParams;
+const SigninPage = async ({ searchParams }: PageProps<'/signin'>) => {
+  const search = await searchParams;
+  const callbackUrl = Array.isArray(search.callbackUrl) ? search.callbackUrl[0] : search.callbackUrl;
 
   return (
     <>

@@ -26,7 +26,8 @@
     "prepare": "husky",
     "start": "next start",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "typegen": "next typegen"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^2.1.2",
