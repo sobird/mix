@@ -71,6 +71,7 @@
     "lint-staged": "^17.6.0",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",
+    "release-please": "^17.11.2",
     "sass": "^1.106.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
