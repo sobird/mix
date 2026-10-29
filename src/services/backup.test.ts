@@ -46,6 +46,21 @@ describe('pruneBackups', () => {
   it('returns zero when the directory does not exist', async () => {
     expect(await pruneBackups(join(dir, 'missing'), 5)).toBe(0);
   });
+
+  it('leaves non-matching files alone when given a candidate predicate', async () => {
+    const names = ['a.zip', 'b.sqlite', 'c.txt', 'database-1.sqlite', 'database-2.sqlite', 'database-3.sqlite'];
+
+    await Promise.all(
+      names.map(async (name, index) => {
+        const file = join(dir, name);
+        await writeFile(file, String(index));
+        await utimes(file, index + 1000, index + 1000);
+      }),
+    );
+
+    expect(await pruneBackups(dir, 1, (name) => /^database-.*\.sqlite$/.test(name))).toBe(2);
+    expect((await readdir(dir)).sort()).toEqual(['a.zip', 'b.sqlite', 'c.txt', 'database-3.sqlite']);
+  });
 });
 
 describe('restoreDatabase', () => {

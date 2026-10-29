@@ -14,6 +14,7 @@
 set -eu
 
 APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export APP_ROOT
 RELEASES_DIR="${RELEASES_DIR:-$APP_ROOT/releases}"
 RELEASE_ID="${RELEASE_ID:?RELEASE_ID is required}"
 RELEASE_DIR="$RELEASES_DIR/$RELEASE_ID"

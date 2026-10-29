@@ -1,4 +1,5 @@
-import { mkdir } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { access, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 import { pendingMigrations, runMigrations } from '@/lib/migrator';
@@ -8,10 +9,18 @@ import { syncMenuCatalog } from '@/services/menu-catalog';
 import { syncPermissionCatalog } from '@/services/permission-catalog';
 import RoleService from '@/services/role';
 
+// 手动/定时备份默认写入当前目录的 ../backups（即 $APP_ROOT/backups）。
 const BACKUP_DIR = '../backups';
+// 迁移在 release 目录内执行，需要显式定位到 $APP_ROOT/backups 才能与手动备份共用同一处。
+const MIGRATE_BACKUP_DIR = process.env.APP_ROOT ? join(process.env.APP_ROOT, 'backups') : BACKUP_DIR;
 // 迁移前的自动快照保留 5 份；手动备份默认保留更多。
 const BACKUP_KEEP = 5;
 const MANUAL_BACKUP_KEEP = 30;
+
+/** 只清理本工具写出的快照，避免误删备份目录里的其他文件。 */
+const SNAPSHOT_NAME = /^database-.*\.sqlite$/;
+
+const isSnapshot = (name: string): boolean => SNAPSHOT_NAME.test(name);
 
 const USAGE = `Usage: db-tools <command>
 
@@ -26,17 +35,20 @@ Commands:
 /** 参数错误：打印用法并以非零状态退出。 */
 class UsageError extends Error {}
 
+/** 运行时错误：只打印消息并以非零状态退出（不打印用法）。 */
+class CliError extends Error {}
+
 async function migrate(): Promise<void> {
   const pending = await pendingMigrations(sequelize);
 
   if (pending.length > 0) {
     // 时间戳文件名既避免 `VACUUM INTO` 覆盖已有文件，也便于按时间清理。
     const stamp = new Date().toISOString().replaceAll(':', '-');
-    const target = join(BACKUP_DIR, `database-${stamp}.sqlite`);
+    const target = join(MIGRATE_BACKUP_DIR, `database-${stamp}.sqlite`);
 
-    await mkdir(BACKUP_DIR, { recursive: true });
+    await mkdir(MIGRATE_BACKUP_DIR, { recursive: true });
     await backupDatabase(sequelize, target);
-    const pruned = await pruneBackups(BACKUP_DIR, BACKUP_KEEP);
+    const pruned = await pruneBackups(MIGRATE_BACKUP_DIR, BACKUP_KEEP, isSnapshot);
     console.log(`backup written: ${target} (pruned ${pruned})`);
   }
 
@@ -74,18 +86,23 @@ function readFlag(argv: string[], flag: string): string | undefined {
   return value;
 }
 
+/** `--keep` 只接受严格的正整数，拒绝 0、负数、`5x`、`3.7` 等。 */
+function parseKeep(value: string): number {
+  if (!/^[1-9][0-9]*$/.test(value)) {
+    throw new UsageError('--keep requires a positive integer');
+  }
+
+  return Number(value);
+}
+
 async function backup(argv: string[]): Promise<void> {
   const stamp = new Date().toISOString().replaceAll(':', '-');
   const target = readFlag(argv, '--to') ?? join(BACKUP_DIR, `database-${stamp}.sqlite`);
   const keepFlag = readFlag(argv, '--keep');
-  const keep = keepFlag === undefined ? MANUAL_BACKUP_KEEP : Number.parseInt(keepFlag, 10);
-
-  if (!Number.isInteger(keep) || keep < 0) {
-    throw new UsageError('--keep requires a non-negative integer');
-  }
+  const keep = keepFlag === undefined ? MANUAL_BACKUP_KEEP : parseKeep(keepFlag);
 
   await backupDatabase(sequelize, target);
-  const pruned = await pruneBackups(dirname(target), keep);
+  const pruned = await pruneBackups(dirname(target), keep, isSnapshot);
   console.log(`backup written: ${target} (pruned ${pruned})`);
 }
 
@@ -94,6 +111,12 @@ async function restore(argv: string[]): Promise<void> {
 
   if (!from) {
     throw new UsageError('restore requires --from <path>');
+  }
+
+  try {
+    await access(from, constants.R_OK);
+  } catch {
+    throw new CliError(`restore: cannot read ${from}`);
   }
 
   await restoreDatabase(from, './database.sqlite');
@@ -124,6 +147,8 @@ async function main(argv: string[]): Promise<void> {
     if (error instanceof UsageError) {
       console.error(error.message);
       console.error(USAGE);
+    } else if (error instanceof CliError) {
+      console.error(error.message);
     } else {
       console.error(error);
     }

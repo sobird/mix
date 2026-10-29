@@ -19,9 +19,16 @@ export async function backupDatabase(sequelize: Sequelize, targetPath: string): 
 /**
  * 仅保留 mtime 最新的 `keep` 份备份，删除其余文件并返回删除数量。
  *
+ * `isCandidate` 可限制参与清理的文件名；目录中其余文件（例如用户放进备份目录的
+ * 其他文件）不会被删除。默认接受全部文件，保持原有行为。
+ *
  * 备份目录不存在时视为没有备份，返回 0。
  */
-export async function pruneBackups(dir: string, keep: number): Promise<number> {
+export async function pruneBackups(
+  dir: string,
+  keep: number,
+  isCandidate: (name: string) => boolean = () => true,
+): Promise<number> {
   let names: string[];
 
   try {
@@ -34,7 +41,7 @@ export async function pruneBackups(dir: string, keep: number): Promise<number> {
   }
 
   const files = await Promise.all(
-    names.map(async (name) => {
+    names.filter(isCandidate).map(async (name) => {
       const path = join(dir, name);
       const info = await stat(path);
       return info.isFile() ? { path, mtimeMs: info.mtimeMs } : null;
