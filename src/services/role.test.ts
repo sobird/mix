@@ -95,6 +95,14 @@ describe('RoleService.listOptions', () => {
 
     await expect(RoleService.listOptions(ability)).resolves.toContainEqual({ value: role.id, label: role.name });
   });
+
+  it('filters options to the matching row under a conditional read grant', async () => {
+    const role = await createRole();
+    await createRole();
+    const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: { conditions: { id: role.id } } }]);
+
+    await expect(RoleService.listOptions(ability)).resolves.toEqual([{ value: role.id, label: role.name }]);
+  });
 });
 
 describe('RoleService.assignOwnerToFirstUser', () => {
