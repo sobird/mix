@@ -24,14 +24,16 @@ import { randomUUID } from 'node:crypto';
 
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { getServerSession, type AuthOptions, type DefaultSession } from 'next-auth';
-import { encode, getToken } from 'next-auth/jwt';
+import { encode, getToken, type JWTEncodeParams } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/email';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import { getCsrfToken } from 'next-auth/react';
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 
+import { Session } from '@/models/Session';
 import { User } from '@/models/User';
 
 import { sendVerificationRequest } from '../mailer';
@@ -62,6 +64,11 @@ import adapter from './adapter-sequelize';
 //   },
 // };
 
+/** 凭证登录失败时对客户端统一的提示 */
+const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
+/** 封禁账号的专用提示；是否区分由产品决定，但不能泄露其他细节 */
+const ACCOUNT_DISABLED_MESSAGE = '账号已被禁用';
+
 const sessionOptions: AuthOptions['session'] = {
   strategy: 'database', // default: database
   maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -69,8 +76,16 @@ const sessionOptions: AuthOptions['session'] = {
   generateSessionToken: randomUUID,
 };
 
+/**
+ * credentials + database 属于 next-auth 官方不支持的组合。
+ *
+ * 上面 sessionOptions.strategy 为 'database' 时，next-auth 仍会为 credentials
+ * 登录签发 JWT cookie，因此这里覆写 encode：回调已手工写入 sessions 表，
+ * token 里带 sessionToken，就直接把裸 sessionToken 当作 cookie 值返回，
+ * 让后续请求走 database session 查询。升级 next-auth 时必须回归此逻辑。
+ */
 const jwtOptions = {
-  async encode(params: any) {
+  async encode(params: JWTEncodeParams) {
     return params.token?.sessionToken ?? encode(params);
   },
 };
@@ -79,6 +94,8 @@ export const authOptions: AuthOptions = {
   session: sessionOptions,
   jwt: jwtOptions,
   adapter,
+  // next-auth 默认读 NEXTAUTH_SECRET ?? AUTH_SECRET；这里显式传入，避免依赖隐式行为
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   // cookies: {},
   providers: [
     /**
@@ -112,12 +129,19 @@ export const authOptions: AuthOptions = {
           return {
             name: user.username,
             email: user.email,
-            id: user.id as unknown as string,
+            id: String(user.id),
             image: user.image,
             // role: 'manage',
           };
         } catch (e) {
-          throw Error(e, { cause: e });
+          const reason = e instanceof Error ? e.message : String(e);
+          // 真实原因只写服务端日志，避免向客户端泄露用户是否存在
+          console.warn(`[auth] credentials 登录失败: ${reason}`);
+
+          if (reason === '用户已被禁用') {
+            throw new Error(ACCOUNT_DISABLED_MESSAGE, { cause: e });
+          }
+          throw new Error(INVALID_CREDENTIALS_MESSAGE, { cause: e });
         }
       },
     }),
@@ -171,27 +195,36 @@ export const authOptions: AuthOptions = {
   //   },
   // }
   callbacks: {
-    async signIn(/* {user, account, profile, email, credentials,} */) {
-      return true;
+    async signIn({ user }) {
+      // 已存在用户（OAuth 再次登录 / Email 登录）由 adapter 提供 status；
+      // 首次 OAuth 登录时 user 是第三方 profile，没有 status，放行。
+      const status = (user as { status?: boolean | number } | undefined)?.status;
+      return status === undefined || Number(status) !== 0;
     },
 
     async jwt({ token, trigger, session, user, account }) {
-      if (trigger === 'update') {
+      // database 策略下 updateSession 直接写库，下面 update 分支不会触发；
+      // 保留仅为将来切换 jwt 策略时可用。
+      if (trigger === 'update' && session?.user) {
         token.name = session.user.name;
       }
       if (user) {
         token.id = user.id;
         // token.role = user.role;
       }
-      // Persist the OAuth access_token to the token right after signin
+      // database 策略下 session 回调拿不到 token，写在这里的 accessToken 不会被读取；
+      // 且 credentials 路径没有 access_token。保留仅为将来切换 jwt 策略时可用。
       if (account) {
         token.accessToken = account.access_token;
       }
 
-      // 支持credentials登录验证strategy: 'database'
-      if (account?.provider === 'credentials' && sessionOptions.strategy !== 'jwt') {
+      // 支持 credentials 登录配合 strategy: 'database'（非官方组合，见 jwtOptions 注释）
+      if (account?.type === 'credentials' && sessionOptions.strategy !== 'jwt' && user) {
+        // 登录即踢掉该用户在其他设备上的旧会话
+        await Session.destroy({ where: { userId: Number(user.id) } });
+
         const authSession = await adapter.createSession!({
-          sessionToken: sessionOptions.generateSessionToken!() as any,
+          sessionToken: await sessionOptions.generateSessionToken!(),
           userId: user.id,
           expires: new Date(Date.now() + sessionOptions.maxAge! * 1000),
         });
@@ -202,6 +235,8 @@ export const authOptions: AuthOptions = {
     },
 
     async session({ session, token, user, trigger: _trigger }) {
+      // database 策略下 next-auth 不传 token，此分支永不生效；
+      // 保留仅为将来切换 jwt 策略时可用。
       if (token?.accessToken) {
         session.accessToken = token.accessToken;
       }
@@ -220,6 +255,13 @@ export const authOptions: AuthOptions = {
 export const handler = NextAuth(authOptions);
 
 /**
+ * 无参读取的请求级缓存：同一请求内 layout / ability / menu / actions 只查询一次 session。
+ *
+ * React `cache()` 的作用域是单次请求，跨请求不会串用；带 req/res 的 pages/API 场景不走缓存。
+ */
+const getServerSessionCached = cache(async () => getServerSession(authOptions));
+
+/**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
  *
  * @see https://next-auth.js.org/configuration/nextjs
@@ -227,7 +269,11 @@ export const handler = NextAuth(authOptions);
 export function getServerAuthSession(
   ...args: [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']] | [NextApiRequest, NextApiResponse] | []
 ) {
-  return getServerSession(...args, authOptions);
+  if (args.length === 0) {
+    return getServerSessionCached();
+  }
+
+  return getServerSession(args[0], args[1], authOptions);
 }
 
 export function parseSessionUserId(userId: unknown): number | null {
@@ -240,6 +286,9 @@ export async function getSessionUserId(): Promise<number | null> {
   return parseSessionUserId(session?.user?.id);
 }
 
+/**
+ * @deprecated database 策略下 cookie 是裸 UUID，`getToken` 必然解出 null；且当前无调用方。
+ */
 export async function getServerAuthToken() {
   return getToken({
     req: {
@@ -248,8 +297,12 @@ export async function getServerAuthToken() {
   });
 }
 
+/**
+ * @deprecated 当前无调用方。
+ *
+ * @see https://github.com/nextauthjs/next-auth/discussions/7256
+ */
 export async function getCsrfAuthToken() {
-  // https://github.com/nextauthjs/next-auth/discussions/7256
   return getCsrfToken({
     req: {
       headers: {
@@ -262,12 +315,14 @@ export async function getCsrfAuthToken() {
 declare module 'next-auth' {
   interface Session {
     user: { id: string } & DefaultSession['user'];
+    // database 策略下永不写入；保留仅为兼容 jwt 策略
     accessToken?: string;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
+    // database 策略下 session 回调读不到；保留仅为兼容 jwt 策略
     accessToken?: string;
     sessionToken?: string;
   }

@@ -60,19 +60,19 @@
 ### D3. 错误信息统一
 
 `authorize` 不再把"用户不存在 / 密码不正确 / 用户已被禁用"原样抛给客户端。
-客户端统一提示"用户名或密码错误"，真实原因写服务端日志（`src/lib/logger.ts`）。
+客户端统一提示"用户名或密码错误"；封禁账号单独提示"账号已被禁用"；真实原因写服务端日志。
 
-### D4. 删除死代码
+### D4. 死代码处理（保留 + 注释）
 
 database 策略下：
 
-- `session` 回调不接收 `token`（`core/routes/session.js`），`token?.accessToken` 永远为空；
-- `jwt` 回调仅在 credentials 路径被调用，`account.access_token` 永远拿不到；
-- `trigger === 'update'` 的 jwt 分支不会执行（DB 会话更新走 `updateSession`）；
-- `getServerAuthToken()` 用 `getToken` 解 UUID 必然返回 null，且无调用方；
-- `getCsrfAuthToken()` 无调用方。
+- `session` 回调不接收 `token`（`core/routes/session.js`），`token?.accessToken` 永远为空；(保留，添加说明注释)
+- `jwt` 回调仅在 credentials 路径被调用，`account.access_token` 永远拿不到；(保留，添加说明注释)
+- `trigger === 'update'` 的 jwt 分支不会执行（DB 会话更新走 `updateSession`）；(保留，添加说明注释)
+- `getServerAuthToken()` 用 `getToken` 解 UUID 必然返回 null，且无调用方；(保留，添加 @deprecated 注释)
+- `getCsrfAuthToken()` 无调用方。(保留，添加 @deprecated 注释)
 
-以上全部删除。若未来需要 OAuth access token，从 `accounts.access_token` 读取。
+若未来需要 OAuth access token，从 `accounts.access_token` 读取。
 
 ### D5. 请求级 session 缓存
 
@@ -84,27 +84,27 @@ layout / ability / menu / actions 重复查询。带 `req/res` 的重载保持�
 `src/proxy.ts` 目前硬编码 `next-auth.session-token`。生产 HTTPS 下 next-auth 使用
 `__Secure-next-auth.session-token`。修复方式（二选一，评审确定）：
 
-- A：按 `NEXTAUTH_URL` 是否 `https` 选择 cookie 名；
+- A：按 `NEXTAUTH_URL` 是否 `https` 选择 cookie 名；（选A）
 - B：中间件只做粗粒度存在性判断，真正的鉴权交给 `dashboard/layout.tsx` 与 actions。
 
 ## 4. 变更清单
 
 ### 阶段一：`src/services/auth/index.ts`（P0 + P1）
 
-| #   | 位置                                      | 变更                                                                              |
-| --- | ----------------------------------------- | --------------------------------------------------------------------------------- |
-| 1   | `callbacks.signIn`                        | 增加 `status` 校验                                                                |
-| 2   | `authorize`                               | 统一错误文案；服务端记录真实原因；`id: String(user.id)`                           |
-| 3   | `callbacks.jwt`                           | 仅保留 credentials 建 session 分支；删除 `token.id` / `accessToken` / update 分支 |
-| 4   | `callbacks.session`                       | 删除 `token?.accessToken` 分支；保留 `session.user.id = String(user.id)`          |
-| 5   | `jwtOptions.encode`                       | 收紧类型；补充非官方组合注释                                                      |
-| 6   | `getServerAuthToken` / `getCsrfAuthToken` | 删除（无调用方且对 DB 策略无效）                                                  |
-| 7   | `getServerAuthSession`                    | 增加无参版本 `cache()` 包装                                                       |
-| 8   | `sessionOptions`                          | `generateSessionToken` 调用处去掉 `as any`                                        |
-| 9   | 模块增强                                  | 删除 `Session.accessToken`；`JWT` 只保留 `sessionToken`                           |
-| 10  | `createSession` 失败                      | 包裹 try/catch，返回可读错误（可选）                                              |
-| 11  | `secret`                                  | 可选：显式传 `secret: env.authSecret`                                             |
-| 12  | 旧会话清理                                | 可选：登录时清理同用户旧 session，或 cron 清理过期行                              |
+| #   | 位置                                      | 变更                                                                             |
+| --- | ----------------------------------------- | -------------------------------------------------------------------------------- |
+| 1   | `callbacks.signIn`                        | 增加 `status` 校验                                                               |
+| 2   | `authorize`                               | 统一错误文案；服务端记录真实原因；`id: String(user.id)`                          |
+| 3   | `callbacks.jwt`                           | 保留 `token.id` / `accessToken` / update 分支，补充"database 策略下不生效"的注释 |
+| 4   | `callbacks.session`                       | 保留 `token?.accessToken` 分支并注释；保留 `session.user.id = String(user.id)`   |
+| 5   | `jwtOptions.encode`                       | 收紧类型；补充非官方组合注释                                                     |
+| 6   | `getServerAuthToken` / `getCsrfAuthToken` | 保留并标 `@deprecated`（无调用方且对 DB 策略无效）                               |
+| 7   | `getServerAuthSession`                    | 增加无参版本 `cache()` 包装                                                      |
+| 8   | `sessionOptions`                          | `generateSessionToken` 调用处去掉 `as any`                                       |
+| 9   | 模块增强                                  | 保留 `Session.accessToken`，补充说明注释                                         |
+| 10  | `createSession` 失败                      | 暂不做                                                                           |
+| 11  | `secret`                                  | 显式传入 `NEXTAUTH_SECRET ?? AUTH_SECRET`                                        |
+| 12  | 旧会话清理                                | credentials 登录时按 `userId` 清理旧 session（含用户其他设备）                   |
 
 ### 阶段二：相邻文件（P0，单独提交）
 
@@ -191,13 +191,15 @@ export function getServerAuthSession(...args: [] | [req, res]) {
 - 风险：请求级缓存若误用于跨请求场景会导致会话串用 → 只缓存无参版本，`cache()` 作用域为单次请求。
 - 回滚：每个阶段独立提交，可单独 revert；无数据迁移，回滚无状态残留。
 
-## 9. 待确认
+## 9. 已确认
 
-- [ ] D6 采用方案 A 还是 B？
-- [ ] "用户名或密码错误" 的最终文案（中英文？是否保留"用户已被禁用"的独立提示？）
-- [ ] 是否需要"登录时清理同用户旧会话"（第 12 项），还是仅靠过期清理？
-- [ ] 是否显式传入 `secret`（第 11 项），还是继续依赖环境变量？
-- [ ] 阶段二是否包含 `createUser` 用户名唯一化（第 14 项）？
+- [x] D6 采用方案 A（按 `NEXTAUTH_URL` 是否 `https` 选择 cookie 名）。
+- [x] 错误文案统一为"用户名或密码错误"，禁用账号单独提示"账号已被禁用"。
+- [x] 登录（credentials）时清理同用户旧会话，不依赖过期清理。
+- [x] 显式传入 `secret`（第 11 项）。
+- [x] 阶段二包含 `createUser` 用户名唯一化（第 14 项）。
+- [x] 死代码按 D4 保留并注释 / 标 `@deprecated`，不删除。
+- [x] 实施分两次提交：阶段一、阶段二。
 
 ## 附录：为什么没有选择 `strategy: 'jwt'`
 
