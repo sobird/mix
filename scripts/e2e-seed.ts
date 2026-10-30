@@ -17,16 +17,13 @@ import { syncPermissionCatalog } from '@/services/permission-catalog';
 import RoleService from '@/services/role';
 
 import { E2E_OWNER, E2E_RESTRICTED_ROLE, E2E_TARGET_USERNAME, E2E_VIEWER } from '../e2e/fixtures';
+import { resolveE2eStorage } from './e2e-storage';
 
 const OWNER_ROLE_NAME = '拥有者';
 const TARGET_PASSWORD = 'Target#1234';
 const TARGET_COUNT = 3;
 
-const dbStorage = process.env.DB_STORAGE;
-
-if (!dbStorage || dbStorage === './database.sqlite') {
-  throw new Error('DB_STORAGE 必须指向隔离的 E2E 数据库；拒绝触碰 ./database.sqlite');
-}
+const dbStorage = resolveE2eStorage(process.env.DB_STORAGE);
 
 // SQLite 的旁文件一并清理，保证每次运行都从空库开始
 for (const suffix of ['', '-journal', '-wal', '-shm']) {
