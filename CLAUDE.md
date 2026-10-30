@@ -31,6 +31,10 @@ Package manager is Bun (`bun.lock`); hooks run via `bunx`.
 - Authorization uses CASL 7; query conversion lives in `src/lib/casl.ts` (`toAccessQuery`, not the removed `rulesToCondition`). `isAllowed` lives in `src/services/ability/check.ts` and is re-exported from `src/services/ability/index.ts`.
 - Form validation bridges zod 4 and antd via `src/zod/`; shared UI is antd 6 with SCSS modules.
 
+## Testing
+
+- Test files are named after the module under test (`src/services/user.ts` → `src/services/user.test.ts`); group multiple concerns with `describe` instead of splitting into topic-named files, and split only when a module's tests grow unwieldy.
+
 ## Gotchas
 
 - `next-env.d.ts` is generated; never edit or commit it.

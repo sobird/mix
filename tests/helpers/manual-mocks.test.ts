@@ -1,10 +1,12 @@
 // @vitest-environment node
 
+import { models, sequelize } from '@/models';
 import { Role } from '@/models/Role';
 import { User } from '@/models/User';
 
 import { DEFAULT_PASSWORD } from './seeds';
 
+vi.mock('@/models');
 vi.mock('@/models/Role');
 vi.mock('@/models/User');
 
@@ -31,5 +33,16 @@ describe('model manual mocks', () => {
 
     const admin = await User.findOne({ where: { username: 'admin' } });
     expect(admin?.verifyPassword(DEFAULT_PASSWORD)).toBe(true);
+  });
+});
+
+describe('models index manual mock', () => {
+  it('re-exports the real models and seeds all sample data on load', async () => {
+    expect(Object.keys(models)).toHaveLength(15);
+    expect((sequelize as unknown as { options: { storage: string } }).options.storage).toBe(':memory:');
+
+    expect(await models.User.count()).toBe(2);
+    expect(await models.Role.count()).toBe(4);
+    expect(await models.Permission.count()).toBe(3);
   });
 });

@@ -2,11 +2,12 @@ import { Session } from '@/models/Session';
 
 import { useInMemoryDatabase } from '../../../tests/helpers/database';
 import { createSession, createUser } from '../../../tests/helpers/factories';
-import { authOptions } from './index';
+import { authOptions, parseSessionUserId } from './index';
 
 useInMemoryDatabase();
 
 const signInCallback = authOptions.callbacks!.signIn!;
+const sessionCallback = authOptions.callbacks!.session!;
 const jwtCallback = authOptions.callbacks!.jwt!;
 // next-auth 把用户传入的选项挂在 provider.options 上，实际使用的是 options.authorize
 const authorize = (
@@ -15,23 +16,15 @@ const authorize = (
   }
 ).options.authorize;
 
-describe('signIn callback', () => {
-  it('rejects users whose status is 0', async () => {
-    const allowed = await signInCallback({ user: { status: 0 } } as any);
-
-    expect(allowed).toBe(false);
+describe('parseSessionUserId', () => {
+  it('parses numeric string ids', () => {
+    expect(parseSessionUserId('42')).toBe(42);
   });
 
-  it('allows users with status 1', async () => {
-    const allowed = await signInCallback({ user: { status: 1 } } as any);
-
-    expect(allowed).toBe(true);
-  });
-
-  it('allows first-time OAuth users that have no status yet', async () => {
-    const allowed = await signInCallback({ user: undefined } as any);
-
-    expect(allowed).toBe(true);
+  it('rejects empty and non-numeric ids', () => {
+    expect(parseSessionUserId(undefined)).toBeNull();
+    expect(parseSessionUserId('abc')).toBeNull();
+    expect(parseSessionUserId(0)).toBeNull();
   });
 });
 
@@ -68,6 +61,53 @@ describe('credentials authorize', () => {
     await createUser({ username: 'banned', password: 'secret', status: false });
 
     await expect(authorize({ username: 'banned', password: 'secret' })).rejects.toThrow('账号已被禁用');
+  });
+});
+
+describe('signIn callback', () => {
+  it('rejects users whose status is 0', async () => {
+    const allowed = await signInCallback({ user: { status: 0 } } as any);
+
+    expect(allowed).toBe(false);
+  });
+
+  it('allows users with status 1', async () => {
+    const allowed = await signInCallback({ user: { status: 1 } } as any);
+
+    expect(allowed).toBe(true);
+  });
+
+  it('allows first-time OAuth users that have no status yet', async () => {
+    const allowed = await signInCallback({ user: undefined } as any);
+
+    expect(allowed).toBe(true);
+  });
+});
+
+describe('session callback', () => {
+  function makeSession() {
+    return {
+      user: { name: 'Alice', email: 'alice@example.com' },
+      expires: new Date(Date.now() + 60_000).toISOString(),
+    };
+  }
+
+  it('copies the database user id onto session.user as a string', async () => {
+    const result = (await sessionCallback({
+      session: makeSession(),
+      user: { id: 42 },
+    } as any)) as any;
+
+    expect(result.user.id).toBe('42');
+  });
+
+  it('returns the session unchanged when there is no user (JWT path)', async () => {
+    const session = makeSession();
+
+    const result = (await sessionCallback({ session, token: {} } as any)) as any;
+
+    expect(result).toBe(session);
+    expect(result.user.id).toBeUndefined();
   });
 });
 
