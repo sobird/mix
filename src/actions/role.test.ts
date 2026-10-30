@@ -1,5 +1,6 @@
 import { Permission, RolePermission } from '@/models';
 import { buildAbility, getCurrentAbility } from '@/services/ability';
+import type { PermissionInput } from '@/services/role';
 
 import { ActionStatus } from '.';
 import { createRole } from '../../tests/helpers/factories';
@@ -50,6 +51,31 @@ describe('saveRolePermissions', () => {
     await saveRolePermissions(1, permissions);
 
     expect(await RolePermission.count({ where: { roleId: 1 } })).toBe(2);
+  });
+});
+
+describe('saveRolePermissions validation', () => {
+  beforeEach(() => {
+    vi.mocked(getCurrentAbility).mockResolvedValue(buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]));
+  });
+
+  const invalidCases: Array<[string, PermissionInput[]]> = [
+    ['unknown field', [{ subject: 'User', actions: [{ action: 'read', fields: ['password'] }] }]],
+    ['unknown condition field', [{ subject: 'User', actions: [{ action: 'read', conditions: { nickname: 'x' } }] }]],
+    [
+      'unsupported operator',
+      [{ subject: 'User', actions: [{ action: 'read', conditions: { status: { $gt: true } } }] }],
+    ],
+    ['all with fields', [{ subject: 'all', actions: [{ action: 'manage', fields: ['name'] }] }]],
+    ['all with conditions', [{ subject: 'all', actions: [{ action: 'manage', conditions: { id: 1 } }] }]],
+    ['create with conditions', [{ subject: 'User', actions: [{ action: 'create', conditions: { id: 1 } }] }]],
+    ['delete with fields', [{ subject: 'User', actions: [{ action: 'delete', fields: ['username'] }] }]],
+    ['value type mismatch', [{ subject: 'User', actions: [{ action: 'read', conditions: { status: 'yes' } }] }]],
+  ];
+
+  it.each(invalidCases)('rejects %s', async (_name, payload) => {
+    const result = await saveRolePermissions(1, payload);
+    expect(result?.status).toBe(ActionStatus.FAILURE);
   });
 });
 

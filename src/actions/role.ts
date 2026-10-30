@@ -12,7 +12,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentAbility } from '@/services/ability';
 import { ForbiddenError, NotFoundError } from '@/services/errors';
 import RoleService, { type PermissionInput } from '@/services/role';
-import { RoleFormZod, RoleFormAttributes } from '@/zod/role';
+import { PermissionInputZod, RoleFormZod, RoleFormAttributes } from '@/zod/role';
 
 import { ActionStatus } from '.';
 
@@ -148,10 +148,18 @@ export async function deleteRoleAction(id: string) {
 }
 
 export const saveRolePermissions = async (roleId: number, permissions: PermissionInput[]) => {
+  const validated = PermissionInputZod.safeParse(permissions);
+  if (!validated.success) {
+    return {
+      status: ActionStatus.FAILURE,
+      message: '权限配置不合法',
+    };
+  }
+
   const ability = await getCurrentAbility();
 
   try {
-    await RoleService.savePermissions(ability, roleId, permissions);
+    await RoleService.savePermissions(ability, roleId, validated.data);
   } catch (error) {
     if (error instanceof NotFoundError) {
       return {
