@@ -9,24 +9,30 @@
 'use client';
 
 import { Form, Input } from 'antd';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 
 import withActionForm from '@/components/with-action-form';
 import { RoleFormRule } from '@/zod/role';
 
-const RoleForm: React.FC<PropsWithChildren> = ({ children }) => {
+const RoleForm: React.FC<WithFormProps> = ({ data }) => {
+  const allowedFields: string[] | undefined = data?.allowedFields;
+  const show = (name: string) => allowedFields === undefined || allowedFields.includes(name);
+
   return (
     <>
       <Form.Item hidden name="id">
         <Input name="id" hidden />
       </Form.Item>
-      <Form.Item label="角色名称" name="name" rules={[RoleFormRule]}>
-        <Input name="name" />
-      </Form.Item>
-      <Form.Item label="备注" name="description">
-        <Input.TextArea name="description" />
-      </Form.Item>
-      {children}
+      {show('name') && (
+        <Form.Item label="角色名称" name="name" rules={[RoleFormRule]}>
+          <Input name="name" />
+        </Form.Item>
+      )}
+      {show('description') && (
+        <Form.Item label="备注" name="description">
+          <Input.TextArea name="description" />
+        </Form.Item>
+      )}
     </>
   );
 };

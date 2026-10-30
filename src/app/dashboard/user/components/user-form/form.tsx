@@ -8,32 +8,43 @@ import dayjs from '@/utils/dayjs';
 import { userFormRule, usernameRule, emailRule, passwordRule } from '@/zod/user';
 
 const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
-  const { roleOptions } = data;
+  const { roleOptions, allowedFields }: { roleOptions: { value: number; label: string }[]; allowedFields?: string[] } =
+    data;
+  const show = (name: string) => allowedFields === undefined || allowedFields.includes(name);
+
   return (
     <Row gutter={[15, 0]}>
       <Form.Item name="id">
         <Input name="id" hidden />
       </Form.Item>
-      <Col span={12}>
-        <Form.Item name="username" label="用户名" validateDebounce={300} rules={[usernameRule]} required>
-          <Input placeholder="用户登录名称" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item name="nickname" label="用户昵称" validateDebounce={300} rules={[userFormRule]}>
-          <Input placeholder="用户昵称" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item name="realname" label="真实姓名" rules={[userFormRule]}>
-          <Input placeholder="用户真实姓名" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item name="gender" label="性别" rules={[userFormRule]}>
-          <Input placeholder="性别" />
-        </Form.Item>
-      </Col>
+      {show('username') && (
+        <Col span={12}>
+          <Form.Item name="username" label="用户名" validateDebounce={300} rules={[usernameRule]} required>
+            <Input placeholder="用户登录名称" />
+          </Form.Item>
+        </Col>
+      )}
+      {show('nickname') && (
+        <Col span={12}>
+          <Form.Item name="nickname" label="用户昵称" validateDebounce={300} rules={[userFormRule]}>
+            <Input placeholder="用户昵称" />
+          </Form.Item>
+        </Col>
+      )}
+      {show('realname') && (
+        <Col span={12}>
+          <Form.Item name="realname" label="真实姓名" rules={[userFormRule]}>
+            <Input placeholder="用户真实姓名" />
+          </Form.Item>
+        </Col>
+      )}
+      {show('gender') && (
+        <Col span={12}>
+          <Form.Item name="gender" label="性别" rules={[userFormRule]}>
+            <Input placeholder="性别" />
+          </Form.Item>
+        </Col>
+      )}
 
       {mode === 'create' && (
         <>
@@ -56,58 +67,70 @@ const InternalUserForm: React.FC<WithFormProps> = ({ mode, data }) => {
         </>
       )}
 
-      <Col span={12}>
-        <Form.Item label="用户邮箱" name="email" validateDebounce={300} rules={[emailRule]} required>
-          <Input placeholder="邮箱" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item label="手机号码" name="mobile" rules={[userFormRule]}>
-          <Input placeholder="用户手机号码" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item label="角色" name="roles">
-          <DebounceSelect options={roleOptions} mode="multiple" placeholder="请选择" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item label="状态" name="status" initialValue rules={[userFormRule]}>
-          <Radio.Group>
-            <Radio value>正常</Radio>
-            <Radio value={false}>禁用</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Col>
+      {show('email') && (
+        <Col span={12}>
+          <Form.Item label="用户邮箱" name="email" validateDebounce={300} rules={[emailRule]} required>
+            <Input placeholder="邮箱" />
+          </Form.Item>
+        </Col>
+      )}
+      {show('mobile') && (
+        <Col span={12}>
+          <Form.Item label="手机号码" name="mobile" rules={[userFormRule]}>
+            <Input placeholder="用户手机号码" />
+          </Form.Item>
+        </Col>
+      )}
+      {show('roles') && (
+        <Col span={12}>
+          <Form.Item label="角色" name="roles">
+            <DebounceSelect options={roleOptions} mode="multiple" placeholder="请选择" />
+          </Form.Item>
+        </Col>
+      )}
+      {show('status') && (
+        <Col span={12}>
+          <Form.Item label="状态" name="status" initialValue rules={[userFormRule]}>
+            <Radio.Group>
+              <Radio value>正常</Radio>
+              <Radio value={false}>禁用</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Col>
+      )}
 
       {mode !== 'create' && (
         <>
-          <Col span={12}>
-            <Form.Item
-              label="更新时间"
-              name="updatedAt"
-              getValueProps={(originValue) => {
-                return {
-                  value: dayjs(originValue),
-                };
-              }}
-            >
-              <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="创建时间"
-              name="createdAt"
-              getValueProps={(originValue) => {
-                return {
-                  value: dayjs(originValue),
-                };
-              }}
-            >
-              <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
-            </Form.Item>
-          </Col>
+          {show('updatedAt') && (
+            <Col span={12}>
+              <Form.Item
+                label="更新时间"
+                name="updatedAt"
+                getValueProps={(originValue) => {
+                  return {
+                    value: dayjs(originValue),
+                  };
+                }}
+              >
+                <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
+              </Form.Item>
+            </Col>
+          )}
+          {show('createdAt') && (
+            <Col span={12}>
+              <Form.Item
+                label="创建时间"
+                name="createdAt"
+                getValueProps={(originValue) => {
+                  return {
+                    value: dayjs(originValue),
+                  };
+                }}
+              >
+                <DatePicker disabled allowClear={false} showTime inputReadOnly open={false} />
+              </Form.Item>
+            </Col>
+          )}
         </>
       )}
     </Row>
