@@ -107,6 +107,25 @@ describe('RoleService.listOptions', () => {
 
     await expect(RoleService.listOptions(ability)).resolves.toEqual([{ value: role.id, label: role.name }]);
   });
+
+  it('falls back to a numeric label when name is pruned', async () => {
+    const role = await createRole();
+    const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: { fields: ['description'] } }]);
+
+    await expect(RoleService.listOptions(ability)).resolves.toEqual([{ value: role.id, label: `#${role.id}` }]);
+  });
+});
+
+describe('RoleService.findForEdit', () => {
+  it('prunes the edit payload to update fields', async () => {
+    const role = await createRole({ description: 'secret' });
+    const ability = buildAbility([{ action: 'update', subject: 'Role', narrowing: { fields: ['name'] } }]);
+
+    const data = await RoleService.findForEdit(ability, role.id);
+
+    expect(data).toHaveProperty('name');
+    expect(data).not.toHaveProperty('description');
+  });
 });
 
 describe('RoleService.assignOwnerToFirstUser', () => {

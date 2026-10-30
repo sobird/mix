@@ -51,6 +51,20 @@ describe('UserService credential redaction', () => {
   });
 });
 
+describe('UserService.findForEdit field pruning', () => {
+  it('prunes edit data to update fields and hides roles when not writable', async () => {
+    const user = await createUser({ nickname: 'nick' });
+    const ability = buildAbility([{ action: 'update', subject: 'User', narrowing: { fields: ['username'] } }]);
+
+    const data = await UserService.findForEdit(ability, user.id);
+
+    expect(data).toHaveProperty('username');
+    expect(data).not.toHaveProperty('email');
+    expect(data).not.toHaveProperty('nickname');
+    expect(data).not.toHaveProperty('roles');
+  });
+});
+
 describe('UserService.findForEdit authorization', () => {
   it('throws NotFoundError for a missing user', async () => {
     const ability = buildAbility([{ action: 'update', subject: 'User', narrowing: {} }]);

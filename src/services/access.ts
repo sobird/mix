@@ -3,6 +3,7 @@ import type { Attributes, Model, ModelStatic } from 'sequelize';
 import { toAccessQuery } from '@/lib/casl';
 
 import type { AppAbility, AppActions, AppSubject } from './ability';
+import { pruneReadableFields } from './ability/fields';
 
 /** 分页查询参数，兼容从 URL 搜索参数传入的字符串 */
 export interface PageQuery {
@@ -57,6 +58,14 @@ export async function paginateAccessible<M extends Model>(
     pn,
     ps,
     count,
-    rows: rows.map((row) => row.toJSON()) as Attributes<M>[],
+    rows: rows.map(
+      (row) =>
+        pruneReadableFields(
+          ability,
+          action,
+          model.name as Exclude<AppSubject, 'all'>,
+          row.toJSON() as Record<string, unknown>,
+        ) as Attributes<M>,
+    ),
   };
 }

@@ -30,6 +30,9 @@ const RoleTable: FC<RoleTableProps> = ({ data }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // 字段级读取授权可能裁掉部分列；空结果集时保留全部表头
+  const has = (key: string) => data.rows.length === 0 || data.rows.some((row) => key in row);
+
   return (
     <div
       style={{
@@ -61,8 +64,8 @@ const RoleTable: FC<RoleTableProps> = ({ data }) => {
         dataSource={data.rows}
         rowKey="id"
       >
-        <Table.Column title="角色名称" dataIndex="name" />
-        <Table.Column title="角色描述" dataIndex="description" />
+        {has('name') && <Table.Column title="角色名称" dataIndex="name" />}
+        {has('description') && <Table.Column title="角色描述" dataIndex="description" />}
         <Table.Column<RoleAttributes>
           title="创建时间"
           dataIndex="createdAt"

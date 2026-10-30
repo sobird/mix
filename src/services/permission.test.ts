@@ -18,3 +18,16 @@ describe('Permission Service', () => {
     expect(await PermissionService.list(buildAbility([]))).toEqual([]);
   });
 });
+
+describe('PermissionService.list', () => {
+  it('prunes fields to the read grant', async () => {
+    await syncPermissionCatalog();
+    const ability = buildAbility([{ action: 'read', subject: 'Permission', narrowing: { fields: ['name'] } }]);
+
+    const [item] = await PermissionService.list(ability);
+
+    expect(item).toHaveProperty('name');
+    expect(item.action).toBeUndefined();
+    expect(item.subject).toBeUndefined();
+  });
+});

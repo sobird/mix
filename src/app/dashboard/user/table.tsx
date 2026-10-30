@@ -30,6 +30,9 @@ const UserTable: FC<UserTableProps> = ({ data }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // 字段级读取授权可能裁掉部分列；空结果集时保留全部表头
+  const has = (key: string) => data.rows.length === 0 || data.rows.some((row) => key in row);
+
   return (
     <div
       style={{
@@ -61,16 +64,18 @@ const UserTable: FC<UserTableProps> = ({ data }) => {
         dataSource={data.rows}
         rowKey="id"
       >
-        <Table.Column title="用户名" dataIndex="username" />
-        <Table.Column title="邮箱" dataIndex="email" />
+        {has('username') && <Table.Column title="用户名" dataIndex="username" />}
+        {has('email') && <Table.Column title="邮箱" dataIndex="email" />}
         <Table.Column title="创建时间" dataIndex="createdAt" />
-        <Table.Column
-          title="状态"
-          dataIndex="status"
-          render={(status) => {
-            return <Switch disabled checkedChildren="正常" unCheckedChildren="停用" defaultChecked={status} />;
-          }}
-        />
+        {has('status') && (
+          <Table.Column
+            title="状态"
+            dataIndex="status"
+            render={(status) => {
+              return <Switch disabled checkedChildren="正常" unCheckedChildren="停用" defaultChecked={status} />;
+            }}
+          />
+        )}
         <Table.Column<any>
           title="操作"
           dataIndex="actions"

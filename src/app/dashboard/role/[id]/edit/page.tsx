@@ -30,7 +30,7 @@ const Page = async ({ params }: PageProps<'/dashboard/role/[id]/edit'>) => {
     throw error;
   }
 
-  return <RoleForm action={updateRoleAction} initialValues={role.get()} />;
+  return <RoleForm action={updateRoleAction} initialValues={role} />;
 };
 
 export default Page;

@@ -2,6 +2,7 @@ import { Op, type Attributes } from 'sequelize';
 
 import { Role, User, UserExcludeAttributes } from '@/models';
 import { isAllowed, type AppAbility } from '@/services/ability';
+import { canAccessField, pruneReadableFields } from '@/services/ability/fields';
 
 import { paginateAccessible, type PageQuery } from './access';
 import { ForbiddenError, NotFoundError } from './errors';
@@ -34,7 +35,7 @@ export interface UserUpdateInput {
 }
 
 /** findForEdit 返回的字段：不包含密码等隐私字段，角色以 id 数组给出 */
-export type UserEditData = Omit<Attributes<User>, (typeof UserExcludeAttributes)[number]> & { roles: number[] };
+export type UserEditData = Omit<Attributes<User>, (typeof UserExcludeAttributes)[number]> & { roles?: number[] };
 
 /**
  * 用户服务：所有读写都先经过能力检查。
@@ -67,7 +68,14 @@ export class UserService {
       Roles?: { id: number }[];
     };
 
-    return { ...rest, roles: Roles?.map((role) => role.id) ?? [] };
+    const plain = user.get({ plain: true }) as Record<PropertyKey, unknown>;
+    const data = pruneReadableFields(ability, 'update', 'User', rest as Record<string, unknown>) as UserEditData;
+
+    if (canAccessField(ability, 'update', 'User', plain, 'roles')) {
+      data.roles = Roles?.map((role) => role.id) ?? [];
+    }
+
+    return data;
   }
 
   static async create(ability: AppAbility, data: UserCreateInput): Promise<[User, boolean]> {

@@ -4,9 +4,12 @@
  * sobird<i@sobird.me> at 2023/09/21 14:17:06 created.
  */
 
+import type { Attributes } from 'sequelize';
+
 import { Role, Permission, User, UserRole, sequelize } from '@/models';
 import type { AppAbility } from '@/services/ability/build';
 import { isAllowed } from '@/services/ability/check';
+import { pruneReadableFields } from '@/services/ability/fields';
 import { queryAccessible } from '@/services/ability/query';
 
 import { paginateAccessible, type PageQuery } from './access';
@@ -93,11 +96,14 @@ class RoleService {
   static async listOptions(ability: AppAbility): Promise<Array<{ value: number; label: string }>> {
     const roles = await queryAccessible(Role, ability, 'read');
 
-    return roles.map((role) => ({ value: role.id, label: role.name }));
+    return roles.map((role) => {
+      const pruned = pruneReadableFields(ability, 'read', 'Role', role.toJSON() as Record<string, unknown>);
+      return { value: role.id, label: (pruned.name as string | undefined) ?? `#${role.id}` };
+    });
   }
 
   /** 读取可编辑的角色，包含其权限关联 */
-  static async findForEdit(ability: AppAbility, id: number | string): Promise<Role> {
+  static async findForEdit(ability: AppAbility, id: number | string): Promise<Attributes<Role>> {
     const role = await Role.findByPk(id, { include: [Role.associations.Permissions] });
 
     if (!role) {
@@ -108,7 +114,7 @@ class RoleService {
       throw new ForbiddenError('您没有更新角色的权限');
     }
 
-    return role;
+    return pruneReadableFields(ability, 'update', 'Role', role.toJSON() as Record<string, unknown>) as Attributes<Role>;
   }
 
   static async create(ability: AppAbility, data: RoleWriteData): Promise<[Role, boolean]> {

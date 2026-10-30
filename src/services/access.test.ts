@@ -46,4 +46,17 @@ describe('paginateAccessible', () => {
 
     expect(older.id).not.toBe(newer.id);
   });
+
+  it('prunes row fields to the read grant', async () => {
+    await createRole({ description: 'hidden' });
+    const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: { fields: ['name'] } }]);
+
+    const page = await paginateAccessible(Role, ability, 'read', {});
+
+    const [row] = page.rows;
+    expect(row).toHaveProperty('name');
+    expect(row).not.toHaveProperty('description');
+    expect(row).toHaveProperty('id');
+    expect(row).toHaveProperty('createdAt');
+  });
 });
