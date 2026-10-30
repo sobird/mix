@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-import { Role, UserRole } from '@/models';
+import { Permission, Role, RolePermission, UserRole } from '@/models';
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
 import { createRole, createUser } from '../../tests/helpers/factories';
@@ -83,6 +83,113 @@ describe('RoleService.savePermissions', () => {
     const ability = buildAbility([{ action: 'read', subject: 'Role', narrowing: {} }]);
 
     await expect(RoleService.savePermissions(ability, role.id, [])).rejects.toBeInstanceOf(ForbiddenError);
+  });
+});
+
+describe('RoleService.savePermissions contract', () => {
+  function ownerAbility() {
+    return buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]);
+  }
+
+  it('persists narrowing and expiry on the join row', async () => {
+    const role = await createRole();
+    const expiresAt = new Date('2026-12-31T00:00:00.000Z');
+
+    await RoleService.savePermissions(ownerAbility(), role.id, [
+      {
+        subject: 'User',
+        actions: [
+          {
+            action: 'read',
+            fields: ['username'],
+            conditions: { status: true },
+            expiresAt: expiresAt.toISOString(),
+            inverted: true,
+          },
+        ],
+      },
+    ]);
+
+    const row = await RolePermission.findOne({
+      where: { roleId: role.id },
+      include: [{ model: Permission, required: true }],
+    });
+
+    expect(row?.Permission.action).toBe('read');
+    expect(row?.narrowing).toEqual({ fields: ['username'], conditions: { status: true }, inverted: true });
+    expect(new Date(row!.expiresAt!).toISOString()).toBe(expiresAt.toISOString());
+  });
+
+  it('stores null narrowing when only expiry is set', async () => {
+    const role = await createRole();
+
+    await RoleService.savePermissions(ownerAbility(), role.id, [
+      { subject: 'User', actions: [{ action: 'read', expiresAt: '2026-12-31T00:00:00.000Z' }] },
+    ]);
+
+    const row = await RolePermission.findOne({ where: { roleId: role.id } });
+    expect(row?.narrowing).toBeNull();
+    expect(row?.expiresAt).not.toBeNull();
+  });
+
+  it('creates catalog-external permissions with a generated name', async () => {
+    const role = await createRole();
+
+    await RoleService.savePermissions(ownerAbility(), role.id, [{ subject: 'Group', actions: [{ action: 'read' }] }]);
+
+    const permission = await Permission.findOne({ where: { action: 'read', subject: 'Group' } });
+    expect(permission?.name).toBe('read:Group');
+  });
+
+  it('replaces existing grants instead of appending', async () => {
+    const role = await createRole();
+
+    await RoleService.savePermissions(ownerAbility(), role.id, [{ subject: 'User', actions: [{ action: 'read' }] }]);
+    await RoleService.savePermissions(ownerAbility(), role.id, [{ subject: 'Role', actions: [{ action: 'read' }] }]);
+
+    const rows = await RolePermission.findAll({
+      where: { roleId: role.id },
+      include: [{ model: Permission, required: true }],
+    });
+    expect(rows.map((row) => row.Permission.subject)).toEqual(['Role']);
+  });
+});
+
+describe('RoleService.findPermissionEditor', () => {
+  it('returns catalog grants including expired ones', async () => {
+    await syncPermissionCatalog();
+    const role = await createRole();
+    const permission = await Permission.findOne({ where: { action: 'read', subject: 'User' } });
+    await role.addPermission(permission!, {
+      through: { narrowing: { conditions: { status: true } }, expiresAt: new Date('2020-01-01T00:00:00.000Z') },
+    });
+
+    const data = await RoleService.findPermissionEditor(
+      buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]),
+      role.id,
+    );
+
+    expect(data.editable).toBe(true);
+    expect(data.grants).toContainEqual({
+      action: 'read',
+      subject: 'User',
+      fields: [],
+      conditions: { status: true },
+      expiresAt: '2020-01-01T00:00:00.000Z',
+      inverted: false,
+    });
+  });
+
+  it('marks built-in roles as not editable', async () => {
+    await syncPermissionCatalog();
+    const owner = await Role.findOne({ where: { name: '拥有者' } });
+
+    const data = await RoleService.findPermissionEditor(
+      buildAbility([{ action: 'manage', subject: 'all', narrowing: {} }]),
+      owner!.id,
+    );
+
+    expect(data.editable).toBe(false);
   });
 });
 

@@ -6,16 +6,30 @@
 
 import type { Attributes } from 'sequelize';
 
-import { Role, Permission, User, UserRole, sequelize } from '@/models';
+import { Role, Permission, RolePermission, User, UserRole, sequelize } from '@/models';
+import { PERMISSION_CATALOG } from '@/permissions/catalog';
 import type { AppAbility } from '@/services/ability/build';
 import { isAllowed } from '@/services/ability/check';
 import { pickWritableFields, pruneReadableFields } from '@/services/ability/fields';
+import { normalizeNarrowing } from '@/services/ability/narrowing';
 import { queryAccessible } from '@/services/ability/query';
 
 import { paginateAccessible, type PageQuery } from './access';
 import { ForbiddenError, NotFoundError } from './errors';
 
 const OWNER_ROLE_NAME = '拥有者';
+
+/** 目录条目的唯一键，与数据库 UNIQUE(action, subject) 对应 */
+function catalogKey(action: string, subject: string): string {
+  return `${action}\u0000${subject}`;
+}
+
+const CATALOG_KEYS = new Set(PERMISSION_CATALOG.map((entry) => catalogKey(entry.action, entry.subject)));
+
+/** 目录内的展示名称；目录外返回 undefined，由调用方回退到 `action:subject` */
+function catalogName(action: string, subject: string): string | undefined {
+  return PERMISSION_CATALOG.find((entry) => entry.action === action && entry.subject === subject)?.name;
+}
 
 export interface RoleWriteData {
   name: string;
@@ -25,7 +39,28 @@ export interface RoleWriteData {
 
 export interface PermissionInput {
   subject: string;
-  actions: { action: string; fields?: string[] }[];
+  actions: {
+    action: string;
+    fields?: string[];
+    conditions?: Record<string, unknown>;
+    expiresAt?: string | null;
+    inverted?: boolean;
+  }[];
+}
+
+/** 编辑器读取的单条授予，字段限制已归一化 */
+export interface RolePermissionGrant {
+  action: string;
+  subject: string;
+  fields: string[];
+  conditions: Record<string, unknown> | null;
+  expiresAt: string | null;
+  inverted: boolean;
+}
+
+export interface RolePermissionEditorData {
+  grants: RolePermissionGrant[];
+  editable: boolean;
 }
 
 const OWNER_ROLE_DEFAULTS = {
@@ -173,24 +208,81 @@ class RoleService {
       await role.setPermissions([], { transaction });
 
       for (const { subject, actions } of permissions) {
-        for (const { action, fields } of actions) {
+        for (const { action, fields, conditions, expiresAt, inverted } of actions) {
+          const name = catalogName(action, subject) ?? `${action}:${subject}`;
+
           // SQLite 单连接下事务内的查询必须串行，不能并发
           // oxlint-disable-next-line no-await-in-loop
           const [permission] = await Permission.findOrCreate({
             where: { action, subject },
+            defaults: { action, subject, name, description: name },
             transaction,
           });
 
+          const hasConditions = conditions !== undefined && Object.keys(conditions).length > 0;
+          const narrowing =
+            fields?.length || hasConditions || inverted === true
+              ? {
+                  fields: fields?.length ? fields : undefined,
+                  conditions: hasConditions ? conditions : undefined,
+                  inverted: inverted || undefined,
+                }
+              : null;
+
           // oxlint-disable-next-line no-await-in-loop
           await role.addPermission(permission, {
-            through: {
-              narrowing: fields?.length ? { fields } : null,
-            },
+            through: { narrowing, expiresAt: expiresAt ? new Date(expiresAt) : null },
             transaction,
           });
         }
       }
     });
+  }
+
+  /** 读取角色权限编辑器的授予集合；内置角色不可编辑 */
+  static async findPermissionEditor(ability: AppAbility, id: number | string): Promise<RolePermissionEditorData> {
+    const role = await Role.findByPk(id);
+
+    if (!role) {
+      throw new NotFoundError('角色不存在');
+    }
+
+    if (!isAllowed(ability, 'update', 'Role', role)) {
+      throw new ForbiddenError('您没有更新角色的权限');
+    }
+
+    const rows = await RolePermission.findAll({
+      where: { roleId: role.id },
+      include: [{ model: Permission, required: true }],
+    });
+
+    const grants: RolePermissionGrant[] = [];
+
+    for (const row of rows) {
+      const { action, subject } = row.Permission;
+
+      // 仅保留目录内的授予；目录外的历史行不进入编辑器
+      if (!CATALOG_KEYS.has(catalogKey(action, subject))) {
+        continue;
+      }
+
+      const narrowing = normalizeNarrowing(row.narrowing);
+
+      if (narrowing === null) {
+        continue;
+      }
+
+      grants.push({
+        action,
+        subject,
+        fields: narrowing.fields ?? [],
+        conditions: narrowing.conditions ?? null,
+        expiresAt: row.expiresAt ? row.expiresAt.toISOString() : null,
+        inverted: narrowing.inverted === true,
+      });
+    }
+
+    return { grants, editable: !role.isBuiltin };
   }
 }
 
