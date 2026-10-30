@@ -45,7 +45,14 @@ const RestrictionDrawer: React.FC<RestrictionDrawerProps> = ({
   const currentKey = actions.includes(activeKey) ? activeKey : (actions[0] ?? '');
 
   const fieldOptions = restrictableFields(subject).map((field) => ({ value: field.name, label: field.label }));
-  const fieldDisabled = subject === 'all';
+  const isFieldDisabled = (action: string) => subject === 'all' || action === 'create' || action === 'delete';
+  const fieldPlaceholder = (action: string) => {
+    if (subject === 'all') {
+      return '系统管理不支持字段限制';
+    }
+
+    return action === 'create' || action === 'delete' ? '该动作不支持字段限制' : '留空表示不限制';
+  };
 
   const update = (action: string, patch: Partial<GrantDraft>) => {
     const draft = grants[action];
@@ -58,6 +65,7 @@ const RestrictionDrawer: React.FC<RestrictionDrawerProps> = ({
 
   const items = actions.map((action) => {
     const draft = grants[action] as GrantDraft;
+    const fieldDisabled = isFieldDisabled(action);
 
     return {
       key: action,
@@ -71,7 +79,7 @@ const RestrictionDrawer: React.FC<RestrictionDrawerProps> = ({
               mode="multiple"
               allowClear
               disabled={fieldDisabled}
-              placeholder={fieldDisabled ? '系统管理不支持字段限制' : '留空表示不限制'}
+              placeholder={fieldPlaceholder(action)}
               value={draft.fields}
               options={fieldOptions}
               onChange={(fields: string[]) => update(action, { fields })}
