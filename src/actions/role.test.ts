@@ -77,6 +77,18 @@ describe('saveRolePermissions validation', () => {
     const result = await saveRolePermissions(1, payload);
     expect(result?.status).toBe(ActionStatus.FAILURE);
   });
+
+  it('treats an empty field list as unrestricted', async () => {
+    const result = await saveRolePermissions(1, [{ subject: 'User', actions: [{ action: 'read', fields: [] }] }]);
+    expect(result?.status).toBe(ActionStatus.SUCCESS);
+
+    const rows = await RolePermission.findAll({
+      where: { roleId: 1 },
+      include: [{ model: Permission, required: true }],
+    });
+    const read = rows.find((row) => row.Permission.action === 'read' && row.Permission.subject === 'User');
+    expect(read?.narrowing).toBeNull();
+  });
 });
 
 describe('role authorization', () => {

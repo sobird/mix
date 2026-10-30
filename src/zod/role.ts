@@ -75,8 +75,6 @@ export const PermissionInputZod: z.ZodType<PermissionInput[]> = PermissionInputB
         if (grant.fields !== undefined) {
           if (grant.action === 'create' || grant.action === 'delete') {
             ctx.addIssue({ code: 'custom', message: '该动作不支持字段限制', path: [...path, 'fields'] });
-          } else if (grant.fields.length === 0) {
-            ctx.addIssue({ code: 'custom', message: '字段限制不能为空', path: [...path, 'fields'] });
           } else {
             for (const name of grant.fields) {
               if (!restrictable.has(name)) {
