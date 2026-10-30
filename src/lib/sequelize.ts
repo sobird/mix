@@ -74,7 +74,7 @@ export const sequelize = new Sequelize({
 
   // the storage engine for sqlite
   // - default ':memory:'
-  storage: './database.sqlite',
+  storage: process.env.DB_STORAGE ?? './database.sqlite',
 
   // disable inserting undefined values as NULL
   // - default: false
