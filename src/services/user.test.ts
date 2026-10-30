@@ -4,12 +4,15 @@ import { useInMemoryDatabase } from '../../tests/helpers/database';
 import { createUser } from '../../tests/helpers/factories';
 import { buildAbility } from './ability';
 import { ForbiddenError, NotFoundError } from './errors';
+import { syncPermissionCatalog } from './permission-catalog';
 import { UserService } from './user';
 
 useInMemoryDatabase();
 
 describe('UserService.create', () => {
   it('assigns the default role when an admin creates a user', async () => {
+    await syncPermissionCatalog();
+
     const ability = buildAbility([{ action: 'create', subject: 'User', narrowing: {} }]);
     const [user] = await UserService.create(ability, {
       username: 'new',

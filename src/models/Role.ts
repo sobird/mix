@@ -180,33 +180,3 @@ Role.init(
     indexes: [{ name: 'roles_parent_id', fields: ['parent_id'] }],
   },
 );
-
-const seeds: CreationAttributes<Role>[] = [
-  {
-    name: '拥有者',
-    description: '系统拥有者角色',
-    isBuiltin: true,
-    editable: false,
-    defaultable: false,
-  },
-  {
-    name: '管理员',
-    description: '系统管理员角色',
-    isBuiltin: true,
-  },
-  {
-    name: '成员',
-    description: '普通用户角色',
-    isBuiltin: true,
-    isDefault: true,
-  },
-];
-
-Role.afterSync(async () => {
-  // 使用 findOrCreate 保证重复 sync 时不会触发唯一约束冲突；
-  // findOrCreate 会开启事务，SQLite 单连接下必须串行执行，不能并发
-  await seeds.reduce<Promise<unknown>>(
-    (chain, seed) => chain.then(() => Role.findOrCreate({ where: { name: seed.name }, defaults: seed })),
-    Promise.resolve(),
-  );
-});

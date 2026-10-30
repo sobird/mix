@@ -13,7 +13,7 @@ import { vi } from 'vitest';
 /** 种子用户的统一明文密码 */
 export const DEFAULT_PASSWORD = 'Passw0rd!';
 
-/** 内置角色名称（由 Role.afterSync 写入） */
+/** 内置角色名称（与权限目录同步写入的名称一致） */
 export const BUILTIN_ROLE_NAMES = {
   owner: '拥有者',
   admin: '管理员',
@@ -111,7 +111,6 @@ export async function seedUsers() {
 
 export async function seedRoles() {
   const { Role } = await useModels();
-  // Role.sync() 会触发 afterSync，写入 3 条内置角色
   await Role.sync();
 
   const [owner] = await Role.findOrCreate({

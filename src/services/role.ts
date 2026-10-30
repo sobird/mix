@@ -38,7 +38,7 @@ class RoleService {
   /**
    * 为新用户分配默认角色。
    *
-   * 默认角色由 `Role.afterSync` 以 `isDefault: true` 标记（内置的「成员」）；
+   * 默认角色由 `syncPermissionCatalog` 以 `isDefault: true` 标记（内置的「成员」）；
    * 若系统未配置默认角色，则仅告警并跳过，不影响注册/创建流程。
    */
   static async assignDefaultRole(userId: number): Promise<void> {

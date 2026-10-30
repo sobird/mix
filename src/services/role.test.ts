@@ -12,6 +12,10 @@ import RoleService from './role';
 useInMemoryDatabase();
 
 describe('RoleService.assignDefaultRole', () => {
+  beforeEach(async () => {
+    await syncPermissionCatalog();
+  });
+
   it('assigns the default role to a new user', async () => {
     const user = await createUser();
 

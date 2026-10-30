@@ -26,7 +26,6 @@ describe('paginateAccessible', () => {
   it('clamps pn/ps to positive integers and keeps the page order', async () => {
     const older = await createRole({ createdAt: new Date('2020-01-01T00:00:00.000Z') });
     const newer = await createRole({ createdAt: new Date('2021-01-01T00:00:00.000Z') });
-    // 仅命中这两条，排除 afterSync 预置的内置角色
     const ability = buildAbility([
       { action: 'read', subject: 'Role', narrowing: { conditions: { id: [older.id, newer.id] } } },
     ]);

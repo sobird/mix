@@ -10,29 +10,6 @@ import { createPermission, createRole, createUser } from '../../tests/helpers/fa
 useInMemoryDatabase();
 
 describe('Role model', () => {
-  describe('built-in seeds', () => {
-    it('creates the built-in roles through afterSync', async () => {
-      const roles = await Role.findAll({ order: [['id', 'ASC']] });
-
-      expect(roles.map((role) => role.name)).toEqual(['拥有者', '管理员', '成员']);
-    });
-
-    it('marks the expected defaults on built-in roles', async () => {
-      const owner = await Role.findOne({ where: { name: '拥有者' } });
-      const member = await Role.findOne({ where: { name: '成员' } });
-
-      expect(owner?.isBuiltin).toBe(true);
-      expect(owner?.editable).toBe(false);
-      expect(member?.isDefault).toBe(true);
-    });
-
-    it('does not duplicate built-in roles when synced again', async () => {
-      await Role.sync();
-
-      expect(await Role.count()).toBe(3);
-    });
-  });
-
   describe('columns', () => {
     it('applies defaults', async () => {
       const role = await createRole();

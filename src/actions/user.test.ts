@@ -1,5 +1,6 @@
 import { User } from '@/models';
 import { buildAbility, getCurrentAbility } from '@/services/ability';
+import { syncPermissionCatalog } from '@/services/permission-catalog';
 
 import { ActionStatus } from '.';
 import { useInMemoryDatabase } from '../../tests/helpers/database';
@@ -44,6 +45,7 @@ describe('user authorization', () => {
   });
 
   it('creates a user and assigns the default role for an owner', async () => {
+    await syncPermissionCatalog();
     vi.mocked(getCurrentAbility).mockResolvedValue(ownerAbility);
 
     await createUserAction(undefined, validPayload);

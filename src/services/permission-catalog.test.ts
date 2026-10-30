@@ -45,13 +45,20 @@ describe('syncPermissionCatalog', () => {
     const second = await syncPermissionCatalog();
     expect(second.permissions).toBe(0);
     expect(await Permission.count()).toBe(PERMISSION_CATALOG.length);
+    expect(await Role.count()).toBe(3);
   });
 
   it('grants the ladder to builtin roles', async () => {
     await syncPermissionCatalog();
-    const owner = await Role.findOne({ where: { name: '拥有者' } });
-    expect(owner).not.toBeNull();
-    const ability = buildAbility(await loadGrantsForRole(owner!.id));
+    const roles = await Role.findAll({ order: [['id', 'ASC']] });
+    expect(roles.map((role) => role.name)).toEqual(['拥有者', '管理员', '成员']);
+
+    const owner = roles[0];
+    expect(owner.isBuiltin).toBe(true);
+    expect(owner.editable).toBe(false);
+    expect(roles[2].isDefault).toBe(true);
+
+    const ability = buildAbility(await loadGrantsForRole(owner.id));
     expect(ability.can('manage', 'all')).toBe(true);
   });
 
