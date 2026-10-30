@@ -11,6 +11,7 @@ import React from 'react';
 
 import { getCurrentAbility } from '@/services/ability';
 import { UserService } from '@/services/user';
+import { paginationSearchParamsZod } from '@/zod/search-params';
 
 import UserTable from './table';
 
@@ -19,12 +20,9 @@ export const metadata: Metadata = {
 };
 
 const UserPage = async ({ searchParams }: PageProps<'/dashboard/user'>) => {
-  const { pn, ps } = await searchParams;
+  const { pn, ps } = paginationSearchParamsZod.parse(await searchParams);
   const ability = await getCurrentAbility();
-  const userWithPage = await UserService.listWithPage(ability, {
-    pn: Array.isArray(pn) ? pn[0] : pn,
-    ps: Array.isArray(ps) ? ps[0] : ps,
-  });
+  const userWithPage = await UserService.listWithPage(ability, { pn, ps });
 
   return (
     <div>

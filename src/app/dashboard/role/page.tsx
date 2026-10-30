@@ -13,6 +13,7 @@ import { createRoleAction } from '@/actions/role';
 import withActionFormModal from '@/components/with-action-form-modal';
 import { getCurrentAbility } from '@/services/ability';
 import RoleService from '@/services/role';
+import { paginationSearchParamsZod } from '@/zod/search-params';
 
 import RoleForm from './components/role-form';
 import RoleTable from './table';
@@ -24,12 +25,9 @@ export const metadata: Metadata = {
 const RoleFormModal = withActionFormModal(RoleForm, { title: '创建角色' });
 
 const RolePage = async ({ searchParams }: PageProps<'/dashboard/role'>) => {
-  const { pn, ps } = await searchParams;
+  const { pn, ps } = paginationSearchParamsZod.parse(await searchParams);
   const ability = await getCurrentAbility();
-  const rolesWithPage = await RoleService.listWithPage(ability, {
-    pn: Array.isArray(pn) ? pn[0] : pn,
-    ps: Array.isArray(ps) ? ps[0] : ps,
-  });
+  const rolesWithPage = await RoleService.listWithPage(ability, { pn, ps });
 
   return (
     <div>

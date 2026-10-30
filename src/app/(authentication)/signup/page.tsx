@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 import Providers from '@/components/providers';
+import { callbackUrlSearchParamsZod } from '@/zod/search-params';
 
 import { SignupForm } from './form';
 
@@ -14,8 +15,7 @@ export const metadata: Metadata = {
 };
 
 const RegisterPage = async ({ searchParams }: PageProps<'/signup'>) => {
-  const search = await searchParams;
-  const callbackUrl = Array.isArray(search.callbackUrl) ? search.callbackUrl[0] : search.callbackUrl;
+  const { callbackUrl } = callbackUrlSearchParamsZod.parse(await searchParams);
 
   return (
     <>
