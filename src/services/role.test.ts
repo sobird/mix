@@ -144,3 +144,14 @@ describe('RoleService.assignOwnerToFirstUser', () => {
     expect(await RoleService.assignOwnerToFirstUser()).toBeNull();
   });
 });
+
+it('silently drops fields outside the update grant', async () => {
+  const role = await createRole({ description: 'old' });
+  const ability = buildAbility([{ action: 'update', subject: 'Role', narrowing: { fields: ['name'] } }]);
+
+  await RoleService.update(ability, role.id, { name: 'renamed', description: 'new' });
+  await role.reload();
+
+  expect(role.name).toBe('renamed');
+  expect(role.description).toBe('old');
+});

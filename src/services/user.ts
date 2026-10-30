@@ -2,7 +2,7 @@ import { Op, type Attributes } from 'sequelize';
 
 import { Role, User, UserExcludeAttributes } from '@/models';
 import { isAllowed, type AppAbility } from '@/services/ability';
-import { canAccessField, pruneReadableFields } from '@/services/ability/fields';
+import { canAccessField, pickWritableFields, pruneReadableFields } from '@/services/ability/fields';
 
 import { paginateAccessible, type PageQuery } from './access';
 import { ForbiddenError, NotFoundError } from './errors';
@@ -118,9 +118,14 @@ export class UserService {
     }
 
     const { roles, password: _password, confirmPassword: _confirmPassword, ...attributes } = data;
-    await user.update(attributes);
+    const plain = user.get({ plain: true }) as Record<PropertyKey, unknown>;
+    const writable = pickWritableFields(ability, 'update', 'User', plain, attributes);
 
-    if (roles?.length) {
+    if (Object.keys(writable).length > 0) {
+      await user.update(writable);
+    }
+
+    if (canAccessField(ability, 'update', 'User', plain, 'roles') && roles?.length) {
       await user.setRoles(roles);
     }
   }

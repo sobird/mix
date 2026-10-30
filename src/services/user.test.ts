@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { useInMemoryDatabase } from '../../tests/helpers/database';
-import { createUser } from '../../tests/helpers/factories';
+import { createRole, createUser } from '../../tests/helpers/factories';
 import { buildAbility } from './ability';
 import { ForbiddenError, NotFoundError } from './errors';
 import { syncPermissionCatalog } from './permission-catalog';
@@ -79,5 +79,32 @@ describe('UserService.findForEdit authorization', () => {
     ]);
 
     await expect(UserService.findForEdit(ability, user.id)).rejects.toBeInstanceOf(ForbiddenError);
+  });
+});
+
+describe('UserService.update field filtering', () => {
+  it('silently drops fields outside the update grant', async () => {
+    const user = await createUser({ nickname: 'nick' });
+    const ability = buildAbility([{ action: 'update', subject: 'User', narrowing: { fields: ['username'] } }]);
+
+    await UserService.update(ability, user.id, { username: 'renamed', nickname: 'changed' });
+    await user.reload();
+
+    expect(user.username).toBe('renamed');
+    expect(user.nickname).toBe('nick');
+  });
+
+  it('gates role assignment behind the roles pseudo-field', async () => {
+    await syncPermissionCatalog();
+    const user = await createUser();
+    const role = await createRole();
+    const withoutRoles = buildAbility([{ action: 'update', subject: 'User', narrowing: { fields: ['username'] } }]);
+
+    await UserService.update(withoutRoles, user.id, { roles: [role.id] });
+    expect(await user.getRoles()).toEqual([]);
+
+    const withRoles = buildAbility([{ action: 'update', subject: 'User', narrowing: { fields: ['roles'] } }]);
+    await UserService.update(withRoles, user.id, { roles: [role.id] });
+    expect((await user.getRoles()).map((item) => item.id)).toEqual([role.id]);
   });
 });

@@ -9,7 +9,7 @@ import type { Attributes } from 'sequelize';
 import { Role, Permission, User, UserRole, sequelize } from '@/models';
 import type { AppAbility } from '@/services/ability/build';
 import { isAllowed } from '@/services/ability/check';
-import { pruneReadableFields } from '@/services/ability/fields';
+import { pickWritableFields, pruneReadableFields } from '@/services/ability/fields';
 import { queryAccessible } from '@/services/ability/query';
 
 import { paginateAccessible, type PageQuery } from './access';
@@ -139,7 +139,8 @@ class RoleService {
       throw new ForbiddenError('您没有更新角色的权限');
     }
 
-    await role.update(data);
+    const plain = role.get({ plain: true }) as Record<PropertyKey, unknown>;
+    await role.update(pickWritableFields(ability, 'update', 'Role', plain, { ...data }));
   }
 
   static async remove(ability: AppAbility, id: number | string): Promise<void> {
