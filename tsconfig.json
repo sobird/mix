@@ -100,5 +100,5 @@
     "strictNullChecks": true
   },
   "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-  "exclude": ["node_modules", "dist", "examples"]
+  "exclude": ["node_modules", "dist"]
 }
