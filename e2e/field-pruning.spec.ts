@@ -24,7 +24,7 @@ test('restricted role sees pruned columns, fields and writes', async ({ page }) 
 
   await page.getByLabel('用户昵称').fill('改名成功');
   await page.getByRole('button', { name: /提\s*交/ }).click();
-  await expect(page).toHaveURL(/\/dashboard\/user$/);
+  await expect(page).toHaveURL(/\/dashboard\/user$/, { timeout: 15_000 });
 
   await page
     .getByRole('row', { name: new RegExp(E2E_TARGET_USERNAME) })

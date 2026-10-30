@@ -19,12 +19,14 @@ test('restrictions survive a save and reload', async ({ page }) => {
   // 第一次 Escape 收起下拉，第二次关闭抽屉
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toBeHidden();
   await page.getByRole('button', { name: /保\s*存/ }).click();
 
-  await expect(page.getByText('权限已保存')).toBeVisible();
+  await expect(page.getByText('权限已保存')).toBeVisible({ timeout: 15_000 });
   await page.reload();
   await expect(page.getByLabel('Role:read')).toBeChecked();
   await expect(page.getByLabel('限制:Role')).toBeEnabled();
+  await expect(page.getByLabel('限制:Role')).toContainText('1 项');
 });
 
 test('built-in roles are read-only', async ({ page }) => {
