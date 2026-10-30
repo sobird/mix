@@ -79,4 +79,8 @@ describe('symbolize', () => {
 
     expect(symbolize({ $lte: date })).toEqual({ [Op.lte]: date });
   });
+
+  it('maps $nin to Op.notIn for Sequelize', () => {
+    expect(symbolize({ id: { $nin: [1, 2] } })).toEqual({ id: { [Op.notIn]: [1, 2] } });
+  });
 });

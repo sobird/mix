@@ -41,7 +41,11 @@ export function symbolize(value: unknown): unknown {
   for (const [key, child] of Object.entries(value)) {
     const operatorName = key.startsWith('$') ? key.slice(1) : undefined;
     const operator =
-      operatorName !== undefined && OPERATOR_NAMES.has(operatorName) ? Op[operatorName as keyof typeof Op] : undefined;
+      operatorName !== undefined && OPERATOR_NAMES.has(operatorName)
+        ? Op[operatorName as keyof typeof Op]
+        : operatorName === 'nin'
+          ? Op.notIn
+          : undefined;
 
     result[operator ?? key] = symbolize(child);
   }
